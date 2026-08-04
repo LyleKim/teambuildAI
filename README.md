@@ -1,6 +1,6 @@
-# 파비콘 (favicon)
+# TeambuildAI
 
-> **TeambuildAI** — 가장 잘 맞는 팀원과 연결되는 순간
+> **파비콘** — 가장 잘 맞는 팀원과 연결되는 순간
   
 공모전·대회에 나가고 싶지만 **함께할 팀원이 없어 망설이는 대학생**을 위한 AI 기반 팀 매칭 플랫폼입니다.
   
@@ -8,13 +8,10 @@
 ## 목차  
   
 - [배경](#배경)  
-- [해결 방식](#해결-방식)  
 - [주요 기능](#주요-기능)  
 - [기술 스택](#기술-스택)  
 - [프로젝트 구조](#프로젝트-구조)  
 - [시작하기](#시작하기)  
-- [개발 현황](#개발-현황)  
-- [로드맵](#로드맵)  
 - [팀](#팀)  
   
   
@@ -168,14 +165,27 @@ pnpm format          # oxfmt
     </a>
     <div style="font-size: 12px; margin-top: 4px;">LyleKim</div>
   </div>
+</div>
 
+</div>
   <div style="display: inline-block; text-align: center; margin-right: 15px;">
     <a href="https://github.com/minch-070605" target="_blank">
       <img src="https://github.com/minch-070605.png" width="40" style="border-radius:50%;" alt="minch-070605" />
     </a>
     <div style="font-size: 12px; margin-top: 4px;">minch-070605</div>
   </div>
-    
+</div>
+
+</div>
+  <div style="display: inline-block; text-align: center; margin-right: 15px;">
+    <a href="https://github.com/changmin0293" target="_blank">
+      <img src="https://github.com/changmin0293" width="40" style="border-radius:50%;" alt="changmin0293" />
+    </a>
+    <div style="font-size: 12px; margin-top: 4px;">changmin0293</div>
+  </div>
+</div>
+
+</div>
   <div style="display: inline-block; text-align: center; margin-right: 15px;">
     <div target="_blank">
       <img src="https://avatars.slack-edge.com/2025-05-14/8891273522918_30c38bf627ac73075db6_512.png" width="40" style="border-radius:50%;" alt="Claude AI" />
