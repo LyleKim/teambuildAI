@@ -1,0 +1,10 @@
+{
+  "description": "This platform enables users to create and prototype MVP screens efficiently, streamlining the development process for startups and entrepreneurs.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
