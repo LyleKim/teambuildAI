@@ -179,7 +179,7 @@ pnpm format          # oxfmt
 </div>
   <div style="display: inline-block; text-align: center; margin-right: 15px;">
     <a href="https://github.com/changmin0293" target="_blank">
-      <img src="https://github.com/changmin0293" width="40" style="border-radius:50%;" alt="changmin0293" />
+      <img src="https://github.com/changmin0293.png" width="40" style="border-radius:50%;" alt="changmin0293" />
     </a>
     <div style="font-size: 12px; margin-top: 4px;">changmin0293</div>
   </div>
