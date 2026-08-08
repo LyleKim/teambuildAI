@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,12 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o_la-h4=y-)-rk5+-&5a#md1xsa)@jxv(wpi^o*wje)=+z)nsx'
+# 예전에 여기 하드코딩돼 있던 값이 실수로 커밋돼 GitHub에 올라간 적이 있어 폐기했다.
+# 이제 .env로만 관리하고, 값이 없으면 컨테이너가 아예 뜨지 않도록 fallback을 안 둔다
+# (SimpleJWT가 이 값을 JWT 서명 키로 그대로 쓰기 때문에 조용히 안전하지 않은
+# 기본값으로 넘어가는 게 더 위험하다).
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -38,11 +43,66 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pybo',
+    'rest_framework',
+    'corsheaders',
+    'accounts',
+    'hackathons',
+    'matching',
+    'chat',
+    'coffeechat',
+    'notifications',
 ]
+
+# 다른 모든 모델이 여기 FK를 걸게 될 커스텀 User.
+# 반드시 첫 migrate 전에 정해야 하므로 Phase 0에서 바로 설정한다.
+AUTH_USER_MODEL = 'accounts.User'
+
+# 기본은 인증 필요로 막아두고(fail closed), 공개 엔드포인트만 뷰에서
+# AllowAny로 명시적으로 풀어준다 (해커톤 목록/상세, meta, stats, auth/*).
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+}
+
+# 프론트엔드 타입(Paginated<T>)과 SimpleJWT 응답 형태를 그대로 맞춰 쓰므로
+# 커스텀 없이 기본값만 사용한다.
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+}
+
+# Vite dev 서버가 /api를 프록시하므로 평소엔 브라우저 입장에서 동일 출처라
+# CORS가 실제로 필요하진 않지만, 프록시 없이 :8000을 직접 두드리는 개발/디버깅
+# 상황을 위해 열어둔다.
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8443',
+    'http://127.0.0.1:8443',
+]
+
+# 카카오 로그인 콜백이 끝나고 JWT를 실어 돌려보낼 수 있는 프론트엔드 주소 화이트리스트.
+# CORS_ALLOWED_ORIGINS와 같은 값이라 재사용한다 — redirect_uri를 검증 안 하면
+# 토큰이 실린 리다이렉트를 아무 외부 주소로나 보낼 수 있는 open redirect가 된다.
+FRONTEND_ORIGINS = CORS_ALLOWED_ORIGINS
+
+# 카카오 디벨로퍼스에서 발급받는 값. 아직 없으면 빈 문자열이라 로그인 시도 시
+# 카카오가 400으로 거부한다 (그 외 API는 이 값과 무관하게 정상 동작).
+KAKAO_REST_API_KEY = os.environ.get('KAKAO_REST_API_KEY', '')
+KAKAO_CLIENT_SECRET = os.environ.get('KAKAO_CLIENT_SECRET', '')
+KAKAO_REDIRECT_URI = os.environ.get(
+    'KAKAO_REDIRECT_URI', 'http://localhost:8000/api/v1/auth/kakao/callback/'
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # CommonMiddleware 등 응답을 만들 수 있는 미들웨어보다 앞에 있어야
+    # 그 응답에도 CORS 헤더가 붙는다.
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -114,7 +174,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 

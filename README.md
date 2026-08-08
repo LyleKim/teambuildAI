@@ -1,4 +1,4 @@
-# TeambuildAI
+# teambuildAI
 
 > **파비콘** — 가장 잘 맞는 팀원과 연결되는 순간
   

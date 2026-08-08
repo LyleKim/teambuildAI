@@ -22,6 +22,9 @@ services:
     build: ./backend
     restart: unless-stopped
     command: python manage.py runserver 0.0.0.0:8000
+    # .env에 새 변수(KAKAO_* 등)를 추가하면 여기 따로 안 적어도 자동으로 들어온다.
+    env_file:
+      - .env
     environment:
       DB_NAME: ${MYSQL_DATABASE}
       DB_USER: ${MYSQL_USER}
