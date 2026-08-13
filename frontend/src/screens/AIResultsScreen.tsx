@@ -142,7 +142,14 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar initial={avatarInitial} size={40} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[15px] text-[#0F172A]">{p.name}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-[15px] text-[#0F172A]">{p.name}</p>
+                      {p.review_summary.count > 0 && (
+                        <span className="text-[11px] font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2 py-0.5 rounded-full">
+                          ⭐ {p.review_summary.average} ({p.review_summary.count})
+                        </span>
+                      )}
+                    </div>
                     <div className="flex gap-1.5 mt-1 flex-wrap">
                       {p.roles.map((r) => (
                         <span key={r} className="bg-[#E0F2FE] text-[#0EA5E9] text-[11px] font-semibold px-2 py-0.5 rounded-full">

@@ -37,6 +37,7 @@ const EMPTY_PROFILE: ProfileInput = {
   bio_contribution: '',
   links: [],
   open_chat: '',
+  phone: '',
   is_private: false,
 }
 
@@ -88,8 +89,10 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
     },
   )
 
+  // 상세 자기소개 5개 항목은 전부 채워야 한다 — AI 매칭 근거로 쓰이는 핵심 정보라 필수로 바뀌었다
+  const bioComplete = BIO_QUESTIONS.every((q) => form[q.key].trim().length > 0)
   // 최소 조건: 역할 하나는 골라야 매칭이 의미가 있다
-  const canSubmit = form.roles.length > 0 && !save.loading
+  const canSubmit = form.roles.length > 0 && bioComplete && !save.loading
 
   if (loading) {
     return (
@@ -186,7 +189,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
         <button onClick={() => setBioOpen((v) => !v)} className="w-full flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <p className="text-[13px] font-semibold text-[#0F172A]">상세 자기소개</p>
-            <span className="text-[11px] text-[#64748B] font-normal">(선택)</span>
+            <span className="text-[11px] text-[#F43F5E] font-semibold">필수</span>
           </div>
           <svg
             width="16"
@@ -202,7 +205,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
           </svg>
         </button>
         <p className="text-[12px] text-[#64748B] mb-3">
-          프로필 상세 페이지에 항목별로 표시돼요. 작성할수록 팀원이 나를 더 잘 이해할 수 있어요.
+          프로필 상세 페이지에 항목별로 표시돼요. 5개 항목 모두 작성해야 저장할 수 있어요.
         </p>
 
         {bioOpen && (
@@ -212,7 +215,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
                 <div className="px-5 py-4">
                   <div className="flex items-center gap-1.5 mb-2">
                     <p className="text-[13px] font-semibold text-[#0F172A]">{q.label}</p>
-                    <span className="text-[11px] text-[#94A3B8]">(선택)</span>
+                    <span className="text-[11px] text-[#F43F5E]">*</span>
                   </div>
                   <textarea
                     value={form[q.key]}
@@ -308,6 +311,21 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
         />
       </div>
 
+      {/* 전화번호 — 팀장이 "수동으로 참가자 추가"할 때 회원 조회 키로 쓰인다 */}
+      <div className="mb-5">
+        <p className="text-[13px] font-semibold text-[#0F172A] mb-1">전화번호</p>
+        <p className="text-[12px] text-[#64748B] mb-2">
+          팀장이 참가자를 수동으로 추가할 때 회원 확인용으로 쓰여요. (선택)
+        </p>
+        <input
+          type="tel"
+          value={form.phone}
+          onChange={(e) => set('phone', e.target.value)}
+          placeholder="010-1234-5678"
+          className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#0EA5E9]"
+        />
+      </div>
+
       <div className="flex items-center justify-between bg-[#F0F5FC] rounded-xl border border-[#E2EAF4] px-4 py-3.5 mb-8">
         <div>
           <p className="text-[13px] font-semibold text-gray-700">추천 대상에서 비공개</p>
@@ -319,6 +337,9 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
       <InlineError message={save.error?.message} />
       {!canSubmit && form.roles.length === 0 && (
         <p className="text-[12px] text-[#94A3B8] mb-2">대표 역할을 최소 1개 선택해주세요.</p>
+      )}
+      {!canSubmit && form.roles.length > 0 && !bioComplete && (
+        <p className="text-[12px] text-[#94A3B8] mb-2">상세 자기소개 5개 항목을 모두 작성해주세요.</p>
       )}
 
       <PrimaryButton onClick={() => save.mutate(form)} loading={save.loading} disabled={!canSubmit} className="w-full">

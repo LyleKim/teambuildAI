@@ -16,4 +16,5 @@ urlpatterns = [
     path('', include('chat.urls')),
     path('', include('coffeechat.urls')),
     path('', include('notifications.urls')),
+    path('', include('reviews.urls')),
 ]

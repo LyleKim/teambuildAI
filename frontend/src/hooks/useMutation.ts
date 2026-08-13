@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { ApiError } from '@/api/client'
 
 export interface MutationResult<TArgs, TData> {
@@ -21,28 +21,30 @@ export function useMutation<TArgs, TData>(
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
 
-  const mutate = useCallback(
-    async (args: TArgs): Promise<TData | null> => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await fn(args)
-        options.onSuccess?.(data, args)
-        return data
-      } catch (err) {
-        const apiError = err instanceof ApiError ? err : new ApiError(0, String(err))
-        setError(apiError)
-        options.onError?.(apiError)
-        return null
-      } finally {
-        setLoading(false)
-      }
-    },
-    // fn/options는 렌더마다 새로 만들어지는 인라인 함수인 경우가 많아 의존성에서 제외한다.
-    // 대신 항상 최신 클로저를 쓰도록 mutate를 매 렌더 재생성하지 않고 내부에서만 참조한다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  )
+  // fn/options는 렌더마다 새로 만들어지는 인라인 함수라 컴포넌트 상태(예: 입력 필드 값)를
+  // 클로저로 갖는 경우가 많다. ref로 매 렌더 최신 값을 갱신해두지 않으면 mutate가
+  // 최초 렌더 시점의 낡은 클로저를 영원히 참조해 최신 상태를 무시하게 된다.
+  const fnRef = useRef(fn)
+  fnRef.current = fn
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+
+  const mutate = useCallback(async (args: TArgs): Promise<TData | null> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await fnRef.current(args)
+      optionsRef.current.onSuccess?.(data, args)
+      return data
+    } catch (err) {
+      const apiError = err instanceof ApiError ? err : new ApiError(0, String(err))
+      setError(apiError)
+      optionsRef.current.onError?.(apiError)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   const reset = useCallback(() => {
     setError(null)

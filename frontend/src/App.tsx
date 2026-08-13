@@ -21,6 +21,8 @@ import { ProfileSetupScreen } from '@/screens/ProfileSetupScreen'
 import { SearchScreen } from '@/screens/SearchScreen'
 import { TeamEditScreen } from '@/screens/TeamEditScreen'
 import { TeamSetupScreen } from '@/screens/TeamSetupScreen'
+import { TeamSpaceScreen } from '@/screens/TeamSpaceScreen'
+import { MyReviewsScreen } from '@/screens/MyReviewsScreen'
 
 type Params = Record<string, string>
 
@@ -83,9 +85,14 @@ const ROUTE_TABLE: { pattern: string; value: RouteDef }[] = [
 
   { pattern: '/my/status', value: { render: () => <MyStatusScreen />, auth: true } },
   {
+    pattern: '/my/status/:id',
+    value: { render: (p) => <Guarded id={numericParam(p, 'id')} render={(id) => <TeamSpaceScreen hackathonId={id} />} />, auth: true },
+  },
+  {
     pattern: '/teams/:id/edit',
     value: { render: (p) => <Guarded id={numericParam(p, 'id')} render={(id) => <TeamEditScreen teamId={id} />} />, auth: true },
   },
+  { pattern: '/mypage/reviews', value: { render: () => <MyReviewsScreen />, auth: true } },
   { pattern: '/mypage', value: { render: () => <MyPageScreen />, auth: true } },
   { pattern: '/notifications', value: { render: () => <NotificationsScreen />, auth: true } },
 ]

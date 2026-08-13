@@ -1,14 +1,23 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Hackathon, Participation, Team
+from accounts.models import Profile
+
+from .models import Hackathon, ManualParticipant, Participation, Team, TodoItem
 from .permissions import IsOwnerOrReadOnly
-from .serializers import HackathonSerializer, ParticipationSerializer, TeamSerializer
+from .serializers import (
+    HackathonSerializer,
+    ManualParticipantSerializer,
+    ParticipationSerializer,
+    TeamSerializer,
+    TodoItemSerializer,
+)
 
 # ─── 해커톤 ───────────────────────────────────────────────────────────────────
 
@@ -69,6 +78,19 @@ class ParticipationDestroyView(generics.DestroyAPIView):
         return Participation.objects.filter(user=self.request.user)
 
 
+class ParticipationEndView(APIView):
+    """삭제가 아니라 '완료' 표시. 팀원/TDL은 계속 조회할 수 있어야 하므로 지우지 않는다."""
+
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        participation = get_object_or_404(Participation, pk=pk, user=request.user)
+        if participation.ended_at is None:
+            participation.ended_at = timezone.now()
+            participation.save(update_fields=['ended_at'])
+        return Response(ParticipationSerializer(participation).data)
+
+
 # ─── 팀 모집 ──────────────────────────────────────────────────────────────────
 
 
@@ -85,6 +107,84 @@ class TeamDetailView(generics.RetrieveUpdateAPIView):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+
+# ─── 개인 TDL ─────────────────────────────────────────────────────────────────
+
+
+class TodoItemListCreateView(generics.ListCreateAPIView):
+    serializer_class = TodoItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return TodoItem.objects.filter(
+            hackathon_id=self.kwargs['hackathon_id'], user=self.request.user,
+        )
+
+    def perform_create(self, serializer):
+        hackathon = get_object_or_404(Hackathon, pk=self.kwargs['hackathon_id'])
+        if not Participation.objects.filter(user=self.request.user, hackathon=hackathon).exists():
+            raise ValidationError('이 해커톤에 참가 중인 사용자만 할 일을 남길 수 있어요.')
+        serializer.save(user=self.request.user, hackathon=hackathon)
+
+
+class TodoItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TodoItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # 본인 항목만 보이게 좁혀서 남의 것은 404로 처리
+        return TodoItem.objects.filter(user=self.request.user)
+
+
+# ─── 참가자 수동 추가 ─────────────────────────────────────────────────────────
+
+
+class ManualParticipantListCreateView(generics.ListCreateAPIView):
+    serializer_class = ManualParticipantSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ManualParticipant.objects.filter(
+            hackathon_id=self.kwargs['hackathon_id'], added_by=self.request.user,
+        ).select_related('user')
+
+    def create(self, request, *args, **kwargs):
+        hackathon = get_object_or_404(Hackathon, pk=self.kwargs['hackathon_id'])
+        phone = (request.data.get('phone') or '').strip()
+        name = (request.data.get('name') or '').strip()
+        email = (request.data.get('email') or '').strip()
+
+        if not phone:
+            raise ValidationError({'phone': '전화번호를 입력해주세요.'})
+
+        # 사이트 회원이면 회원 정보로, 아니면 입력받은 이름/이메일로 추가한다.
+        matched_profile = Profile.objects.filter(phone=phone).select_related('user').first()
+
+        if matched_profile:
+            member = matched_profile.user
+            participant, _ = ManualParticipant.objects.update_or_create(
+                hackathon=hackathon, added_by=request.user, phone=phone,
+                defaults={'user': member, 'name': member.name, 'email': member.email},
+            )
+        else:
+            if not name or not email:
+                # 프론트가 이 코드를 보고 이름/이메일 입력 UI를 추가로 보여준다
+                raise ValidationError({'not_member': '사이트 회원이 아니에요. 이름과 이메일을 입력해주세요.'})
+            participant, _ = ManualParticipant.objects.update_or_create(
+                hackathon=hackathon, added_by=request.user, phone=phone,
+                defaults={'user': None, 'name': name, 'email': email},
+            )
+
+        return Response(ManualParticipantSerializer(participant).data, status=201)
+
+
+class ManualParticipantDeleteView(generics.DestroyAPIView):
+    serializer_class = ManualParticipantSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ManualParticipant.objects.filter(added_by=self.request.user)
 
 
 # ─── 메타 / 통계 ──────────────────────────────────────────────────────────────

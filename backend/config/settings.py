@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'chat',
     'coffeechat',
     'notifications',
+    'reviews',
 ]
 
 # 다른 모든 모델이 여기 FK를 걸게 될 커스텀 User.

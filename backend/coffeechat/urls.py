@@ -8,5 +8,8 @@ urlpatterns = [
     path('coffeechats/sent/', views.CoffeeChatSentListView.as_view()),
     path('coffeechats/<int:coffeechat_id>/accept/', views.CoffeeChatAcceptView.as_view()),
     path('coffeechats/<int:coffeechat_id>/reject/', views.CoffeeChatRejectView.as_view()),
+    path('coffeechats/<int:coffeechat_id>/progress/', views.CoffeeChatProgressView.as_view()),
+    path('coffeechats/<int:coffeechat_id>/delete/', views.CoffeeChatDeleteView.as_view()),
     path('coffeechats/<int:pk>/', views.CoffeeChatDetailView.as_view()),
+    path('hackathons/<int:hackathon_id>/teammates/', views.TeammatesView.as_view()),
 ]

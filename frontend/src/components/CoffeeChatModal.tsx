@@ -14,6 +14,8 @@ export interface CoffeeChatTarget {
 /**
  * 커피챗 신청 모달.
  *
+ * 문구는 기본값을 채워주되 자유롭게 수정할 수 있다.
+ * 오픈채팅 링크는 서버가 내 프로필 기준으로 자동 첨부하므로 여기서 따로 다루지 않는다.
  * 신청 성공 시 onSent를 호출해 호출한 화면이 목록/버튼 상태를 갱신하게 한다.
  */
 export function CoffeeChatModal({
@@ -67,7 +69,10 @@ export function CoffeeChatModal({
           maxLength={300}
           className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#4EAAF5] resize-none"
         />
-        <p className="text-[11px] text-[#94A3B8] text-right mt-1">{message.length}/300</p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-[11px] text-[#94A3B8]">내 프로필의 오픈채팅 링크가 함께 전달돼요.</p>
+          <p className="text-[11px] text-[#94A3B8]">{message.length}/300</p>
+        </div>
 
         <div className="mt-3">
           <InlineError message={send.error?.message} />

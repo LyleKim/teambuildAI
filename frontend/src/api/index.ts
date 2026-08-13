@@ -14,6 +14,7 @@ import type {
   CoffeeChatStatus,
   CurrentUser,
   Hackathon,
+  ManualParticipant,
   MemberProfile,
   MetaOptions,
   MyProfile,
@@ -21,8 +22,11 @@ import type {
   ProfileInput,
   Recommendation,
   RecommendationJob,
+  Review,
   Team,
   TeamInput,
+  Teammate,
+  TodoItem,
   TokenPair,
 } from '@/types'
 
@@ -94,6 +98,11 @@ export const participationApi = {
   leave(participationId: number) {
     return api.delete<void>(`/participations/${participationId}/`)
   },
+
+  /** 삭제가 아니라 완료 표시 — 팀원/TDL은 계속 조회할 수 있다. */
+  end(participationId: number) {
+    return api.patch<Participation>(`/participations/${participationId}/end/`)
+  },
 }
 
 // ─── 프로필 ───────────────────────────────────────────────────────────────────
@@ -136,6 +145,62 @@ export const teamApi = {
   },
 }
 
+// ─── 개인 TDL ─────────────────────────────────────────────────────────────────
+
+export const todoApi = {
+  async list(hackathonId: number) {
+    const data = await api.get<TodoItem[] | { results: TodoItem[] }>(
+      `/hackathons/${hackathonId}/todos/`,
+    )
+    return toList(data)
+  },
+
+  create(hackathonId: number, text: string) {
+    return api.post<TodoItem>(`/hackathons/${hackathonId}/todos/`, { text })
+  },
+
+  toggle(id: number, isDone: boolean) {
+    return api.patch<TodoItem>(`/todos/${id}/`, { is_done: isDone })
+  },
+
+  remove(id: number) {
+    return api.delete<void>(`/todos/${id}/`)
+  },
+}
+
+// ─── 참가자 수동 추가 ─────────────────────────────────────────────────────────
+
+export const manualParticipantApi = {
+  async list(hackathonId: number) {
+    const data = await api.get<ManualParticipant[] | { results: ManualParticipant[] }>(
+      `/hackathons/${hackathonId}/participants/manual/`,
+    )
+    return toList(data)
+  },
+
+  /** 회원이 아니면 name/email 없이 첫 호출이 실패한다 — ApiError.data.not_member로 판별 */
+  add(hackathonId: number, params: { phone: string; name?: string; email?: string }) {
+    return api.post<ManualParticipant>(`/hackathons/${hackathonId}/participants/manual/`, params)
+  },
+
+  remove(id: number) {
+    return api.delete<void>(`/participants/manual/${id}/`)
+  },
+}
+
+// ─── 리뷰 ─────────────────────────────────────────────────────────────────────
+
+export const reviewApi = {
+  save(params: { hackathon_id: number; reviewee_id: number; rating: number; content: string }) {
+    return api.post<Review>('/reviews/', params)
+  },
+
+  async received() {
+    const data = await api.get<Review[] | { results: Review[] }>('/reviews/received/')
+    return toList(data)
+  },
+}
+
 // ─── AI 추천 ──────────────────────────────────────────────────────────────────
 
 export const recommendationApi = {
@@ -159,6 +224,7 @@ export const recommendationApi = {
 // ─── 커피챗 ───────────────────────────────────────────────────────────────────
 
 export const coffeechatApi = {
+  /** 연락처는 서버가 내 프로필의 오픈채팅 링크로 자동 첨부한다. */
   send(params: { to_user_id: number; hackathon_id: number; message: string }) {
     return api.post<CoffeeChat>('/coffeechats/', params)
   },
@@ -186,8 +252,25 @@ export const coffeechatApi = {
     return api.patch<CoffeeChat>(`/coffeechats/${id}/reject/`)
   },
 
+  /** accepted -> in_progress -> completed 순서로만 한 단계씩 넘어간다. */
+  setProgress(id: number, status: 'in_progress' | 'completed') {
+    return api.patch<CoffeeChat>(`/coffeechats/${id}/progress/`, { status })
+  },
+
+  remove(id: number) {
+    return api.delete<void>(`/coffeechats/${id}/delete/`)
+  },
+
   detail(id: number) {
     return api.get<CoffeeChat>(`/coffeechats/${id}/`)
+  },
+
+  /** 해당 해커톤에서 나와 커피챗이 수락된(진행중/완료 포함) 상대 목록 — "팀원" */
+  async teammates(hackathonId: number) {
+    const data = await api.get<Teammate[] | { results: Teammate[] }>(
+      `/hackathons/${hackathonId}/teammates/`,
+    )
+    return toList(data)
   },
 }
 

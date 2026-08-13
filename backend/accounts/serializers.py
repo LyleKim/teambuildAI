@@ -15,9 +15,19 @@ class PortfolioLinkSerializer(serializers.Serializer):
 
 
 class MyProfileSerializer(serializers.ModelSerializer):
-    """내 프로필 조회/저장 겸용 (GET/PUT 응답·입력 형태가 동일하다)."""
+    """내 프로필 조회/저장 겸용 (GET/PUT 응답·입력 형태가 동일하다).
+
+    상세 자기소개 5개 항목은 AI 매칭의 핵심 근거라 필수로 바뀌었다 — 모델은
+    blank=True로 남겨두되(과거 데이터 호환) 여기서 required=True로 막는다.
+    프론트 검증만 믿지 않고 API를 직접 호출해도 막히도록 하는 게 목적이다.
+    """
 
     links = PortfolioLinkSerializer(many=True, required=False)
+    bio_style = serializers.CharField(allow_blank=False)
+    bio_strength = serializers.CharField(allow_blank=False)
+    bio_experience = serializers.CharField(allow_blank=False)
+    bio_goal = serializers.CharField(allow_blank=False)
+    bio_contribution = serializers.CharField(allow_blank=False)
 
     class Meta:
         model = Profile
@@ -25,7 +35,7 @@ class MyProfileSerializer(serializers.ModelSerializer):
             'roles', 'skills', 'available_time', 'regions', 'goal',
             'collaboration', 'communication', 'interests', 'one_liner',
             'bio_style', 'bio_strength', 'bio_experience', 'bio_goal',
-            'bio_contribution', 'links', 'open_chat', 'is_private',
+            'bio_contribution', 'links', 'open_chat', 'phone', 'is_private',
         ]
 
 
@@ -40,6 +50,8 @@ class MemberProfileSerializer(serializers.ModelSerializer):
     open_chat_locked = serializers.SerializerMethodField()
     coffeechat_sent = serializers.SerializerMethodField()
     coffeechat_status = serializers.SerializerMethodField()
+    review_summary = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -48,6 +60,7 @@ class MemberProfileSerializer(serializers.ModelSerializer):
             'goal', 'collaboration', 'communication', 'interests', 'one_liner',
             'bio_style', 'bio_strength', 'bio_experience', 'bio_goal', 'bio_contribution',
             'links', 'open_chat', 'open_chat_locked', 'coffeechat_sent', 'coffeechat_status',
+            'review_summary', 'reviews',
         ]
 
     def get_initial(self, obj):
@@ -62,7 +75,11 @@ class MemberProfileSerializer(serializers.ModelSerializer):
 
             request = self.context['request']
             obj._accepted_cc_cache = CoffeeChat.objects.filter(
-                status=CoffeeChat.Status.ACCEPTED,
+                # in_progress/completed도 이미 수락된 관계다 — ACCEPTED만 보면
+                # 진행 상태를 넘긴 순간 다시 잠기는 회귀가 생긴다.
+                status__in=[
+                    CoffeeChat.Status.ACCEPTED, CoffeeChat.Status.IN_PROGRESS, CoffeeChat.Status.COMPLETED,
+                ],
             ).filter(
                 Q(sender=request.user, receiver=obj.user) | Q(sender=obj.user, receiver=request.user)
             ).first()
@@ -92,3 +109,15 @@ class MemberProfileSerializer(serializers.ModelSerializer):
     def get_coffeechat_status(self, obj):
         cc = self._my_sent_coffeechat(obj)
         return cc.status if cc else None
+
+    def get_review_summary(self, obj):
+        from reviews.services import review_summary  # 앱 간 순환 임포트 방지용 지역 import
+
+        return review_summary(obj.user)
+
+    def get_reviews(self, obj):
+        from reviews.models import Review  # 앱 간 순환 임포트 방지용 지역 import
+        from reviews.serializers import ReviewSerializer
+
+        qs = Review.objects.filter(reviewee=obj.user).select_related('reviewer', 'hackathon')[:20]
+        return ReviewSerializer(qs, many=True).data

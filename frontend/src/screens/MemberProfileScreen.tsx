@@ -56,7 +56,14 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
           <div className="flex items-center gap-4 mb-6">
             <Avatar initial={data.initial || initialOf(data.name)} size={64} className="bg-[#4EAAF5]" />
             <div>
-              <h1 className="text-[22px] font-bold text-gray-800">{data.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-[22px] font-bold text-gray-800">{data.name}</h1>
+                {data.review_summary.count > 0 && (
+                  <span className="text-[13px] font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2.5 py-0.5 rounded-full">
+                    ⭐ {data.review_summary.average} ({data.review_summary.count})
+                  </span>
+                )}
+              </div>
               <div className="flex gap-1.5 mt-1.5 flex-wrap">
                 {data.roles.map((r) => (
                   <span key={r} className="bg-blue-100 text-[#4EAAF5] text-[12px] font-semibold px-2.5 py-0.5 rounded-full">
@@ -150,6 +157,28 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
                     </a>
                   )
                 })}
+              </div>
+            </div>
+          )}
+
+          {data.reviews.length > 0 && (
+            <div className="mb-6">
+              <p className="text-[13px] font-semibold text-[#0F172A] mb-3">받은 리뷰</p>
+              <div className="flex flex-col gap-2">
+                {data.reviews.map((r) => (
+                  <div key={r.id} className="bg-white rounded-xl border border-[#E2EAF4] p-4">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-[12px] font-semibold text-[#0F172A]">
+                        {r.reviewer_name}
+                        <span className="text-[#94A3B8] font-normal ml-1.5">· {r.hackathon.title}</span>
+                      </p>
+                      <span className="text-[12px] font-bold text-[#F59E0B] flex-shrink-0">
+                        {'⭐'.repeat(r.rating)}
+                      </span>
+                    </div>
+                    {r.content && <p className="text-[13px] text-[#64748B] leading-relaxed">{r.content}</p>}
+                  </div>
+                ))}
               </div>
             </div>
           )}

@@ -42,7 +42,7 @@ export function MyStatusScreen() {
               <div className="flex items-center justify-between mb-3 gap-3">
                 <div className="min-w-0">
                   <button
-                    onClick={() => navigate(routes.hackathon(p.hackathon.id))}
+                    onClick={() => navigate(routes.teamSpace(p.hackathon.id))}
                     className="font-bold text-[15px] text-[#0F172A] hover:text-[#0EA5E9] transition-colors text-left"
                   >
                     {p.hackathon.title}
@@ -51,13 +51,19 @@ export function MyStatusScreen() {
                     {p.join_type === 'individual' ? '참가자(개인)' : '팀 모집자'}
                   </p>
                 </div>
-                <span
-                  className={`text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
-                    RECRUIT_STATUS_STYLES[p.status] ?? RECRUIT_STATUS_STYLES['모집 마감']
-                  }`}
-                >
-                  {p.status}
-                </span>
+                {p.ended_at ? (
+                  <span className="text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0 text-[#64748B] bg-[#F1F5F9] border border-[#E2EAF4]">
+                    ✅ 종료됨
+                  </span>
+                ) : (
+                  <span
+                    className={`text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
+                      RECRUIT_STATUS_STYLES[p.status] ?? RECRUIT_STATUS_STYLES['모집 마감']
+                    }`}
+                  >
+                    {p.status}
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-2 flex-wrap">

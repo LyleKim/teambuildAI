@@ -13,7 +13,7 @@ export interface Paginated<T> {
 }
 
 export type JoinType = 'individual' | 'team'
-export type CoffeeChatStatus = 'pending' | 'accepted' | 'rejected'
+export type CoffeeChatStatus = 'pending' | 'accepted' | 'rejected' | 'in_progress' | 'completed'
 export type NotificationType = 'request' | 'accepted' | 'rejected' | 'recommendation'
 
 /** 서버가 내려주는 화면 이동 대상. 프론트 라우팅 경로로 변환해서 쓴다. */
@@ -95,6 +95,8 @@ export interface Participation {
   status: string
   /** join_type === 'team' 일 때 모집 조건 수정으로 연결할 팀 id */
   team_id: number | null
+  /** 내가 이 프로젝트를 종료 표시한 시각. null이면 진행 중 */
+  ended_at: string | null
 }
 
 // ─── 프로필 ───────────────────────────────────────────────────────────────────
@@ -117,6 +119,8 @@ export interface ProfileInput {
   bio_contribution: string
   links: PortfolioLink[]
   open_chat: string
+  /** 참가자 수동 추가 시 전화번호로 회원을 찾을 수 있게 하는 선택 입력 */
+  phone: string
   is_private: boolean
 }
 
@@ -147,6 +151,8 @@ export interface MemberProfile {
   /** 내가 이 사람에게 이미 커피챗을 보냈는지 */
   coffeechat_sent: boolean
   coffeechat_status: CoffeeChatStatus | null
+  review_summary: ReviewSummary
+  reviews: Review[]
 }
 
 // ─── 팀 모집 ──────────────────────────────────────────────────────────────────
@@ -169,6 +175,42 @@ export interface Team extends TeamInput {
   hackathon: Pick<Hackathon, 'id' | 'title'>
 }
 
+/** 해커톤별 개인 할 일. 팀 공유가 아니라 사용자 1명 기준. */
+export interface TodoItem {
+  id: number
+  text: string
+  is_done: boolean
+  created_at: string
+}
+
+/** AI 매칭 없이 직접 추가한 참가자. user_id가 있으면 사이트 회원, 없으면 비회원. */
+export interface ManualParticipant {
+  id: number
+  user_id: number | null
+  is_member: boolean
+  name: string
+  phone: string
+  email: string
+  created_at: string
+}
+
+// ─── 리뷰 ─────────────────────────────────────────────────────────────────────
+
+export interface ReviewSummary {
+  average: number | null
+  count: number
+}
+
+export interface Review {
+  id: number
+  hackathon: Pick<Hackathon, 'id' | 'title'>
+  reviewer_name: string
+  reviewer_initial?: string
+  rating: number
+  content: string
+  created_at: string
+}
+
 // ─── AI 추천 ──────────────────────────────────────────────────────────────────
 
 export interface RecommendedPerson {
@@ -177,6 +219,7 @@ export interface RecommendedPerson {
   initial?: string
   roles: string[]
   skills: string[]
+  review_summary: ReviewSummary
 }
 
 export interface Recommendation {
@@ -211,10 +254,17 @@ export interface CoffeeChat {
   counterpart: CoffeeChatPerson
   hackathon: Pick<Hackathon, 'id' | 'title'>
   message: string
+  /** 신청 시점 발신자의 오픈채팅 링크 스냅샷 */
+  sender_contact: string
   status: CoffeeChatStatus
   created_at: string
   /** 수락된 경우에만 채워진다 */
   thread_id: number | null
+}
+
+/** "팀원" 탭에서 쓰는 뷰 — 수락된(진행중/완료 포함) 커피챗 + 내가 이미 남긴 리뷰 */
+export interface Teammate extends CoffeeChat {
+  my_review: { rating: number; content: string } | null
 }
 
 // ─── 메시지 ───────────────────────────────────────────────────────────────────

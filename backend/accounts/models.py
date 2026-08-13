@@ -67,6 +67,9 @@ class Profile(models.Model):
     # 별도 테이블 없이 JSONField로 둔다.
     links = models.JSONField(default=list, blank=True)
     open_chat = models.URLField(blank=True)
+    # 참가자 수동 추가 시 "사이트 회원인지" 조회하는 키. 카카오 로그인이 전화번호를
+    # 안 주기 때문에 선택 입력이고, 회원마다 있을 수도 없을 수도 있다.
+    phone = models.CharField(max_length=20, blank=True, db_index=True)
 
     is_private = models.BooleanField(default=False)
 

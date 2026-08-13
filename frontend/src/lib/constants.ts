@@ -31,12 +31,16 @@ export const COFFEECHAT_STATUS_BADGE: Record<CoffeeChatStatus, { label: string; 
   pending: { label: '대기중', cls: 'text-[#F59E0B] bg-[#FFF7ED] border border-[#FDE68A]' },
   accepted: { label: '수락됨', cls: 'text-[#22C55E] bg-[#F0FDF4] border border-[#BBF7D0]' },
   rejected: { label: '거절됨', cls: 'text-[#F43F5E] bg-[#FFF1F2] border border-[#FECDD3]' },
+  in_progress: { label: '진행중', cls: 'text-[#0EA5E9] bg-[#F0F9FF] border border-[#BAE6FD]' },
+  completed: { label: '완료', cls: 'text-[#64748B] bg-[#F1F5F9] border border-[#E2EAF4]' },
 }
 
 export const COFFEECHAT_FILTERS: { label: string; value: CoffeeChatStatus | 'all' }[] = [
   { label: '전체', value: 'all' },
   { label: '대기중', value: 'pending' },
   { label: '수락됨', value: 'accepted' },
+  { label: '진행중', value: 'in_progress' },
+  { label: '완료', value: 'completed' },
   { label: '거절됨', value: 'rejected' },
 ]
 

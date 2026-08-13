@@ -9,6 +9,7 @@ class RecommendedPersonSerializer(serializers.Serializer):
     initial = serializers.SerializerMethodField()
     roles = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
+    review_summary = serializers.SerializerMethodField()
 
     def get_initial(self, user):
         return user.name[:1] if user.name else '?'
@@ -20,6 +21,11 @@ class RecommendedPersonSerializer(serializers.Serializer):
     def get_skills(self, user):
         profile = getattr(user, 'profile', None)
         return profile.skills if profile else []
+
+    def get_review_summary(self, user):
+        from reviews.services import review_summary  # 앱 간 순환 임포트 방지용 지역 import
+
+        return review_summary(user)
 
 
 class RecommendationSerializer(serializers.ModelSerializer):

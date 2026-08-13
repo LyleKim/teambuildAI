@@ -70,12 +70,20 @@ export function MyPageScreen() {
 
         {user.summary && <p className="text-[13px] text-[#64748B] mb-4">{user.summary}</p>}
 
-        <button
-          onClick={() => navigate(routes.profile)}
-          className="border border-[#E2EAF4] rounded-xl px-4 py-2 text-[13px] font-medium text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
-        >
-          프로필 수정
-        </button>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => navigate(routes.profile)}
+            className="border border-[#E2EAF4] rounded-xl px-4 py-2 text-[13px] font-medium text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
+          >
+            프로필 수정
+          </button>
+          <button
+            onClick={() => navigate(routes.myReviews)}
+            className="border border-[#FDE68A] bg-[#FFFBEB] text-[#B45309] rounded-xl px-4 py-2 text-[13px] font-medium hover:bg-[#FEF3C7] transition-colors"
+          >
+            ⭐ 리뷰 보기
+          </button>
+        </div>
       </div>
 
       <InlineError message={setPrivate.error?.message} />

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Hackathon, Participation, Team
+from .models import Hackathon, ManualParticipant, Participation, Team, TodoItem
 
 
 class HackathonRefSerializer(serializers.ModelSerializer):
@@ -41,8 +41,8 @@ class ParticipationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participation
-        fields = ['id', 'hackathon', 'join_type', 'status', 'team_id']
-        read_only_fields = ['id', 'hackathon', 'status', 'team_id']
+        fields = ['id', 'hackathon', 'join_type', 'status', 'team_id', 'ended_at']
+        read_only_fields = ['id', 'hackathon', 'status', 'team_id', 'ended_at']
 
     def _team(self, obj):
         """팀 트랙일 때만 연결된 Team을 찾는다. 요청 1건당 한 번만 조회하도록 캐싱."""
@@ -72,3 +72,23 @@ class TeamSerializer(serializers.ModelSerializer):
             'open_chat_link', 'recruit_status',
         ]
         read_only_fields = ['id', 'hackathon']
+
+
+class TodoItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodoItem
+        fields = ['id', 'text', 'is_done', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+
+class ManualParticipantSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source='user.id', read_only=True, default=None)
+    is_member = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ManualParticipant
+        fields = ['id', 'user_id', 'is_member', 'name', 'phone', 'email', 'created_at']
+        read_only_fields = ['id', 'user_id', 'is_member', 'created_at']
+
+    def get_is_member(self, obj):
+        return obj.user_id is not None

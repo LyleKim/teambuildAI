@@ -158,7 +158,9 @@ export const routes = {
   messages: '/messages',
   thread: (id: number) => `/messages/${id}`,
   myStatus: '/my/status',
+  teamSpace: (hackathonId: number) => `/my/status/${hackathonId}`,
   teamEdit: (id: number) => `/teams/${id}/edit`,
   mypage: '/mypage',
+  myReviews: '/mypage/reviews',
   notifications: '/notifications',
 } as const
