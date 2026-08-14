@@ -73,3 +73,6 @@ export const CHAT_POLL_INTERVAL = 5000
 
 /** 알림 배지 폴링 주기(ms) */
 export const BADGE_POLL_INTERVAL = 30000
+
+/** 받은 리뷰가 이 개수 이상이면 Avatar에 인증 체크마크를 보여준다. */
+export const VERIFIED_REVIEW_COUNT = 5

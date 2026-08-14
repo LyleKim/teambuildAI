@@ -91,8 +91,10 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
 
   // 상세 자기소개 5개 항목은 전부 채워야 한다 — AI 매칭 근거로 쓰이는 핵심 정보라 필수로 바뀌었다
   const bioComplete = BIO_QUESTIONS.every((q) => form[q.key].trim().length > 0)
+  // AI 카드가 없는 추천(5위 밖, AI 호출 실패)은 이 문구로 사람을 소개하므로 비워둘 수 없다
+  const oneLinerComplete = form.one_liner.trim().length > 0
   // 최소 조건: 역할 하나는 골라야 매칭이 의미가 있다
-  const canSubmit = form.roles.length > 0 && bioComplete && !save.loading
+  const canSubmit = form.roles.length > 0 && oneLinerComplete && bioComplete && !save.loading
 
   if (loading) {
     return (
@@ -172,7 +174,10 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
       <ChipGroup label="관심 분야" options={options.interests} selected={form.interests} onChange={(v) => set('interests', v)} />
 
       <div className="mb-5">
-        <p className="text-[13px] font-semibold text-[#0F172A] mb-0.5">한 줄 자기소개</p>
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <p className="text-[13px] font-semibold text-[#0F172A]">한 줄 자기소개</p>
+          <span className="text-[11px] text-[#F43F5E] font-semibold">필수</span>
+        </div>
         <p className="text-[12px] text-[#64748B] mb-2">추천 카드에 표시되는 짧은 소개 (30자 이내 권장)</p>
         <input
           type="text"
@@ -338,7 +343,10 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
       {!canSubmit && form.roles.length === 0 && (
         <p className="text-[12px] text-[#94A3B8] mb-2">대표 역할을 최소 1개 선택해주세요.</p>
       )}
-      {!canSubmit && form.roles.length > 0 && !bioComplete && (
+      {!canSubmit && form.roles.length > 0 && !oneLinerComplete && (
+        <p className="text-[12px] text-[#94A3B8] mb-2">한 줄 자기소개를 작성해주세요.</p>
+      )}
+      {!canSubmit && form.roles.length > 0 && oneLinerComplete && !bioComplete && (
         <p className="text-[12px] text-[#94A3B8] mb-2">상세 자기소개 5개 항목을 모두 작성해주세요.</p>
       )}
 

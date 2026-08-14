@@ -219,6 +219,8 @@ export interface RecommendedPerson {
   initial?: string
   roles: string[]
   skills: string[]
+  regions: string[]
+  one_liner: string
   review_summary: ReviewSummary
 }
 
@@ -230,6 +232,8 @@ export interface Recommendation {
   complement: string
   check_point: string
   reason: string
+  /** 상위 5명 중 Groq 호출이 성공한 경우만 true. false면 AI 문구 대신 프로필 요약 카드로 보여준다. */
+  ai_generated: boolean
   coffeechat_sent: boolean
 }
 

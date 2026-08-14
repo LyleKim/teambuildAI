@@ -48,6 +48,9 @@ class Recommendation(models.Model):
     complement = models.TextField()
     check_point = models.TextField()
     reason = models.TextField()
+    # 상위 5명만 Groq 호출로 문구를 받는다 — False면 fit_points 등은 scoring.py의
+    # 규칙 기반 템플릿 문구다. 프론트는 이 값으로 AI 카드/간단 카드를 가른다.
+    ai_generated = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

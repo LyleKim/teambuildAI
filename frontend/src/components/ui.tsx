@@ -27,17 +27,34 @@ export function Avatar({
   initial,
   size = 40,
   className = '',
+  verified = false,
 }: {
   initial: string
   size?: number
   className?: string
+  /** 받은 리뷰 5개 이상일 때 우측 하단에 작은 인증 체크마크를 얹는다. */
+  verified?: boolean
 }) {
+  const badgeSize = Math.max(12, Math.round(size * 0.32))
   return (
-    <div
-      className={`rounded-full bg-[#0EA5E9] flex items-center justify-center text-white font-bold flex-shrink-0 ${className}`}
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.35) }}
-    >
-      {initial}
+    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+      <div
+        className={`w-full h-full rounded-full bg-[#0EA5E9] flex items-center justify-center text-white font-bold ${className}`}
+        style={{ fontSize: Math.round(size * 0.35) }}
+      >
+        {initial}
+      </div>
+      {verified && (
+        <span
+          title="받은 리뷰 5개 이상 (인증)"
+          className="absolute bottom-0 right-0 flex items-center justify-center rounded-full bg-[#0EA5E9] border-2 border-white"
+          style={{ width: badgeSize, height: badgeSize }}
+        >
+          <svg width="65%" height="65%" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2.5 6.2l2.3 2.3L9.5 3.5" />
+          </svg>
+        </span>
+      )}
     </div>
   )
 }

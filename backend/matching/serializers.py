@@ -9,6 +9,8 @@ class RecommendedPersonSerializer(serializers.Serializer):
     initial = serializers.SerializerMethodField()
     roles = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
+    regions = serializers.SerializerMethodField()
+    one_liner = serializers.SerializerMethodField()
     review_summary = serializers.SerializerMethodField()
 
     def get_initial(self, user):
@@ -22,6 +24,14 @@ class RecommendedPersonSerializer(serializers.Serializer):
         profile = getattr(user, 'profile', None)
         return profile.skills if profile else []
 
+    def get_regions(self, user):
+        profile = getattr(user, 'profile', None)
+        return profile.regions if profile else []
+
+    def get_one_liner(self, user):
+        profile = getattr(user, 'profile', None)
+        return profile.one_liner if profile else ''
+
     def get_review_summary(self, user):
         from reviews.services import review_summary  # 앱 간 순환 임포트 방지용 지역 import
 
@@ -34,7 +44,10 @@ class RecommendationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recommendation
-        fields = ['id', 'person', 'score', 'fit_points', 'complement', 'check_point', 'reason', 'coffeechat_sent']
+        fields = [
+            'id', 'person', 'score', 'fit_points', 'complement', 'check_point', 'reason',
+            'ai_generated', 'coffeechat_sent',
+        ]
 
     def get_coffeechat_sent(self, obj):
         from coffeechat.models import CoffeeChat  # 앱 간 순환 임포트 방지용 지역 import

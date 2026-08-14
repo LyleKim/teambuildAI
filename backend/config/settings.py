@@ -99,6 +99,12 @@ KAKAO_REDIRECT_URI = os.environ.get(
     'KAKAO_REDIRECT_URI', 'http://localhost:8000/api/v1/auth/kakao/callback/'
 )
 
+# 추천 결과 상위 5명의 '추천 이유' 문구를 생성하는 데만 쓴다 (점수 산정은 matching/scoring.py
+# 알고리즘이 담당). 비어 있으면 matching/ai_reason.py가 호출을 건너뛰고 템플릿 문구로
+# 조용히 대체한다 — 카카오 키와 동일하게 "키 없음"과 "코드 버그"를 구분하기 위함.
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # CommonMiddleware 등 응답을 만들 수 있는 미들웨어보다 앞에 있어야

@@ -9,9 +9,13 @@ from rest_framework.views import APIView
 from accounts.models import Profile
 from hackathons.models import Hackathon, Participation
 
+from .ai_reason import generate_ai_reasons
 from .models import Recommendation, RecommendationJob
 from .scoring import score_pair
 from .serializers import RecommendationJobSerializer, RecommendationSerializer
+
+# "다시 추천받기" 한 번당 Groq 호출을 이 인원수로 고정한다 (ai_reason.py 참고).
+AI_REASON_TOP_N = 5
 
 
 class RecommendationView(APIView):
@@ -53,24 +57,42 @@ class RecommendationView(APIView):
             .select_related('user__profile')
         )
 
-        # 다시 추천받기를 눌러도 이전 결과가 섞이지 않도록 이번 해커톤 결과를 통째로 새로 만든다.
-        Recommendation.objects.filter(requester=request.user, hackathon=hackathon).delete()
-
+        scored = []
         for participation in candidates:
             candidate_profile = getattr(participation.user, 'profile', None)
             if candidate_profile is None or candidate_profile.is_private:
                 continue
             match = score_pair(requester_profile, candidate_profile)
-            Recommendation.objects.create(
+            scored.append((participation.user, candidate_profile, match))
+
+        # 점수 높은 순으로 정렬 후 상위 N명만 AI 문구 대상으로 삼는다.
+        # (Recommendation.Meta.ordering도 -score라 GET 조회 시 순서가 그대로 유지된다)
+        scored.sort(key=lambda item: item[2].score, reverse=True)
+        top_candidates = scored[:AI_REASON_TOP_N]
+
+        try:
+            ai_texts = generate_ai_reasons(requester_profile, top_candidates)
+        except Exception:
+            # AI 호출 실패로 추천 전체가 죽으면 안 된다 — 템플릿 문구로 조용히 폴백.
+            ai_texts = {}
+
+        # 다시 추천받기를 눌러도 이전 결과가 섞이지 않도록 이번 해커톤 결과를 통째로 새로 만든다.
+        Recommendation.objects.filter(requester=request.user, hackathon=hackathon).delete()
+
+        Recommendation.objects.bulk_create(
+            Recommendation(
                 requester=request.user,
                 hackathon=hackathon,
-                target=participation.user,
+                target=user,
                 score=match.score,
-                fit_points=match.fit_points,
-                complement=match.complement,
-                check_point=match.check_point,
-                reason=match.reason,
+                fit_points=ai_texts.get(user.id, {}).get('fit_points', match.fit_points),
+                complement=ai_texts.get(user.id, {}).get('complement', match.complement),
+                check_point=ai_texts.get(user.id, {}).get('check_point', match.check_point),
+                reason=ai_texts.get(user.id, {}).get('reason', match.reason),
+                ai_generated=user.id in ai_texts,
             )
+            for user, candidate_profile, match in scored
+        )
 
         job.status = RecommendationJob.Status.DONE
         job.completed_at = timezone.now()
