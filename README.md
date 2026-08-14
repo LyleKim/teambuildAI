@@ -187,6 +187,24 @@ pnpm format          # oxfmt
 
 </div>
   <div style="display: inline-block; text-align: center; margin-right: 15px;">
+    <a href="https://github.com/changmin0293" target="_blank">
+      <img src="https://github.com/changmin0293.png" width="40" style="border-radius:50%;" alt="changmin0293" />
+    </a>
+    <div style="font-size: 12px; margin-top: 4px;">changmin0293</div>
+  </div>
+</div>
+
+</div>
+  <div style="display: inline-block; text-align: center; margin-right: 15px;">
+    <a href="https://github.com/shim75" target="_blank">
+      <img src="https://github.com/shim75.png" width="40" style="border-radius:50%;" alt="shim75" />
+    </a>
+    <div style="font-size: 12px; margin-top: 4px;">shim75</div>
+  </div>
+</div>
+
+</div>
+  <div style="display: inline-block; text-align: center; margin-right: 15px;">
     <div target="_blank">
       <img src="https://avatars.slack-edge.com/2025-05-14/8891273522918_30c38bf627ac73075db6_512.png" width="40" style="border-radius:50%;" alt="Claude AI" />
     </div>
