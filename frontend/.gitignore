@@ -11,3 +11,6 @@ logs/
 *.log
 .claude-replay.*
 .tmp-*
+
+# Figma Make의 디자인 참고용 스크린샷 — 코드에서 참조되지 않음
+src/imports/
