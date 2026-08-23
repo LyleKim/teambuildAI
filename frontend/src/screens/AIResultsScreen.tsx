@@ -90,6 +90,19 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
     show('커피챗 신청을 보냈어요')
   }
 
+  // 넘긴 사람을 맨 뒤로 보내 다음 순번이 상위 카드로 올라오게 한다
+  const skip = (userId: number) => {
+    recs.setData((prev) => {
+      const list = prev ?? []
+      const idx = list.findIndex((r) => r.person.id === userId)
+      if (idx === -1) return list
+      const next = [...list]
+      const [skipped] = next.splice(idx, 1)
+      next.push(skipped)
+      return next
+    })
+  }
+
   const openTarget = (rec: Recommendation) => {
     setTarget({
       userId: rec.person.id,
@@ -163,6 +176,7 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
                   rec={rec}
                   onOpenDetail={() => navigate(routes.member(rec.person.id))}
                   onRequestCoffeeChat={() => openTarget(rec)}
+                  onSkip={() => skip(rec.person.id)}
                 />
               ) : (
                 <CompactRecommendationCard
@@ -171,6 +185,7 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
                   variant="wide"
                   onOpenDetail={() => navigate(routes.member(rec.person.id))}
                   onRequestCoffeeChat={() => openTarget(rec)}
+                  onSkip={() => skip(rec.person.id)}
                 />
               ),
             )}
@@ -211,10 +226,12 @@ function FullRecommendationCard({
   rec,
   onOpenDetail,
   onRequestCoffeeChat,
+  onSkip,
 }: {
   rec: Recommendation
   onOpenDetail: () => void
   onRequestCoffeeChat: () => void
+  onSkip: () => void
 }) {
   const p = rec.person
   const avatarInitial = p.initial || initialOf(p.name)
@@ -266,7 +283,7 @@ function FullRecommendationCard({
         </div>
       </div>
 
-      <CardActions rec={rec} onOpenDetail={onOpenDetail} onRequestCoffeeChat={onRequestCoffeeChat} />
+      <CardActions rec={rec} onOpenDetail={onOpenDetail} onRequestCoffeeChat={onRequestCoffeeChat} onSkip={onSkip} />
     </div>
   )
 }
@@ -284,11 +301,13 @@ function CompactRecommendationCard({
   variant,
   onOpenDetail,
   onRequestCoffeeChat,
+  onSkip,
 }: {
   rec: Recommendation
   variant: 'wide' | 'scroll'
   onOpenDetail: () => void
   onRequestCoffeeChat?: () => void
+  onSkip?: () => void
 }) {
   const p = rec.person
   const avatarInitial = p.initial || initialOf(p.name)
@@ -342,7 +361,7 @@ function CompactRecommendationCard({
     <div className="bg-white rounded-2xl border border-[#E2EAF4] p-5">
       {content}
       <div className="mt-3">
-        <CardActions rec={rec} onOpenDetail={onOpenDetail} onRequestCoffeeChat={onRequestCoffeeChat!} />
+        <CardActions rec={rec} onOpenDetail={onOpenDetail} onRequestCoffeeChat={onRequestCoffeeChat!} onSkip={onSkip} />
       </div>
     </div>
   )
@@ -352,13 +371,23 @@ function CardActions({
   rec,
   onOpenDetail,
   onRequestCoffeeChat,
+  onSkip,
 }: {
   rec: Recommendation
   onOpenDetail: () => void
   onRequestCoffeeChat: () => void
+  onSkip?: () => void
 }) {
   return (
     <div className="flex gap-2">
+      {onSkip && (
+        <button
+          onClick={onSkip}
+          className="px-4 border border-[#E2EAF4] rounded-xl py-2.5 text-[13px] font-medium text-[#94A3B8] hover:bg-gray-50 hover:text-[#64748B] transition-colors flex-shrink-0"
+        >
+          넘기기
+        </button>
+      )}
       <button
         onClick={onOpenDetail}
         className="flex-1 border border-[#E2EAF4] rounded-xl py-2.5 text-[13px] font-medium text-[#64748B] hover:bg-gray-50 transition-colors"

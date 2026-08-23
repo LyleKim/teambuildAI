@@ -27,7 +27,7 @@ class HackathonListView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        qs = Hackathon.objects.all().order_by('-created_at')
+        qs = Hackathon.objects.filter(is_demo=False).order_by('-created_at')
         q = self.request.query_params.get('q')
         category = self.request.query_params.get('category')
         if q:
@@ -192,7 +192,7 @@ class ManualParticipantDeleteView(generics.DestroyAPIView):
 # 나중에 운영진이 직접 늘리고 싶어지면 그때 DB 테이블로 옮긴다.
 
 META_OPTIONS = {
-    'categories': ['전체', 'AI', '핀테크', '헬스케어', '커리어', '소셜'],
+    'categories': ['전체', 'AI', '모바일', '클라우드', 'DevOps'],
     'roles': ['기획', '디자인', '백엔드', '프론트엔드', 'AI/ML'],
     'skills': ['Django', 'React', 'Figma', 'Python', 'TypeScript', 'Node.js'],
     'available_times': ['평일 저녁', '주말 위주', '주말 올인', '자유'],

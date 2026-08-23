@@ -1,25 +1,20 @@
 /** 화면 전반에서 재사용하는 프리미티브 컴포넌트 모음. */
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import logo from '@/assets/logo.png'
 import { COFFEECHAT_STATUS_BADGE } from '@/lib/constants'
 import type { CoffeeChatStatus } from '@/types'
 
 export function LogoIcon({ size = 36 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <rect width="36" height="36" rx="10" fill="#4EAAF5" />
-      {/* Heart shape — "Favorite" */}
-      <path
-        d="M18 26.5C18 26.5 8.5 20.5 8.5 14.5C8.5 11.46 10.96 9 14 9C15.74 9 17.29 9.84 18 11.13C18.71 9.84 20.26 9 22 9C25.04 9 27.5 11.46 27.5 14.5C27.5 20.5 18 26.5 18 26.5Z"
-        fill="white"
-      />
-      {/* Star spark top-right — "contact spark" */}
-      <path
-        d="M27 8L27.6 9.8L29.5 10L27.6 10.2L27 12L26.4 10.2L24.5 10L26.4 9.8L27 8Z"
-        fill="white"
-        fillOpacity="0.8"
-      />
-    </svg>
+    <img
+      src={logo}
+      alt="파비콘"
+      width={size}
+      height={size}
+      className="rounded-[22%] object-cover flex-shrink-0"
+      style={{ width: size, height: size }}
+    />
   )
 }
 

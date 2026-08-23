@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { LogoIcon } from '@/components/ui'
 import { useSession } from '@/context/SessionContext'
 import { initialOf } from '@/lib/format'
 import { lastHackathonId } from '@/lib/prefs'
@@ -70,18 +71,7 @@ export function NavBar() {
         onClick={() => navigate(routes.hackathons)}
         className="flex items-center gap-2 flex-shrink-0"
       >
-        <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-          <rect width="36" height="36" rx="10" fill="#4EAAF5" />
-          <path
-            d="M18 26.5C18 26.5 8.5 20.5 8.5 14.5C8.5 11.46 10.96 9 14 9C15.74 9 17.29 9.84 18 11.13C18.71 9.84 20.26 9 22 9C25.04 9 27.5 11.46 27.5 14.5C27.5 20.5 18 26.5 18 26.5Z"
-            fill="white"
-          />
-          <path
-            d="M27 8L27.6 9.8L29.5 10L27.6 10.2L27 12L26.4 10.2L24.5 10L26.4 9.8L27 8Z"
-            fill="white"
-            fillOpacity="0.8"
-          />
-        </svg>
+        <LogoIcon size={36} />
         <span className="font-bold text-[15px] text-gray-800">파비콘</span>
       </button>
 

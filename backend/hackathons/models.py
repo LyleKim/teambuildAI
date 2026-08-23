@@ -16,6 +16,9 @@ class Hackathon(models.Model):
     color = models.CharField(max_length=7, default='#B8D9F5')
     banner_url = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True)
+    # 추천/커피챗 기능 테스트용으로 심어둔 해커톤(seed_recommendation_demo 등)을
+    # 홈 화면 목록에서만 감추기 위한 플래그. 연결된 테스트 데이터는 그대로 둔다.
+    is_demo = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

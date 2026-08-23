@@ -36,7 +36,7 @@ This is the canonical project structure. Start with task-relevant files below. O
 
 - 모든 요청은 `/api/v1` 로 나가고, Vite dev 서버가 `http://127.0.0.1:8000` (Django)로 프록시한다.
 - 프록시 대상: `/api`, `/admin`, `/static`, `/media`, `/ws`. `vite.config.ts` 의 `proxy` 참고.
-- Django 포트를 바꾸려면 `DJANGO_ORIGIN=http://127.0.0.1:9000 pnpm dev`.
+- Django 포트를 바꾸려면 `DJANGO_ORIGIN=http://127.0.0.1:9000 pnpm dev`, 또는 `frontend/.env`(커밋 안 됨)에 `DJANGO_ORIGIN=...`을 적어두면 매번 안 붙여도 된다.
 - 인증은 JWT Bearer. 토큰은 localStorage(`favicon.access_token`)에 저장하고
   401이 나면 `client.ts` 가 refresh 후 1회 재시도한다.
 - 백엔드가 꺼져 있으면 `ErrorState` 가 "서버에 연결할 수 없어요" 안내를 띄운다.

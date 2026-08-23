@@ -78,7 +78,7 @@ export function LandingScreen() {
     <div className="min-h-screen bg-white">
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 h-[60px] bg-white/80 backdrop-blur-md border-b border-[#E8EFF8]">
         <div className="flex items-center gap-2.5">
-          <LogoIcon size={28} />
+          <LogoIcon size={36} />
           <div className="flex flex-col leading-none">
             <span className="font-bold text-[16px] text-gray-800">파비콘</span>
             <span className="text-[10px] font-medium text-[#4EAAF5] tracking-wide mt-0.5">Favorite contact</span>

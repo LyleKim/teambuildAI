@@ -1,37 +1,43 @@
-import { defineConfig, type HtmlTagDescriptor, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type HtmlTagDescriptor, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
 import siteConfiguration from './.figma/make/site.json'
 
-/**
- * Django 개발 서버 주소.
- * 기본은 127.0.0.1:8000 이며, 다른 포트를 쓰면 DJANGO_ORIGIN 으로 덮어쓴다.
- *   DJANGO_ORIGIN=http://127.0.0.1:9000 pnpm dev
- */
-const DJANGO_ORIGIN = process.env.DJANGO_ORIGIN || 'http://127.0.0.1:8000'
-
-/**
- * Vite dev 서버가 Django로 넘길 경로들.
- *  - /api    : REST API (프론트가 실제로 호출하는 경로)
- *  - /admin  : Django admin (개발 중 데이터 확인용)
- *  - /static : admin 및 DRF browsable API 의 정적 파일
- *  - /media  : 업로드 파일 (배너 이미지 등)
- *  - /ws     : 채팅 WebSocket (Django Channels 도입 시)
- */
-const proxy = {
-  '/api': { target: DJANGO_ORIGIN, changeOrigin: true },
-  '/admin': { target: DJANGO_ORIGIN, changeOrigin: true },
-  '/static': { target: DJANGO_ORIGIN, changeOrigin: true },
-  '/media': { target: DJANGO_ORIGIN, changeOrigin: true },
-  '/ws': { target: DJANGO_ORIGIN, changeOrigin: true, ws: true },
-}
-
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === 'development'
+
+  // 쉘에서 준 DJANGO_ORIGIN=... 값이 있으면 그게 우선이고, 없으면 frontend/.env(.local)의
+  // 값을, 그것도 없으면 기본 포트를 쓴다 — 로컬마다 8000번이 막혀 있을 수 있어서
+  // 매번 커맨드 앞에 안 붙여도 되게 이 세 단계로 해결한다.
+  const env = loadEnv(mode, process.cwd(), '')
+
+  /**
+   * Django 개발 서버 주소.
+   * 기본은 127.0.0.1:8000 이며, 다른 포트를 쓰면 DJANGO_ORIGIN 으로 덮어쓴다.
+   *   DJANGO_ORIGIN=http://127.0.0.1:9000 pnpm dev
+   * 또는 frontend/.env(.local)에 DJANGO_ORIGIN=... 을 적어두면 매번 안 붙여도 된다.
+   */
+  const DJANGO_ORIGIN = env.DJANGO_ORIGIN || 'http://127.0.0.1:8000'
+
+  /**
+   * Vite dev 서버가 Django로 넘길 경로들.
+   *  - /api    : REST API (프론트가 실제로 호출하는 경로)
+   *  - /admin  : Django admin (개발 중 데이터 확인용)
+   *  - /static : admin 및 DRF browsable API 의 정적 파일
+   *  - /media  : 업로드 파일 (배너 이미지 등)
+   *  - /ws     : 채팅 WebSocket (Django Channels 도입 시)
+   */
+  const proxy = {
+    '/api': { target: DJANGO_ORIGIN, changeOrigin: true },
+    '/admin': { target: DJANGO_ORIGIN, changeOrigin: true },
+    '/static': { target: DJANGO_ORIGIN, changeOrigin: true },
+    '/media': { target: DJANGO_ORIGIN, changeOrigin: true },
+    '/ws': { target: DJANGO_ORIGIN, changeOrigin: true, ws: true },
+  }
 
   return {
     base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : '/',

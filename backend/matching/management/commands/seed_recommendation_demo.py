@@ -28,6 +28,11 @@ CANDIDATES = [
     ('임채원', ['디자인', '기획'], ['Figma'], '자유', ['서울'], '포트폴리오', '혼합', '부드러운 소통 선호', ['소셜'], '', False),  # 한 줄 소개 미입력 폴백 확인용
     ('신동혁', ['백엔드'], ['Node.js'], '주말 위주', ['경기'], '경험', '오프라인 위주', '직설적 피드백 선호', ['핀테크', '커리어'], '', False),  # 한 줄 소개 미입력 폴백 확인용
     ('강나은', ['기획'], [], '자유', ['경기'], '경험', '온라인 위주', '상관없음', ['헬스케어', '커리어'], '비공개로 지원 현황만 확인 중', True),  # 비공개 → 후보 제외 확인용
+    ('조은비', ['백엔드'], ['Java', 'Spring'], '평일 저녁', ['서울'], '포트폴리오', '온라인 위주', '상관없음', ['핀테크'], 'Spring으로 안정적인 서버 짜는 걸 좋아해요', False),
+    ('한지호', ['프론트엔드', 'AI/ML'], ['React', 'Python'], '주말 올인', ['온라인'], '수상 목적', '혼합', '직설적 피드백 선호', ['AI', '소셜'], 'AI 서비스를 프론트까지 붙여서 완성하는 걸 좋아해요', False),
+    ('서지우', ['디자인'], ['Figma', 'Photoshop'], '자유', ['경기'], '경험', '오프라인 위주', '부드러운 소통 선호', ['헬스케어'], '', False),  # 한 줄 소개 미입력 폴백 확인용
+    ('권도현', ['백엔드', '기획'], ['Node.js'], '주말 위주', ['서울'], '수상 목적', '온라인 위주', '상관없음', ['커리어', '핀테크'], '기획부터 서버까지 혼자 굴려본 경험 있어요', False),
+    ('문세아', ['AI/ML', '프론트엔드'], ['Python', 'React'], '평일 저녁', ['온라인'], '포트폴리오', '혼합', '직설적 피드백 선호', ['AI'], '모델 데모를 웹으로 바로 보여주는 걸 좋아해요', False),
 ]
 
 NO_PROFILE_NAME = '무프로필유저'  # 프로필 미작성 → 후보 제외 확인용
@@ -54,7 +59,7 @@ class Command(BaseCommand):
             hackathon = Hackathon.objects.get(pk=options['hackathon_id'])
             self.stdout.write(self.style.SUCCESS(f'기존 해커톤 재사용: {hackathon.title} (id={hackathon.id})'))
         else:
-            hackathon, created = Hackathon.objects.get_or_create(
+            hackathon, created = Hackathon.objects.update_or_create(
                 title=HACKATHON_TITLE,
                 defaults=dict(
                     category='AI',
@@ -62,6 +67,7 @@ class Command(BaseCommand):
                     start_date=timezone.now().date(),
                     end_date=timezone.now().date() + timezone.timedelta(days=30),
                     description='추천 알고리즘 + AI 문구 생성을 테스트하기 위한 더미 해커톤입니다.',
+                    is_demo=True,  # 홈 화면 목록에는 노출되지 않는다
                 ),
             )
             self.stdout.write(self.style.SUCCESS(

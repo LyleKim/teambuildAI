@@ -12,6 +12,7 @@
 - [기술 스택](#기술-스택)  
 - [프로젝트 구조](#프로젝트-구조)  
 - [시작하기](#시작하기)  
+- [테스트 방법](./QA.md)  
 - [팀](#팀)  
   
   
@@ -135,6 +136,9 @@ docker compose exec backend uv run python manage.py migrate
 
 # 관리자 계정 생성
 docker compose exec backend uv run python manage.py createsuperuser
+
+# 홈 화면에 보여줄 실제 해커톤 6개 심기 (마이그레이션이 아니라 커맨드라 migrate만으론 안 채워짐)
+docker compose exec backend uv run python manage.py seed_real_hackathons
 ```
   
 ### 3. 프론트엔드 실행  
@@ -154,7 +158,13 @@ pnpm format          # oxfmt
 ```
   
   
+
+## 테스트 방법  
+
+전 기능 테스트 절차는 [QA.md](./QA.md)를 참고하세요.
   
+  
+
 ## 팀  
   
 숭실대학교 SSU-WAY 프로젝트 참여 팀입니다.  

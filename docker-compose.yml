@@ -32,7 +32,10 @@ services:
       DB_HOST: db
       DB_PORT: 3306
     ports:
-      - "8000:8000"
+      # 호스트 8000번을 다른 프로세스가 쓰고 있어 8001로 바꿈. 컨테이너 안쪽은 여전히
+      # 8000이라 Django 설정은 그대로고, 프론트에서만 DJANGO_ORIGIN=http://127.0.0.1:8001
+      # 로 맞춰주면 된다 (frontend/AGENTS.md 참고).
+      - "8001:8000"
     volumes:
       - ./backend:/app
       # 호스트에서 만든 .venv(macOS용)가 컨테이너를 덮어쓰지 않도록 분리
