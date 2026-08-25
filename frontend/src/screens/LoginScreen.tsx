@@ -33,7 +33,7 @@ export function LoginScreen() {
       <div className="flex flex-col items-center gap-4">
         <LogoIcon size={72} />
         <div className="text-center mt-1">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">파비콘</h1>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">ㅎㅋㅌ</h1>
           <p className="text-[12px] text-gray-400 mt-0.5 font-medium tracking-wide">Favorite contact</p>
           <p className="text-[13px] text-gray-400 mt-1.5">AI로 만나는 우리 팀, 해커톤 팀 빌딩</p>
         </div>

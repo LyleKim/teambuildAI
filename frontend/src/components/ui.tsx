@@ -9,7 +9,7 @@ export function LogoIcon({ size = 36 }: { size?: number }) {
   return (
     <img
       src={logo}
-      alt="파비콘"
+      alt="ㅎㅋㅌ"
       width={size}
       height={size}
       className="rounded-[22%] object-cover flex-shrink-0"

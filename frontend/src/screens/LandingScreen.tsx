@@ -80,7 +80,7 @@ export function LandingScreen() {
         <div className="flex items-center gap-2.5">
           <LogoIcon size={36} />
           <div className="flex flex-col leading-none">
-            <span className="font-bold text-[16px] text-gray-800">파비콘</span>
+            <span className="font-bold text-[16px] text-gray-800">ㅎㅋㅌ</span>
             <span className="text-[10px] font-medium text-[#4EAAF5] tracking-wide mt-0.5">Favorite contact</span>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function LandingScreen() {
           <div className="inline-flex items-center gap-1.5 bg-white/80 border border-[#D0E8F8] rounded-full px-4 py-1.5 mb-6 shadow-sm">
             <span className="text-[#4EAAF5] text-[12px]">✦</span>
             <span className="text-[12px] font-medium text-gray-500">
-              <span className="text-[#4EAAF5] font-semibold">파비콘</span>
+              <span className="text-[#4EAAF5] font-semibold">ㅎㅋㅌ</span>
               <span className="text-gray-300 mx-1.5">·</span>
               <span className="italic text-gray-400">Favorite contact</span>
               <span className="text-gray-300 mx-1.5">·</span>
@@ -209,7 +209,7 @@ export function LandingScreen() {
         <div className="flex items-center gap-2">
           <LogoIcon size={24} />
           <div className="flex flex-col leading-none">
-            <span className="font-bold text-[13px] text-gray-700">파비콘</span>
+            <span className="font-bold text-[13px] text-gray-700">ㅎㅋㅌ</span>
             <span className="text-[10px] font-medium text-[#4EAAF5] tracking-wide mt-0.5">Favorite contact</span>
           </div>
         </div>

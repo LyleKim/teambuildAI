@@ -72,7 +72,7 @@ export function NavBar() {
         className="flex items-center gap-2 flex-shrink-0"
       >
         <LogoIcon size={36} />
-        <span className="font-bold text-[15px] text-gray-800">파비콘</span>
+        <span className="font-bold text-[15px] text-gray-800">ㅎㅋㅌ</span>
       </button>
 
       <nav className="flex items-center gap-1">

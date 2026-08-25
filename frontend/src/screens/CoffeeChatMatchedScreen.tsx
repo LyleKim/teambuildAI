@@ -28,7 +28,7 @@ export function CoffeeChatMatchedScreen({ coffeechatId }: { coffeechatId: number
               </svg>
             </div>
             <h1 className="text-[26px] font-bold text-[#0F172A] mb-2">🎉 커피챗이 성사되었어요!</h1>
-            <p className="text-[14px] text-[#64748B] mb-8">파비콘 메시지에서 바로 대화를 시작해보세요</p>
+            <p className="text-[14px] text-[#64748B] mb-8">ㅎㅋㅌ 메시지에서 바로 대화를 시작해보세요</p>
 
             <div className="bg-white rounded-2xl border border-[#E2EAF4] p-6 text-left mb-6">
               <div className="flex items-center gap-3 mb-5">
