@@ -1,21 +1,35 @@
 import { participationApi } from '@/api'
 import { Page } from '@/components/NavBar'
 import { EmptyState, ErrorState, LoadingState } from '@/components/states'
+import { InlineError } from '@/components/ui'
+import { useMutation } from '@/hooks/useMutation'
 import { useQuery } from '@/hooks/useQuery'
 import { RECRUIT_STATUS_STYLES } from '@/lib/constants'
 import { routes, useNavigate } from '@/lib/router'
 
 export function MyStatusScreen() {
   const navigate = useNavigate()
-  const { data, loading, error, refetch } = useQuery('me:participations', () =>
+  const { data, loading, error, refetch, setData } = useQuery('me:participations', () =>
     participationApi.mine(),
   )
+
+  const leave = useMutation((id: number) => participationApi.leave(id), {
+    onSuccess: (_void, id) => setData((prev) => (prev ?? []).filter((p) => p.id !== id)),
+  })
+
+  const deleteItem = (id: number, title: string) => {
+    if (window.confirm(`'${title}' 참가를 삭제할까요? 되돌릴 수 없어요.`)) {
+      leave.mutate(id)
+    }
+  }
 
   const items = data ?? []
 
   return (
     <Page>
       <h1 className="text-[22px] font-bold text-[#0F172A] mb-6">내 참가 현황</h1>
+
+      <InlineError message={leave.error?.message} />
 
       {loading && <LoadingState />}
       {!loading && error && <ErrorState error={error} onRetry={refetch} />}
@@ -81,6 +95,13 @@ export function MyStatusScreen() {
                     모집 조건 수정
                   </button>
                 )}
+                <button
+                  onClick={() => deleteItem(p.id, p.hackathon.title)}
+                  disabled={leave.loading}
+                  className="border border-[#FECDD3] rounded-xl px-4 py-2 text-[13px] font-medium text-[#E11D48] hover:bg-[#FFF1F2] transition-colors disabled:opacity-50"
+                >
+                  삭제
+                </button>
               </div>
             </div>
           ))}

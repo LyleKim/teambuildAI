@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LogoIcon } from '@/components/ui'
+import { LogoIcon, useToast } from '@/components/ui'
 import { useSession } from '@/context/SessionContext'
 import { initialOf } from '@/lib/format'
 import { lastHackathonId } from '@/lib/prefs'
@@ -34,6 +34,7 @@ export function NavBar() {
   const { path } = useLocation()
   const { user, badges } = useSession()
   const [query, setQuery] = useState('')
+  const { toast, show } = useToast()
 
   const active = activeLabelFor(path)
 
@@ -45,7 +46,12 @@ export function NavBar() {
       case '추천': {
         // 마지막으로 본 해커톤이 없으면 먼저 해커톤을 고르게 한다
         const id = lastHackathonId()
-        navigate(id ? routes.recommendations(id) : routes.hackathons)
+        if (id) {
+          navigate(routes.recommendations(id))
+        } else {
+          show('먼저 해커톤을 선택하면 추천을 볼 수 있어요')
+          navigate(routes.hackathons)
+        }
         break
       }
       case '커피챗':
@@ -155,6 +161,8 @@ export function NavBar() {
           {user?.initial || initialOf(user?.name, '나')}
         </button>
       </div>
+
+      {toast}
     </header>
   )
 }
