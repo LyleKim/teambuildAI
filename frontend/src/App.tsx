@@ -18,6 +18,7 @@ import { MyPageScreen } from '@/screens/MyPageScreen'
 import { MyStatusScreen } from '@/screens/MyStatusScreen'
 import { NotificationsScreen } from '@/screens/NotificationsScreen'
 import { ProfileSetupScreen } from '@/screens/ProfileSetupScreen'
+import { RoleSelectScreen } from '@/screens/RoleSelectScreen'
 import { SearchScreen } from '@/screens/SearchScreen'
 import { TeamEditScreen } from '@/screens/TeamEditScreen'
 import { TeamSetupScreen } from '@/screens/TeamSetupScreen'
@@ -42,6 +43,7 @@ const ROUTE_TABLE: { pattern: string; value: RouteDef }[] = [
   { pattern: '/', value: { render: () => <LandingScreen />, auth: false } },
   { pattern: '/login', value: { render: () => <LoginScreen />, auth: false } },
   { pattern: '/auth/callback', value: { render: () => <AuthCallbackScreen />, auth: false } },
+  { pattern: '/onboarding/role', value: { render: () => <RoleSelectScreen />, auth: true } },
 
   { pattern: '/hackathons', value: { render: () => <SearchScreen />, auth: false } },
   {
