@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 
-from .models import User
+from .models import Profile, User
 
 VALID_PROFILE = {
     'roles': ['백엔드'],
@@ -44,3 +44,35 @@ class MyProfileBioRequiredTests(APITestCase):
         res = self.client.put('/api/v1/me/profile/', payload, format='json')
         self.assertEqual(res.status_code, 400)
         self.assertIn('bio_experience', res.data)
+
+
+class MyProfileRoleTests(APITestCase):
+    """온보딩(역할 선택) 단계에서 쓰는 부분 저장 엔드포인트.
+
+    PUT /me/profile/ 은 자기소개 5개 필드가 전부 필수라 이 시점엔 못 쓴다 —
+    역할만 먼저 저장하고 나머지는 다음 화면(ProfileSetupScreen)에서 채운다.
+    """
+
+    def setUp(self):
+        self.me = User.objects.create_user(email='me@x.com', name='나', password='x')
+        self.client.force_authenticate(self.me)
+
+    def test_saves_roles_and_creates_profile_if_missing(self):
+        res = self.client.patch('/api/v1/me/profile/role/', {'roles': ['디자인']}, format='json')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['roles'], ['디자인'])
+        self.assertEqual(Profile.objects.get(user=self.me).roles, ['디자인'])
+
+    def test_updates_roles_on_existing_profile(self):
+        Profile.objects.create(user=self.me, roles=['백엔드'])
+        res = self.client.patch('/api/v1/me/profile/role/', {'roles': ['프론트엔드', 'AI/ML']}, format='json')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Profile.objects.get(user=self.me).roles, ['프론트엔드', 'AI/ML'])
+
+    def test_rejects_empty_roles(self):
+        res = self.client.patch('/api/v1/me/profile/role/', {'roles': []}, format='json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_missing_roles(self):
+        res = self.client.patch('/api/v1/me/profile/role/', {}, format='json')
+        self.assertEqual(res.status_code, 400)

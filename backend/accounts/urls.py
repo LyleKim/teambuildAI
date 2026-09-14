@@ -11,5 +11,6 @@ urlpatterns = [
 
     path('me/profile/', views.MyProfileView.as_view()),
     path('me/profile/privacy/', views.MyProfilePrivacyView.as_view()),
+    path('me/profile/role/', views.MyProfileRoleView.as_view()),
     path('users/<int:user_id>/profile/', views.MemberProfileView.as_view()),
 ]
