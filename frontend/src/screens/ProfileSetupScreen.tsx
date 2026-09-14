@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { profileApi, recommendationApi } from '@/api'
 import { Page } from '@/components/NavBar'
 import { ErrorState, LoadingState } from '@/components/states'
@@ -12,13 +12,42 @@ import { routes, useNavigate } from '@/lib/router'
 import { LINK_TYPES } from '@/types'
 import type { LinkType, PortfolioLink, ProfileInput } from '@/types'
 
-const BIO_QUESTIONS = [
-  { key: 'bio_style', label: '저는 이런 사람이에요', placeholder: '차분하게 문제를 뜯어보는 편이고, 마감은 꼭 지켜요' },
-  { key: 'bio_strength', label: '이런 걸 잘해요', placeholder: 'REST API 설계와 DB 최적화에 자신 있어요' },
-  { key: 'bio_experience', label: '이런 경험이 있어요', placeholder: '교내 해커톤 2회 참가, 사이드 프로젝트로 예약 서비스 개발' },
-  { key: 'bio_goal', label: '이번 해커톤에서 이걸 하고 싶어요', placeholder: '결제 기능을 처음부터 끝까지 구현해보고 싶어요' },
-  { key: 'bio_contribution', label: '팀에 이렇게 기여할 수 있어요', placeholder: '백엔드 전반을 책임지고, 배포까지 맡을 수 있어요' },
-] as const
+type RoleCategory = 'dev' | 'design' | 'planning'
+const DEFAULT_CATEGORY: RoleCategory = 'dev'
+
+type BioQuestion = { key: keyof Pick<ProfileInput, 'bio_style' | 'bio_strength' | 'bio_experience' | 'bio_goal' | 'bio_contribution'>; label: string; placeholder: string }
+
+// 역할 카테고리별 자기소개 문항. 이전엔 개발자 예시로만 고정돼 있었다 —
+// PM(기획)/디자인도 자기 역할에 맞는 예시를 보도록 카테고리별로 나눈다.
+const BIO_QUESTIONS_BY_CATEGORY: Record<RoleCategory, BioQuestion[]> = {
+  dev: [
+    { key: 'bio_style', label: '저는 이런 사람이에요', placeholder: '차분하게 문제를 뜯어보는 편이고, 마감은 꼭 지켜요' },
+    { key: 'bio_strength', label: '이런 걸 잘해요', placeholder: 'REST API 설계와 DB 최적화에 자신 있어요' },
+    { key: 'bio_experience', label: '이런 경험이 있어요', placeholder: '교내 해커톤 2회 참가, 사이드 프로젝트로 예약 서비스 개발' },
+    { key: 'bio_goal', label: '이번 해커톤에서 이걸 하고 싶어요', placeholder: '결제 기능을 처음부터 끝까지 구현해보고 싶어요' },
+    { key: 'bio_contribution', label: '팀에 이렇게 기여할 수 있어요', placeholder: '백엔드 전반을 책임지고, 배포까지 맡을 수 있어요' },
+  ],
+  design: [
+    { key: 'bio_style', label: '저는 이런 사람이에요', placeholder: '섬세하게 디테일을 챙기는 편이고, 사용자 입장에서 먼저 생각해요' },
+    { key: 'bio_strength', label: '이런 걸 잘해요', placeholder: 'UI/UX 리서치와 프로토타이핑에 자신 있어요' },
+    { key: 'bio_experience', label: '이런 경험이 있어요', placeholder: '교내 공모전 2회 참가, 사이드 프로젝트 앱 UI 리디자인' },
+    { key: 'bio_goal', label: '이번 해커톤에서 이걸 하고 싶어요', placeholder: '처음부터 끝까지 디자인 시스템을 구축해보고 싶어요' },
+    { key: 'bio_contribution', label: '팀에 이렇게 기여할 수 있어요', placeholder: '전체 화면 디자인과 프로토타입 제작을 책임질 수 있어요' },
+  ],
+  planning: [
+    { key: 'bio_style', label: '저는 이런 사람이에요', placeholder: '일정과 우선순위를 꼼꼼히 챙기는 편이고, 소통을 중요하게 생각해요' },
+    { key: 'bio_strength', label: '이런 걸 잘해요', placeholder: '요구사항 정리와 일정 관리, 팀 커뮤니케이션에 자신 있어요' },
+    { key: 'bio_experience', label: '이런 경험이 있어요', placeholder: '교내 해커톤 2회 기획 참여, 서비스 기획서 작성 경험' },
+    { key: 'bio_goal', label: '이번 해커톤에서 이걸 하고 싶어요', placeholder: '아이디어를 실제 서비스로 만들어보는 전 과정을 이끌어보고 싶어요' },
+    { key: 'bio_contribution', label: '팀에 이렇게 기여할 수 있어요', placeholder: '기획서 작성부터 일정 관리, 팀 커뮤니케이션 전반을 맡을 수 있어요' },
+  ],
+}
+
+const ONE_LINER_PLACEHOLDER_BY_CATEGORY: Record<RoleCategory, string> = {
+  dev: '예: 백엔드로 빠르게 만들고 검증하는 걸 좋아합니다',
+  design: '예: 사용자가 느끼는 디테일까지 고민하는 걸 좋아합니다',
+  planning: '예: 아이디어를 구조화하고 팀을 이끄는 걸 좋아합니다',
+}
 
 const EMPTY_PROFILE: ProfileInput = {
   roles: [],
@@ -55,6 +84,25 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
   const [form, setForm] = useState<ProfileInput>(EMPTY_PROFILE)
   const [bioOpen, setBioOpen] = useState(true)
 
+  // 대표 역할 선택에 따라 기술스택 선택지와 자기소개 문항을 바꾼다. 온보딩(RoleSelectScreen)에서
+  // 이미 골라둔 roles가 여기 폼에 그대로 반영돼 들어오므로, 로그인 직후 흐름에서도 처음부터
+  // 역할에 맞는 내용이 보인다. 역할을 여러 카테고리에 걸쳐 골랐으면 기술스택은 합쳐서 보여준다.
+  const activeCategories = useMemo(() => {
+    const cats = form.roles
+      .map((role) => options.role_categories[role] as RoleCategory | undefined)
+      .filter((c): c is RoleCategory => c != null)
+    return cats.length > 0 ? Array.from(new Set(cats)) : [DEFAULT_CATEGORY]
+  }, [form.roles, options.role_categories])
+
+  const primaryCategory = activeCategories[0]
+
+  const skillOptions = useMemo(() => {
+    const bucketed = activeCategories.flatMap((c) => options.skills_by_role_category[c] ?? [])
+    return bucketed.length > 0 ? Array.from(new Set(bucketed)) : options.skills
+  }, [activeCategories, options])
+
+  const bioQuestions = BIO_QUESTIONS_BY_CATEGORY[primaryCategory]
+
   // 서버에서 받은 기존 프로필로 폼을 초기화한다
   useEffect(() => {
     if (data) setForm({ ...EMPTY_PROFILE, ...data })
@@ -90,7 +138,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
   )
 
   // 상세 자기소개 5개 항목은 전부 채워야 한다 — AI 매칭 근거로 쓰이는 핵심 정보라 필수로 바뀌었다
-  const bioComplete = BIO_QUESTIONS.every((q) => form[q.key].trim().length > 0)
+  const bioComplete = bioQuestions.every((q) => form[q.key].trim().length > 0)
   // AI 카드가 없는 추천(5위 밖, AI 호출 실패)은 이 문구로 사람을 소개하므로 비워둘 수 없다
   const oneLinerComplete = form.one_liner.trim().length > 0
   // 최소 조건: 역할 하나는 골라야 매칭이 의미가 있다
@@ -119,7 +167,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
       <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">AI 추천을 위해 정보를 입력해주세요</p>
 
       <ChipGroup label="대표 역할" options={options.roles} selected={form.roles} onChange={(v) => set('roles', v)} />
-      <ChipGroup label="기술 스택" options={options.skills} selected={form.skills} onChange={(v) => set('skills', v)} />
+      <ChipGroup label="기술 스택" options={skillOptions} selected={form.skills} onChange={(v) => set('skills', v)} />
       <ChipGroup
         label="활동 가능 시간"
         options={options.available_times}
@@ -184,7 +232,7 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
           value={form.one_liner}
           onChange={(e) => set('one_liner', e.target.value)}
           maxLength={50}
-          placeholder="예: 백엔드로 빠르게 만들고 검증하는 걸 좋아합니다"
+          placeholder={ONE_LINER_PLACEHOLDER_BY_CATEGORY[primaryCategory]}
           className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#0EA5E9]"
         />
       </div>
@@ -215,8 +263,8 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
 
         {bioOpen && (
           <div className="bg-white border border-[#E2EAF4] rounded-2xl overflow-hidden">
-            {BIO_QUESTIONS.map((q, idx) => (
-              <div key={q.key} className={idx < BIO_QUESTIONS.length - 1 ? 'border-b border-[#F1F5F9]' : ''}>
+            {bioQuestions.map((q, idx) => (
+              <div key={q.key} className={idx < bioQuestions.length - 1 ? 'border-b border-[#F1F5F9]' : ''}>
                 <div className="px-5 py-4">
                   <div className="flex items-center gap-1.5 mb-2">
                     <p className="text-[13px] font-semibold text-[#0F172A]">{q.label}</p>
