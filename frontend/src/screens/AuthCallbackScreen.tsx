@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { authApi } from '@/api'
+import { ApiError, authApi, profileApi } from '@/api'
 import { LoadingState } from '@/components/states'
 import { useSession } from '@/context/SessionContext'
 import { routes, useLocation, useNavigate } from '@/lib/router'
@@ -45,7 +45,19 @@ export function AuthCallbackScreen() {
           setError('로그인 정보가 전달되지 않았어요.')
           return
         }
-        navigate(routes.hackathons, { replace: true })
+
+        // 역할을 한 번도 고른 적 없는 사용자(프로필 없음 = 404, 또는 roles가 비어있음)는
+        // 온보딩(역할 선택) 화면으로, 이미 골랐으면 바로 홈으로 보낸다.
+        try {
+          const profile = await profileApi.mine()
+          navigate(profile.roles.length > 0 ? routes.hackathons : routes.onboardingRole, { replace: true })
+        } catch (profileErr) {
+          if (profileErr instanceof ApiError && profileErr.status === 404) {
+            navigate(routes.onboardingRole, { replace: true })
+          } else {
+            throw profileErr
+          }
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : '로그인 처리 중 문제가 발생했어요.')
       }
