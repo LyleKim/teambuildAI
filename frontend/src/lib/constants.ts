@@ -7,6 +7,18 @@ import type { CoffeeChatStatus, LinkType, MetaOptions, NotificationType } from '
 export const DEFAULT_META_OPTIONS: MetaOptions = {
   categories: ['전체', 'AI', '모바일', '클라우드', 'DevOps'],
   roles: ['기획', '디자인', '백엔드', '프론트엔드', 'AI/ML'],
+  role_categories: {
+    기획: 'planning',
+    디자인: 'design',
+    백엔드: 'dev',
+    프론트엔드: 'dev',
+    'AI/ML': 'dev',
+  },
+  skills_by_role_category: {
+    dev: ['Django', 'React', 'Python', 'TypeScript', 'Node.js'],
+    design: ['Figma', 'Zeplin', 'Adobe XD', 'Photoshop', 'Illustrator'],
+    planning: ['Notion', 'Jira', 'Google Analytics', 'PRD 작성', 'Miro'],
+  },
   skills: ['Django', 'React', 'Figma', 'Python', 'TypeScript', 'Node.js'],
   available_times: ['평일 저녁', '주말 위주', '주말 올인', '자유'],
   regions: ['서울', '경기', '온라인'],

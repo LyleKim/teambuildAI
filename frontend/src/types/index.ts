@@ -315,6 +315,10 @@ export interface AppNotification {
 export interface MetaOptions {
   categories: string[]
   roles: string[]
+  /** 역할 태그(roles의 각 값) -> 'dev' | 'design' | 'planning' 카테고리 */
+  role_categories: Record<string, string>
+  /** 카테고리별 기술스택 선택지. 역할 미선택 시 skills(통합 리스트)로 폴백한다 */
+  skills_by_role_category: Record<string, string[]>
   skills: string[]
   available_times: string[]
   regions: string[]
