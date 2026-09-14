@@ -135,3 +135,24 @@ class ManualParticipantTests(APITestCase):
         self.client.force_authenticate(self.member)
         res = self.client.delete(f'/api/v1/participants/manual/{added_id}/')
         self.assertEqual(res.status_code, 404)  # 내가 추가한 게 아니면 못 지운다
+
+
+class MetaOptionsTests(APITestCase):
+    def test_role_categories_and_bucketed_skills_are_exposed(self):
+        res = self.client.get('/api/v1/meta/options/')
+        self.assertEqual(res.status_code, 200)
+
+        self.assertEqual(res.data['role_categories']['백엔드'], 'dev')
+        self.assertEqual(res.data['role_categories']['프론트엔드'], 'dev')
+        self.assertEqual(res.data['role_categories']['AI/ML'], 'dev')
+        self.assertEqual(res.data['role_categories']['디자인'], 'design')
+        self.assertEqual(res.data['role_categories']['기획'], 'planning')
+
+        self.assertIn('Figma', res.data['skills_by_role_category']['design'])
+        self.assertIn('Notion', res.data['skills_by_role_category']['planning'])
+        self.assertIn('Django', res.data['skills_by_role_category']['dev'])
+
+        # 하위 호환: 통합 skills 리스트도 여전히 내려간다 (역할 미선택 상태의 폴백용)
+        self.assertIn('Django', res.data['skills'])
+        self.assertIn('Figma', res.data['skills'])
+        self.assertIn('Notion', res.data['skills'])

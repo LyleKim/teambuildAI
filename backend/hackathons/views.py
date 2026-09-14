@@ -191,10 +191,30 @@ class ManualParticipantDeleteView(generics.DestroyAPIView):
 # 아직 관리자가 편집할 필요가 없는 고정 선택지라 모델 없이 상수로 둔다.
 # 나중에 운영진이 직접 늘리고 싶어지면 그때 DB 테이블로 옮긴다.
 
+# 역할 태그 -> 카테고리. 온보딩 화면(역할 선택)과 프로필 작성 화면이 "대표 역할"
+# 선택에 따라 기술스택 선택지와 자기소개 문항 문구를 바꿔 보여주는 데 쓴다
+# (개발자 전용이던 문구를 PM/디자인에도 맞춘다).
+ROLE_CATEGORIES = {
+    '기획': 'planning',
+    '디자인': 'design',
+    '백엔드': 'dev',
+    '프론트엔드': 'dev',
+    'AI/ML': 'dev',
+}
+
+SKILLS_BY_ROLE_CATEGORY = {
+    'dev': ['Django', 'React', 'Python', 'TypeScript', 'Node.js'],
+    'design': ['Figma', 'Zeplin', 'Adobe XD', 'Photoshop', 'Illustrator'],
+    'planning': ['Notion', 'Jira', 'Google Analytics', 'PRD 작성', 'Miro'],
+}
+
 META_OPTIONS = {
     'categories': ['전체', 'AI', '모바일', '클라우드', 'DevOps'],
     'roles': ['기획', '디자인', '백엔드', '프론트엔드', 'AI/ML'],
-    'skills': ['Django', 'React', 'Figma', 'Python', 'TypeScript', 'Node.js'],
+    'role_categories': ROLE_CATEGORIES,
+    'skills_by_role_category': SKILLS_BY_ROLE_CATEGORY,
+    # 역할을 아직 안 고른 상태(신규 작성 초반)의 폴백 겸, 과거 프론트 캐시 호환용 통합 리스트.
+    'skills': sorted({skill for skills in SKILLS_BY_ROLE_CATEGORY.values() for skill in skills}),
     'available_times': ['평일 저녁', '주말 위주', '주말 올인', '자유'],
     'regions': ['서울', '경기', '온라인'],
     'goals': ['수상 목적', '포트폴리오', '경험'],
