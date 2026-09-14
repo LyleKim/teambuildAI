@@ -156,3 +156,8 @@ class MetaOptionsTests(APITestCase):
         self.assertIn('Django', res.data['skills'])
         self.assertIn('Figma', res.data['skills'])
         self.assertIn('Notion', res.data['skills'])
+
+        self.assertEqual(set(res.data['role_categories']), set(res.data['roles']))
+        self.assertEqual(
+            set(res.data['role_categories'].values()), set(res.data['skills_by_role_category']),
+        )

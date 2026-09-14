@@ -98,8 +98,9 @@ export function ProfileSetupScreen({ hackathonId }: { hackathonId: number | null
 
   const skillOptions = useMemo(() => {
     const bucketed = activeCategories.flatMap((c) => options.skills_by_role_category[c] ?? [])
-    return bucketed.length > 0 ? Array.from(new Set(bucketed)) : options.skills
-  }, [activeCategories, options])
+    const base = bucketed.length > 0 ? bucketed : options.skills
+    return Array.from(new Set([...base, ...form.skills]))
+  }, [activeCategories, options, form.skills])
 
   const bioQuestions = BIO_QUESTIONS_BY_CATEGORY[primaryCategory]
 
