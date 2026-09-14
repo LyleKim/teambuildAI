@@ -144,6 +144,8 @@ export const routes = {
   landing: '/',
   login: '/login',
   authCallback: '/auth/callback',
+  /** 카카오 로그인 직후, 역할을 한 번도 고른 적 없는 사용자에게 보여주는 온보딩 화면 */
+  onboardingRole: '/onboarding/role',
   hackathons: '/hackathons',
   hackathon: (id: number) => `/hackathons/${id}`,
   join: (id: number) => `/hackathons/${id}/join`,

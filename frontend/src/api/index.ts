@@ -116,6 +116,11 @@ export const profileApi = {
     return api.put<MyProfile>('/me/profile/', input)
   },
 
+  /** 온보딩(역할 선택) 화면 전용 — 자기소개 등 나머지 필드 없이 roles만 저장한다 */
+  setRole(roles: string[]) {
+    return api.patch<{ roles: string[] }>('/me/profile/role/', { roles })
+  },
+
   setPrivate(isPrivate: boolean) {
     return api.patch<{ is_private: boolean }>('/me/profile/privacy/', { is_private: isPrivate })
   },
