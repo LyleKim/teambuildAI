@@ -8,8 +8,15 @@
  *
  * react-router로 갈아탈 경우 이 파일과 App.tsx의 라우트 테이블만 바꾸면 된다.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
+import type { ReactNode } from "react"
 
 export interface RouteLocation {
   /** 해시에서 쿼리를 제외한 경로. 항상 '/'로 시작한다. */
@@ -18,26 +25,31 @@ export interface RouteLocation {
 }
 
 function readLocation(): RouteLocation {
-  const raw = window.location.hash.replace(/^#/, '') || '/'
-  const [path, search = ''] = raw.split('?')
+  const raw = window.location.hash.replace(/^#/, "") || "/"
+  const [path, search = ""] = raw.split("?")
   return {
-    path: path.startsWith('/') ? path : `/${path}`,
+    path: path.startsWith("/") ? path : `/${path}`,
     query: new URLSearchParams(search),
   }
 }
 
-const RouterContext = createContext<RouteLocation>({ path: '/', query: new URLSearchParams() })
+const RouterContext = createContext<RouteLocation>({
+  path: "/",
+  query: new URLSearchParams(),
+})
 
 export function RouterProvider({ children }: { children: ReactNode }) {
   const [location, setLocation] = useState<RouteLocation>(readLocation)
 
   useEffect(() => {
     const onChange = () => setLocation(readLocation())
-    window.addEventListener('hashchange', onChange)
-    return () => window.removeEventListener('hashchange', onChange)
+    window.addEventListener("hashchange", onChange)
+    return () => window.removeEventListener("hashchange", onChange)
   }, [])
 
-  return <RouterContext.Provider value={location}>{children}</RouterContext.Provider>
+  return (
+    <RouterContext.Provider value={location}>{children}</RouterContext.Provider>
+  )
 }
 
 export function useLocation() {
@@ -50,23 +62,26 @@ export interface NavigateOptions {
 }
 
 export function navigate(to: string, options: NavigateOptions = {}) {
-  const target = to.startsWith('/') ? to : `/${to}`
+  const target = to.startsWith("/") ? to : `/${to}`
   const nextHash = `#${target}`
 
   if (window.location.hash === nextHash) return
 
   if (options.replace) {
     const url = `${window.location.pathname}${window.location.search}${nextHash}`
-    window.history.replaceState(null, '', url)
+    window.history.replaceState(null, "", url)
     // replaceState는 hashchange를 발생시키지 않으므로 직접 알린다
-    window.dispatchEvent(new HashChangeEvent('hashchange'))
+    window.dispatchEvent(new HashChangeEvent("hashchange"))
   } else {
     window.location.hash = nextHash
   }
 }
 
 export function useNavigate() {
-  return useCallback((to: string, options?: NavigateOptions) => navigate(to, options), [])
+  return useCallback(
+    (to: string, options?: NavigateOptions) => navigate(to, options),
+    [],
+  )
 }
 
 /**
@@ -77,15 +92,15 @@ export function matchPath(
   pattern: string,
   path: string,
 ): Record<string, string> | null {
-  const patternParts = pattern.split('/').filter(Boolean)
-  const pathParts = path.split('/').filter(Boolean)
+  const patternParts = pattern.split("/").filter(Boolean)
+  const pathParts = path.split("/").filter(Boolean)
 
   if (patternParts.length !== pathParts.length) return null
 
   const params: Record<string, string> = {}
   for (let i = 0; i < patternParts.length; i++) {
     const p = patternParts[i]
-    if (p.startsWith(':')) {
+    if (p.startsWith(":")) {
       params[p.slice(1)] = decodeURIComponent(pathParts[i])
     } else if (p !== pathParts[i]) {
       return null
@@ -112,7 +127,10 @@ export function useMatchedRoute<T>(
 }
 
 /** 경로 파라미터를 숫자로 파싱. 유효하지 않으면 null. */
-export function numericParam(params: Record<string, string>, key: string): number | null {
+export function numericParam(
+  params: Record<string, string>,
+  key: string,
+): number | null {
   const value = Number(params[key])
   return Number.isFinite(value) && value > 0 ? value : null
 }
@@ -130,7 +148,7 @@ export function Link({
 }) {
   return (
     <a
-      href={`#${to.startsWith('/') ? to : `/${to}`}`}
+      href={`#${to.startsWith("/") ? to : `/${to}`}`}
       className={className}
       onClick={() => onClick?.()}
     >
@@ -141,12 +159,12 @@ export function Link({
 
 /** 앱 전역에서 쓰는 경로 빌더. 경로 문자열을 여기저기 흩뿌리지 않기 위함. */
 export const routes = {
-  landing: '/',
-  login: '/login',
-  authCallback: '/auth/callback',
+  landing: "/",
+  login: "/login",
+  authCallback: "/auth/callback",
   /** 카카오 로그인 직후, 역할을 한 번도 고른 적 없는 사용자에게 보여주는 온보딩 화면 */
-  onboardingRole: '/onboarding/role',
-  hackathons: '/hackathons',
+  onboardingRole: "/onboarding/role",
+  hackathons: "/hackathons",
   hackathon: (id: number) => `/hackathons/${id}`,
   join: (id: number) => `/hackathons/${id}/join`,
   profileSetup: (id: number) => `/hackathons/${id}/profile-setup`,
@@ -154,15 +172,15 @@ export const routes = {
   recommendations: (id: number) => `/hackathons/${id}/recommendations`,
   member: (userId: number) => `/users/${userId}`,
   /** 해커톤 컨텍스트 없이 프로필만 수정할 때 (마이페이지 진입) */
-  profile: '/profile',
-  coffeechats: '/coffeechats',
+  profile: "/profile",
+  coffeechats: "/coffeechats",
   coffeechatMatched: (id: number) => `/coffeechats/${id}/matched`,
-  messages: '/messages',
+  messages: "/messages",
   thread: (id: number) => `/messages/${id}`,
-  myStatus: '/my/status',
+  myStatus: "/my/status",
   teamSpace: (hackathonId: number) => `/my/status/${hackathonId}`,
   teamEdit: (id: number) => `/teams/${id}/edit`,
-  mypage: '/mypage',
-  myReviews: '/mypage/reviews',
-  notifications: '/notifications',
+  mypage: "/mypage",
+  myReviews: "/mypage/reviews",
+  notifications: "/notifications",
 } as const

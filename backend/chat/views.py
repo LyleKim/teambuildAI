@@ -2,6 +2,8 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +11,16 @@ from rest_framework.views import APIView
 
 from .models import ChatMessage, ChatThread
 from .serializers import ChatThreadSerializer, serialize_message
+
+MESSAGE_FIELDS = {
+    'id': serializers.IntegerField(),
+    'from': serializers.ChoiceField(choices=['me', 'them']),
+    'text': serializers.CharField(),
+    'time': serializers.CharField(),
+    'date': serializers.CharField(),
+    'created_at': serializers.DateTimeField(),
+}
+MessageSerializer = inline_serializer('Message', MESSAGE_FIELDS)
 
 
 def _thread_for_participant(thread_id, user):
@@ -22,6 +34,7 @@ def _thread_for_participant(thread_id, user):
 class ChatThreadListView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=ChatThreadSerializer(many=True))
     def get(self, request):
         threads = ChatThread.objects.filter(
             Q(user_a=request.user) | Q(user_b=request.user)
@@ -33,6 +46,7 @@ class ChatThreadListView(APIView):
 class ChatThreadDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=ChatThreadSerializer)
     def get(self, request, thread_id):
         thread = _thread_for_participant(thread_id, request.user)
         serializer = ChatThreadSerializer(thread, context={'request': request})
@@ -42,11 +56,16 @@ class ChatThreadDetailView(APIView):
 class ChatMessageListView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=inline_serializer('MessageList', MESSAGE_FIELDS, many=True))
     def get(self, request, thread_id):
         thread = _thread_for_participant(thread_id, request.user)
         messages = thread.messages.all()
         return Response([serialize_message(m, request.user) for m in messages])
 
+    @extend_schema(
+        request=inline_serializer('SendMessage', {'text': serializers.CharField()}),
+        responses={201: MessageSerializer},
+    )
     def post(self, request, thread_id):
         thread = _thread_for_participant(thread_id, request.user)
         text = (request.data.get('text') or '').strip()
@@ -59,6 +78,7 @@ class ChatMessageListView(APIView):
 class ChatMarkReadView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses={204: None})
     def patch(self, request, thread_id):
         thread = _thread_for_participant(thread_id, request.user)
         thread.messages.filter(read_at__isnull=True).exclude(sender=request.user).update(

@@ -1,7 +1,9 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import generics
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiExample, extend_schema, inline_serializer
+from rest_framework import generics, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -83,6 +85,7 @@ class ParticipationEndView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses=ParticipationSerializer)
     def patch(self, request, pk):
         participation = get_object_or_404(Participation, pk=pk, user=request.user)
         if participation.ended_at is None:
@@ -163,7 +166,7 @@ class ManualParticipantListCreateView(generics.ListCreateAPIView):
 
         if matched_profile:
             member = matched_profile.user
-            participant, _ = ManualParticipant.objects.update_or_create(
+            participant, created = ManualParticipant.objects.update_or_create(
                 hackathon=hackathon, added_by=request.user, phone=phone,
                 defaults={'user': member, 'name': member.name, 'email': member.email},
             )
@@ -171,12 +174,12 @@ class ManualParticipantListCreateView(generics.ListCreateAPIView):
             if not name or not email:
                 # 프론트가 이 코드를 보고 이름/이메일 입력 UI를 추가로 보여준다
                 raise ValidationError({'not_member': '사이트 회원이 아니에요. 이름과 이메일을 입력해주세요.'})
-            participant, _ = ManualParticipant.objects.update_or_create(
+            participant, created = ManualParticipant.objects.update_or_create(
                 hackathon=hackathon, added_by=request.user, phone=phone,
                 defaults={'user': None, 'name': name, 'email': email},
             )
 
-        return Response(ManualParticipantSerializer(participant).data, status=201)
+        return Response(ManualParticipantSerializer(participant).data, status=201 if created else 200)
 
 
 class ManualParticipantDeleteView(generics.DestroyAPIView):
@@ -226,8 +229,15 @@ META_OPTIONS = {
 
 
 class MetaOptionsView(APIView):
+    """선택지 상수 묶음. 필드마다 형태가 제각각(리스트/딕셔너리)이라 타입으로 딱 떨어지게
+    표현하기보다 실제 응답 예시를 그대로 문서에 보여주는 게 더 유용하다."""
+
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        examples=[OpenApiExample('예시', value=META_OPTIONS, response_only=True)],
+    )
     def get(self, request):
         return Response(META_OPTIONS)
 
@@ -235,6 +245,12 @@ class MetaOptionsView(APIView):
 class LandingStatsView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(responses=inline_serializer('LandingStats', {
+        'total_participants': serializers.IntegerField(),
+        'recruiting_teams': serializers.IntegerField(),
+        'active_hackathons': serializers.IntegerField(),
+        'satisfaction_rate': serializers.IntegerField(),
+    }))
     def get(self, request):
         return Response({
             'total_participants': Participation.objects.count(),

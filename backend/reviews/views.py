@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import generics, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,6 +20,15 @@ class ReviewCreateView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=inline_serializer('ReviewCreate', {
+            'hackathon_id': serializers.IntegerField(),
+            'reviewee_id': serializers.IntegerField(),
+            'rating': serializers.IntegerField(min_value=1, max_value=5),
+            'content': serializers.CharField(required=False, allow_blank=True),
+        }),
+        responses={201: ReviewSerializer, 200: ReviewSerializer},
+    )
     def post(self, request):
         hackathon_id = request.data.get('hackathon_id')
         reviewee_id = request.data.get('reviewee_id')
@@ -51,11 +61,11 @@ class ReviewCreateView(APIView):
         if not is_teammate:
             raise ValidationError('같은 해커톤에서 커피챗이 수락된 상대만 리뷰할 수 있어요.')
 
-        review, _ = Review.objects.update_or_create(
+        review, created = Review.objects.update_or_create(
             hackathon=hackathon, reviewer=request.user, reviewee=reviewee,
             defaults={'rating': rating, 'content': content},
         )
-        return Response(ReviewSerializer(review).data, status=200)
+        return Response(ReviewSerializer(review).data, status=201 if created else 200)
 
 
 class MyReceivedReviewsView(generics.ListAPIView):

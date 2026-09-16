@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { coffeechatApi } from '@/api'
-import { useMutation } from '@/hooks/useMutation'
-import { initialOf } from '@/lib/format'
-import { Avatar, InlineError } from './ui'
+import { useState } from "react"
+import { coffeechatApi } from "@/api"
+import { useMutation } from "@/hooks/useMutation"
+import { initialOf } from "@/lib/format"
+import { Avatar, InlineError } from "./ui"
 
 export interface CoffeeChatTarget {
   userId: number
@@ -46,7 +46,7 @@ export function CoffeeChatModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(80,100,130,0.45)' }}
+      style={{ background: "rgba(80,100,130,0.45)" }}
       onClick={onClose}
     >
       <div
@@ -54,14 +54,19 @@ export function CoffeeChatModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 mb-5">
-          <Avatar initial={target.initial || initialOf(target.name)} size={40} />
+          <Avatar
+            initial={target.initial || initialOf(target.name)}
+            size={40}
+          />
           <div>
             <p className="font-bold text-[15px] text-gray-800">{target.name}</p>
             <p className="text-[12px] text-[#8FA3BF]">{target.role}</p>
           </div>
         </div>
 
-        <p className="text-[13px] font-semibold text-gray-700 mb-2">신청 인사말</p>
+        <p className="text-[13px] font-semibold text-gray-700 mb-2">
+          신청 인사말
+        </p>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -70,7 +75,9 @@ export function CoffeeChatModal({
           className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#4EAAF5] resize-none"
         />
         <div className="flex items-center justify-between mt-1">
-          <p className="text-[11px] text-[#94A3B8]">내 프로필의 오픈채팅 링크가 함께 전달돼요.</p>
+          <p className="text-[11px] text-[#94A3B8]">
+            내 프로필의 오픈채팅 링크가 함께 전달돼요.
+          </p>
           <p className="text-[11px] text-[#94A3B8]">{message.length}/300</p>
         </div>
 

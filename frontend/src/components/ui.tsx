@@ -1,9 +1,9 @@
 /** 화면 전반에서 재사용하는 프리미티브 컴포넌트 모음. */
-import { useState } from 'react'
-import type { ReactNode } from 'react'
-import logo from '@/assets/logo.png'
-import { COFFEECHAT_STATUS_BADGE } from '@/lib/constants'
-import type { CoffeeChatStatus } from '@/types'
+import { useState } from "react"
+import type { ReactNode } from "react"
+import logo from "@/assets/logo.png"
+import { COFFEECHAT_STATUS_BADGE } from "@/lib/constants"
+import type { CoffeeChatStatus } from "@/types"
 
 export function LogoIcon({ size = 36 }: { size?: number }) {
   return (
@@ -21,18 +21,21 @@ export function LogoIcon({ size = 36 }: { size?: number }) {
 export function Avatar({
   initial,
   size = 40,
-  className = '',
+  className = "",
   verified = false,
+  /** 받은 리뷰 5개 이상일 때 우측 하단에 작은 인증 체크마크를 얹는다. */
 }: {
   initial: string
   size?: number
   className?: string
-  /** 받은 리뷰 5개 이상일 때 우측 하단에 작은 인증 체크마크를 얹는다. */
   verified?: boolean
 }) {
   const badgeSize = Math.max(12, Math.round(size * 0.32))
   return (
-    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+    <div
+      className="relative flex-shrink-0"
+      style={{ width: size, height: size }}
+    >
       <div
         className={`w-full h-full rounded-full bg-[#0EA5E9] flex items-center justify-center text-white font-bold ${className}`}
         style={{ fontSize: Math.round(size * 0.35) }}
@@ -45,7 +48,16 @@ export function Avatar({
           className="absolute bottom-0 right-0 flex items-center justify-center rounded-full bg-[#0EA5E9] border-2 border-white"
           style={{ width: badgeSize, height: badgeSize }}
         >
-          <svg width="65%" height="65%" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="65%"
+            height="65%"
+            viewBox="0 0 12 12"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M2.5 6.2l2.3 2.3L9.5 3.5" />
           </svg>
         </span>
@@ -54,7 +66,13 @@ export function Avatar({
   )
 }
 
-export function BackButton({ label, onClick }: { label: string; onClick: () => void }) {
+export function BackButton({
+  label,
+  onClick,
+}: {
+  label: string
+  onClick: () => void
+}) {
   return (
     <button
       onClick={onClick}
@@ -80,7 +98,11 @@ export function ChipGroup({
 }) {
   const toggle = (opt: string) => {
     if (multi) {
-      onChange(selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt])
+      onChange(
+        selected.includes(opt)
+          ? selected.filter((s) => s !== opt)
+          : [...selected, opt],
+      )
     } else {
       onChange(selected.includes(opt) ? [] : [opt])
     }
@@ -95,8 +117,8 @@ export function ChipGroup({
             onClick={() => toggle(opt)}
             className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
               selected.includes(opt)
-                ? 'bg-[#4EAAF5] text-white border-[#4EAAF5]'
-                : 'bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]'
+                ? "bg-[#4EAAF5] text-white border-[#4EAAF5]"
+                : "bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]"
             }`}
           >
             {opt}
@@ -121,12 +143,12 @@ export function Toggle({
       onClick={() => !disabled && onChange(!value)}
       disabled={disabled}
       className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-        value ? 'bg-[#4EAAF5]' : 'bg-[#D0DCE8]'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        value ? "bg-[#4EAAF5]" : "bg-[#D0DCE8]"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       <span
-        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-          value ? 'translate-x-5' : 'translate-x-0.5'
+        className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+          value ? "translate-x-5" : "translate-x-0"
         }`}
       />
     </button>
@@ -152,7 +174,9 @@ export function CounterRow({
         >
           −
         </button>
-        <span className="text-[14px] font-semibold text-gray-800 w-4 text-center">{value}</span>
+        <span className="text-[14px] font-semibold text-gray-800 w-4 text-center">
+          {value}
+        </span>
         <button
           onClick={() => onChange(value + 1)}
           className="w-7 h-7 rounded-full border border-[#4EAAF5] text-[#4EAAF5] flex items-center justify-center text-lg leading-none hover:bg-blue-50 transition-colors"
@@ -171,7 +195,14 @@ export function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative w-14 h-14 flex-shrink-0">
       <svg width="56" height="56" viewBox="0 0 56 56" className="-rotate-90">
-        <circle cx="28" cy="28" r={r} fill="none" stroke="#E2EAF4" strokeWidth="4" />
+        <circle
+          cx="28"
+          cy="28"
+          r={r}
+          fill="none"
+          stroke="#E2EAF4"
+          strokeWidth="4"
+        />
         <circle
           cx="28"
           cy="28"
@@ -184,7 +215,9 @@ export function ScoreRing({ score }: { score: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[13px] font-bold text-[#4EAAF5] leading-none">{score}점</span>
+        <span className="text-[13px] font-bold text-[#4EAAF5] leading-none">
+          {score}점
+        </span>
         <span className="text-[9px] text-[#8FA3BF]">매칭</span>
       </div>
     </div>
@@ -195,7 +228,9 @@ export function StatusBadge({ status }: { status: CoffeeChatStatus }) {
   const badge = COFFEECHAT_STATUS_BADGE[status]
   if (!badge) return null
   return (
-    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${badge.cls}`}>
+    <span
+      className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${badge.cls}`}
+    >
       {badge.label}
     </span>
   )
@@ -206,7 +241,7 @@ export function PrimaryButton({
   onClick,
   loading = false,
   disabled = false,
-  className = '',
+  className = "",
 }: {
   children: ReactNode
   onClick?: () => void

@@ -1,47 +1,38 @@
-import { useState } from 'react'
-import { profileApi } from '@/api'
-import { CoffeeChatModal } from '@/components/CoffeeChatModal'
-import { Page } from '@/components/NavBar'
-import { ErrorState, LoadingState } from '@/components/states'
-import { Avatar, BackButton, StatusBadge, useToast } from '@/components/ui'
-import { LINK_META } from '@/lib/constants'
-import { initialOf } from '@/lib/format'
-import { lastHackathonId } from '@/lib/prefs'
-import { useQuery } from '@/hooks/useQuery'
-import { useLocation } from '@/lib/router'
-import type { LinkType } from '@/types'
+import { useState } from "react"
+import { profileApi } from "@/api"
+import { CoffeeChatModal } from "@/components/CoffeeChatModal"
+import { Page } from "@/components/NavBar"
+import { ErrorState, LoadingState } from "@/components/states"
+import { Avatar, BackButton, StatusBadge, useToast } from "@/components/ui"
+import { useMetaOptions } from "@/hooks/useMetaOptions"
+import { useProfileCategory } from "@/hooks/useProfileCategory"
+import { initialOf } from "@/lib/format"
+import { lastHackathonId } from "@/lib/prefs"
+import { useQuery } from "@/hooks/useQuery"
+import { useLocation } from "@/lib/router"
+import { DesignProfileView } from "./profile/DesignProfileView"
+import { DevProfileView } from "./profile/DevProfileView"
+import { PlanningProfileView } from "./profile/PlanningProfileView"
 
 export function MemberProfileScreen({ userId }: { userId: number }) {
   const { query } = useLocation()
   const { toast, show } = useToast()
   const [modalOpen, setModalOpen] = useState(false)
+  const { options } = useMetaOptions()
 
   // 커피챗은 해커톤 단위라 컨텍스트가 필요하다.
   // 링크에 hackathon 파라미터가 있으면 그걸, 없으면 마지막으로 본 해커톤을 쓴다.
-  const hackathonId = Number(query.get('hackathon')) || lastHackathonId()
+  const hackathonId = Number(query.get("hackathon")) || lastHackathonId()
 
-  const { data, loading, error, refetch, setData } = useQuery(`profile:${userId}`, () =>
-    profileApi.member(userId),
+  const { data, loading, error, refetch, setData } = useQuery(
+    `profile:${userId}`,
+    () => profileApi.member(userId),
   )
 
-  const bioItems = data
-    ? [
-        { label: '저는 이런 사람이에요', value: data.bio_style },
-        { label: '이런 걸 잘해요', value: data.bio_strength },
-        { label: '이런 경험이 있어요', value: data.bio_experience },
-        { label: '이번 해커톤에서 이걸 하고 싶어요', value: data.bio_goal },
-        { label: '팀에 이렇게 기여할 수 있어요', value: data.bio_contribution },
-      ].filter((q) => q.value)
-    : []
-
-  const infoItems = data
-    ? ([
-        ['활동 가능 시간', data.available_time],
-        ['참여 목표', data.goal],
-        ['협업 방식', data.collaboration],
-        ['소통 방식', data.communication],
-      ] as [string, string][])
-    : []
+  const { primaryCategory, bioQuestions } = useProfileCategory(
+    data?.roles ?? [],
+    options,
+  )
 
   return (
     <Page>
@@ -54,19 +45,29 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
       {!loading && !error && data && (
         <>
           <div className="flex items-center gap-4 mb-6">
-            <Avatar initial={data.initial || initialOf(data.name)} size={64} className="bg-[#4EAAF5]" />
+            <Avatar
+              initial={data.initial || initialOf(data.name)}
+              size={64}
+              className="bg-[#4EAAF5]"
+            />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-[22px] font-bold text-gray-800">{data.name}</h1>
+                <h1 className="text-[22px] font-bold text-gray-800">
+                  {data.name}
+                </h1>
                 {data.review_summary.count > 0 && (
                   <span className="text-[13px] font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2.5 py-0.5 rounded-full">
-                    ⭐ {data.review_summary.average} ({data.review_summary.count})
+                    ⭐ {data.review_summary.average} (
+                    {data.review_summary.count})
                   </span>
                 )}
               </div>
               <div className="flex gap-1.5 mt-1.5 flex-wrap">
                 {data.roles.map((r) => (
-                  <span key={r} className="bg-blue-100 text-[#4EAAF5] text-[12px] font-semibold px-2.5 py-0.5 rounded-full">
+                  <span
+                    key={r}
+                    className="bg-blue-100 text-[#4EAAF5] text-[12px] font-semibold px-2.5 py-0.5 rounded-full"
+                  >
                     {r}
                   </span>
                 ))}
@@ -74,109 +75,41 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
             </div>
           </div>
 
-          {data.one_liner && (
-            <p className="text-[14px] text-[#64748B] mb-5 leading-relaxed">{data.one_liner}</p>
-          )}
-
-          {data.skills.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-5">
-              {data.skills.map((s) => (
-                <span key={s} className="bg-white border border-[#E2EAF4] text-gray-600 text-[13px] px-3 py-1 rounded-lg">
-                  {s}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-            {infoItems.map(([label, value]) => (
-              <div key={label} className="bg-white rounded-xl border border-[#E2EAF4] p-4">
-                <p className="text-[11px] text-[#8FA3BF] mb-1">{label}</p>
-                <p className="text-[14px] font-semibold text-gray-800">{value || '—'}</p>
-              </div>
-            ))}
-          </div>
-
-          {data.interests.length > 0 && (
-            <div className="mb-5">
-              <p className="text-[13px] font-semibold text-gray-700 mb-2">관심 분야</p>
-              <div className="flex gap-2 flex-wrap">
-                {data.interests.map((i) => (
-                  <span key={i} className="bg-blue-100 text-[#4EAAF5] text-[12px] font-semibold px-3 py-1 rounded-full">
-                    {i}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mb-6">
-            <p className="text-[13px] font-semibold text-[#0F172A] mb-3">자기소개</p>
-            <div className="bg-white rounded-2xl border border-[#E2EAF4] overflow-hidden">
-              {bioItems.length > 0 ? (
-                bioItems.map((q, idx) => (
-                  <div
-                    key={q.label}
-                    className={`px-5 py-4 ${idx < bioItems.length - 1 ? 'border-b border-[#F8FAFC]' : ''}`}
-                  >
-                    <p className="text-[11px] font-semibold text-[#0EA5E9] mb-1 uppercase tracking-wide">
-                      {q.label}
-                    </p>
-                    <p className="text-[14px] text-[#0F172A] leading-relaxed">{q.value}</p>
-                  </div>
-                ))
-              ) : (
-                <div className="px-5 py-4">
-                  <p className="text-[14px] text-[#94A3B8] leading-relaxed">
-                    아직 작성된 자기소개가 없어요.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {data.links.length > 0 && (
-            <div className="mb-4">
-              <p className="text-[13px] font-semibold text-[#0F172A] mb-2.5">포트폴리오</p>
-              <div className="flex flex-wrap gap-2">
-                {data.links.map((link, i) => {
-                  const meta = LINK_META[link.type as LinkType] ?? LINK_META['기타']
-                  return (
-                    <a
-                      key={`${link.type}-${i}`}
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`flex items-center gap-1.5 border rounded-full px-4 py-1.5 text-[13px] font-medium transition-opacity hover:opacity-75 ${meta.color} ${meta.bg} ${meta.border}`}
-                    >
-                      <span className="text-[14px]">{meta.icon}</span>
-                      {link.type}
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="opacity-50">
-                        <path d="M2 8L8 2M4 2h4v4" />
-                      </svg>
-                    </a>
-                  )
-                })}
-              </div>
-            </div>
+          {primaryCategory === "design" ? (
+            <DesignProfileView data={data} bioQuestions={bioQuestions} />
+          ) : primaryCategory === "planning" ? (
+            <PlanningProfileView data={data} bioQuestions={bioQuestions} />
+          ) : (
+            <DevProfileView data={data} bioQuestions={bioQuestions} />
           )}
 
           {data.reviews.length > 0 && (
             <div className="mb-6">
-              <p className="text-[13px] font-semibold text-[#0F172A] mb-3">받은 리뷰</p>
+              <p className="text-[13px] font-semibold text-[#0F172A] mb-3">
+                받은 리뷰
+              </p>
               <div className="flex flex-col gap-2">
                 {data.reviews.map((r) => (
-                  <div key={r.id} className="bg-white rounded-xl border border-[#E2EAF4] p-4">
+                  <div
+                    key={r.id}
+                    className="bg-white rounded-xl border border-[#E2EAF4] p-4"
+                  >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <p className="text-[12px] font-semibold text-[#0F172A]">
                         {r.reviewer_name}
-                        <span className="text-[#94A3B8] font-normal ml-1.5">· {r.hackathon.title}</span>
+                        <span className="text-[#94A3B8] font-normal ml-1.5">
+                          · {r.hackathon.title}
+                        </span>
                       </p>
                       <span className="text-[12px] font-bold text-[#F59E0B] flex-shrink-0">
-                        {'⭐'.repeat(r.rating)}
+                        {"⭐".repeat(r.rating)}
                       </span>
                     </div>
-                    {r.content && <p className="text-[13px] text-[#64748B] leading-relaxed">{r.content}</p>}
+                    {r.content && (
+                      <p className="text-[13px] text-[#64748B] leading-relaxed">
+                        {r.content}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -190,7 +123,7 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
               height="16"
               viewBox="0 0 16 16"
               fill="none"
-              stroke={data.open_chat ? '#22C55E' : '#94A3B8'}
+              stroke={data.open_chat ? "#22C55E" : "#94A3B8"}
               strokeWidth="1.6"
               strokeLinecap="round"
             >
@@ -199,29 +132,44 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
             </svg>
             {data.open_chat ? (
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-semibold text-[#22C55E]">오픈채팅/연락처</p>
-                <a href={data.open_chat} target="_blank" rel="noreferrer" className="text-[13px] text-[#0EA5E9] underline break-all">
+                <p className="text-[12px] font-semibold text-[#22C55E]">
+                  오픈채팅/연락처
+                </p>
+                <a
+                  href={data.open_chat}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[13px] text-[#0EA5E9] underline break-all"
+                >
                   {data.open_chat}
                 </a>
               </div>
             ) : (
               <div>
-                <p className="text-[12px] font-semibold text-[#94A3B8]">오픈채팅/연락처</p>
-                <p className="text-[12px] text-[#94A3B8]">커피챗 수락 후 공개</p>
+                <p className="text-[12px] font-semibold text-[#94A3B8]">
+                  오픈채팅/연락처
+                </p>
+                <p className="text-[12px] text-[#94A3B8]">
+                  커피챗 수락 후 공개
+                </p>
               </div>
             )}
           </div>
 
           {data.coffeechat_sent ? (
             <div className="w-full bg-[#F1F5F9] border border-[#E2EAF4] rounded-xl py-3.5 flex items-center justify-center gap-2">
-              <span className="text-[14px] font-semibold text-[#94A3B8]">커피챗 신청함</span>
-              {data.coffeechat_status && <StatusBadge status={data.coffeechat_status} />}
+              <span className="text-[14px] font-semibold text-[#94A3B8]">
+                커피챗 신청함
+              </span>
+              {data.coffeechat_status && (
+                <StatusBadge status={data.coffeechat_status} />
+              )}
             </div>
           ) : (
             <button
               onClick={() => setModalOpen(true)}
               disabled={!hackathonId}
-              title={hackathonId ? undefined : '해커톤을 먼저 선택해주세요'}
+              title={hackathonId ? undefined : "해커톤을 먼저 선택해주세요"}
               className="w-full bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold text-[15px] rounded-xl py-3.5 transition-colors shadow-sm disabled:bg-[#BAE6FD] disabled:cursor-not-allowed"
             >
               커피챗 신청하기
@@ -234,14 +182,22 @@ export function MemberProfileScreen({ userId }: { userId: number }) {
                 userId: data.id,
                 name: data.name,
                 initial: data.initial || initialOf(data.name),
-                role: data.roles[0] ?? '팀원',
+                role: data.roles[0] ?? "팀원",
               }}
               hackathonId={hackathonId}
               onClose={() => setModalOpen(false)}
               onSent={() => {
-                setData((prev) => (prev ? { ...prev, coffeechat_sent: true, coffeechat_status: 'pending' } : prev))
+                setData((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        coffeechat_sent: true,
+                        coffeechat_status: "pending",
+                      }
+                    : prev,
+                )
                 setModalOpen(false)
-                show('커피챗 신청을 보냈어요')
+                show("커피챗 신청을 보냈어요")
               }}
             />
           )}

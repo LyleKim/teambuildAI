@@ -1,3 +1,4 @@
+import logging
 import secrets
 from urllib.parse import urlencode, urlparse
 
@@ -5,6 +6,13 @@ from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    inline_serializer,
+)
+from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +23,13 @@ from notifications.models import Notification
 
 from . import kakao_client
 from .models import User
+
+logger = logging.getLogger(__name__)
+
+BadgesSerializer = inline_serializer('Badges', {
+    'unread_notification_count': serializers.IntegerField(),
+    'unread_message_count': serializers.IntegerField(),
+})
 
 
 def _is_allowed_redirect(uri: str) -> bool:
@@ -34,6 +49,18 @@ class KakaoLoginView(APIView):
 
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                'redirect_uri', str, OpenApiParameter.QUERY, required=True,
+                description='로그인 완료 후 돌아갈 프론트엔드 주소. FRONTEND_ORIGINS 화이트리스트에 있어야 한다.',
+            ),
+        ],
+        responses={
+            302: OpenApiResponse(description='카카오 인가 화면으로 리다이렉트'),
+            400: OpenApiResponse(description='redirect_uri가 없거나 화이트리스트에 없음'),
+        },
+    )
     def get(self, request):
         redirect_uri = request.query_params.get('redirect_uri')
         if not redirect_uri or not _is_allowed_redirect(redirect_uri):
@@ -55,6 +82,19 @@ class KakaoCallbackView(APIView):
 
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('code', str, OpenApiParameter.QUERY, description='카카오 인가 코드'),
+            OpenApiParameter('state', str, OpenApiParameter.QUERY, description='CSRF 방지용 state'),
+            OpenApiParameter('error', str, OpenApiParameter.QUERY, required=False),
+        ],
+        responses={
+            302: OpenApiResponse(
+                description='성공 시 access/refresh 토큰을 실어 프론트로, 실패 시 ?error=kakao_oauth_failed로 리다이렉트',
+            ),
+            400: OpenApiResponse(description='로그인 세션(redirect_uri)이 만료됨'),
+        },
+    )
     def get(self, request):
         code = request.query_params.get('code')
         state = request.query_params.get('state')
@@ -75,6 +115,7 @@ class KakaoCallbackView(APIView):
             kakao_access_token = kakao_client.exchange_code_for_token(code)
             kakao_user = kakao_client.fetch_kakao_user(kakao_access_token)
         except Exception:
+            logger.exception('카카오 로그인 실패 (code/token 교환 또는 사용자 조회 단계)')
             return redirect(f'{redirect_uri}?{urlencode({"error": "kakao_oauth_failed"})}')
 
         kakao_id = str(kakao_user['id'])
@@ -116,6 +157,16 @@ def _badges_for(user):
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=inline_serializer('Me', {
+        'id': serializers.IntegerField(),
+        'name': serializers.CharField(),
+        'email': serializers.EmailField(),
+        'initial': serializers.CharField(),
+        'avatar_url': serializers.CharField(allow_null=True),
+        'summary': serializers.CharField(allow_null=True),
+        'is_private': serializers.BooleanField(),
+        'badges': BadgesSerializer,
+    }))
     def get(self, request):
         user = request.user
         profile = getattr(user, 'profile', None)
@@ -145,6 +196,7 @@ class MeView(APIView):
 class MeBadgesView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=BadgesSerializer)
     def get(self, request):
         return Response(_badges_for(request.user))
 
@@ -160,5 +212,6 @@ class LogoutView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses={204: None})
     def post(self, request):
         return Response(status=204)

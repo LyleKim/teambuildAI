@@ -16,8 +16,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework.permissions import AllowAny
+
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('config.api_urls')),
+
+    # API 문서 (OpenAPI 스키마 + Swagger UI + ReDoc). 다른 meta 엔드포인트(해커톤 목록 등)와
+    # 마찬가지로 공개 문서라 인증 없이 열람 가능하다(기본값 IsAuthenticated를 명시적으로 푼다).
+    path('api/schema/', SpectacularAPIView.as_view(permission_classes=[AllowAny]), name='schema'),
+    path(
+        'api/docs/',
+        SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[AllowAny]),
+        name='swagger-ui',
+    ),
+    path(
+        'api/redoc/',
+        SpectacularRedocView.as_view(url_name='schema', permission_classes=[AllowAny]),
+        name='redoc',
+    ),
 ]

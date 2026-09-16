@@ -41,6 +41,26 @@ class CoffeeChatFlowTests(APITestCase):
         res = self._send(message='  ')
         self.assertEqual(res.status_code, 400)
 
+    def test_error_response_shape_is_unified(self):
+        """문자열로 raise한 에러도, 필드 딕셔너리로 raise한 에러도 'detail' 키를 갖는다."""
+        self.client.force_authenticate(self.receiver)
+        res = self.client.post(
+            '/api/v1/coffeechats/',
+            {'to_user_id': self.receiver.id, 'hackathon_id': self.hackathon.id, 'message': 'hi'},
+        )  # 자기 자신에게 신청 -> 문자열로 raise된 케이스
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('detail', res.data)
+
+        res = self._send(message='  ')  # {'message': ...} 딕셔너리로 raise된 케이스
+        self.assertIn('detail', res.data)
+        self.assertIn('message', res.data)
+
+    def test_send_to_private_profile_is_hidden_as_404(self):
+        self.receiver.profile.is_private = True
+        self.receiver.profile.save(update_fields=['is_private'])
+        res = self._send()
+        self.assertEqual(res.status_code, 404)
+
     def test_send_uses_client_message_and_snapshots_contact(self):
         res = self._send()
         self.assertEqual(res.status_code, 201)
@@ -74,14 +94,62 @@ class CoffeeChatFlowTests(APITestCase):
         cc_id = self._send().data['id']
 
         self.client.force_authenticate(self.stranger)
-        res = self.client.delete(f'/api/v1/coffeechats/{cc_id}/delete/')
+        res = self.client.delete(f'/api/v1/coffeechats/{cc_id}/')
         self.assertEqual(res.status_code, 404)
         self.assertTrue(CoffeeChat.objects.filter(id=cc_id).exists())
 
         self.client.force_authenticate(self.receiver)
-        res = self.client.delete(f'/api/v1/coffeechats/{cc_id}/delete/')
+        res = self.client.delete(f'/api/v1/coffeechats/{cc_id}/')
         self.assertEqual(res.status_code, 204)
         self.assertFalse(CoffeeChat.objects.filter(id=cc_id).exists())
+
+    def test_detail_url_serves_both_get_and_delete(self):
+        """자원 하나(URL 하나)에 GET/DELETE가 둘 다 붙는지 — REST 자원 중심 설계 확인용."""
+        cc_id = self._send().data['id']
+        self.client.force_authenticate(self.receiver)
+
+        res = self.client.get(f'/api/v1/coffeechats/{cc_id}/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['id'], cc_id)
+
+        res = self.client.delete(f'/api/v1/coffeechats/{cc_id}/')
+        self.assertEqual(res.status_code, 204)
+
+    def test_accept_and_reject_are_idempotent(self):
+        accept_id = self._send().data['id']
+        self.client.force_authenticate(self.receiver)
+        self.client.patch(f'/api/v1/coffeechats/{accept_id}/accept/')
+        res = self.client.patch(f'/api/v1/coffeechats/{accept_id}/accept/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['status'], 'accepted')
+
+        # 상대(stranger)에게 보낸 별개의 커피챗으로 reject 쪽도 확인 (같은 두 사람 사이엔
+        # 이미 진행 중인 게 있어 중복 신청이 막히므로 receiver를 하나 더 둔다)
+        self.client.force_authenticate(self.sender)
+        res = self.client.post(
+            '/api/v1/coffeechats/',
+            {'to_user_id': self.stranger.id, 'hackathon_id': self.hackathon.id, 'message': '안녕하세요!'},
+        )
+        reject_id = res.data['id']
+        self.client.force_authenticate(self.stranger)
+        self.client.patch(f'/api/v1/coffeechats/{reject_id}/reject/')
+        res = self.client.patch(f'/api/v1/coffeechats/{reject_id}/reject/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['status'], 'rejected')
+
+        # 서로 다른 상태끼리 넘나드는 건 여전히 막혀야 한다 (진짜 충돌은 그대로 400)
+        res = self.client.patch(f'/api/v1/coffeechats/{reject_id}/accept/')
+        self.assertEqual(res.status_code, 400)
+
+    def test_progress_retry_with_same_target_is_idempotent(self):
+        cc_id = self._send().data['id']
+        self.client.force_authenticate(self.receiver)
+        self.client.patch(f'/api/v1/coffeechats/{cc_id}/accept/')
+        self.client.patch(f'/api/v1/coffeechats/{cc_id}/progress/', {'status': 'in_progress'})
+
+        res = self.client.patch(f'/api/v1/coffeechats/{cc_id}/progress/', {'status': 'in_progress'})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['status'], 'in_progress')
 
     def test_teammates_only_lists_accepted_and_beyond(self):
         pending_id = self._send().data['id']

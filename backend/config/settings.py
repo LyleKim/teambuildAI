@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'corsheaders',
     'accounts',
     'hackathons',
@@ -69,6 +70,33 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    # 에러 응답 형태를 {'detail': ...}로 통일하고 처리되지 않은 예외를 로그로 남긴다.
+    'EXCEPTION_HANDLER': 'config.exceptions.exception_handler',
+    # OpenAPI 스키마(Swagger/ReDoc)를 drf-spectacular가 코드에서 자동으로 생성하게 한다.
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'teambuildAI API',
+    'DESCRIPTION': '해커톤 팀원 AI 매칭 플랫폼 "파비콘"의 백엔드 API.',
+    'VERSION': 'v1',
+    # /api/v1/... 뒤에 SERVE_INCLUDE_SCHEMA=False인 스키마/문서 뷰까지 스캔 대상에
+    # 넣지 않도록(자기 자신을 문서화하는 걸 방지).
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+# 콘솔(stdout/stderr)로만 내보낸다 — 컨테이너 로그(`docker compose logs backend`)에서 본다.
+# 브라우저 콘솔과는 무관하다: 이건 서버(백엔드) 프로세스가 남기는 로그다.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {'format': '[{asctime}] {levelname} {name}: {message}', 'style': '{'},
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'default'},
+    },
+    'root': {'handlers': ['console'], 'level': 'INFO'},
 }
 
 # 프론트엔드 타입(Paginated<T>)과 SimpleJWT 응답 형태를 그대로 맞춰 쓰므로
@@ -80,11 +108,11 @@ SIMPLE_JWT = {
 
 # Vite dev 서버가 /api를 프록시하므로 평소엔 브라우저 입장에서 동일 출처라
 # CORS가 실제로 필요하진 않지만, 프록시 없이 :8000을 직접 두드리는 개발/디버깅
-# 상황을 위해 열어둔다.
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8443',
-    'http://127.0.0.1:8443',
-]
+# 상황을 위해 열어둔다. ALLOWED_HOSTS와 마찬가지로 배포 도메인마다 값이 달라지므로
+# 코드에 박아두지 않고 env로 뺀다.
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    'CORS_ALLOWED_ORIGINS', 'http://localhost:8443,http://127.0.0.1:8443'
+).split(',')
 
 # 카카오 로그인 콜백이 끝나고 JWT를 실어 돌려보낼 수 있는 프론트엔드 주소 화이트리스트.
 # CORS_ALLOWED_ORIGINS와 같은 값이라 재사용한다 — redirect_uri를 검증 안 하면

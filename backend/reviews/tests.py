@@ -40,7 +40,7 @@ class ReviewFlowTests(APITestCase):
 
     def test_review_create_and_upsert(self):
         res = self._post(self.teammate.id, rating=5, content='처음 리뷰')
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)  # 새로 생성 -> 201
         self.assertEqual(Review.objects.count(), 1)
 
         res = self._post(self.teammate.id, rating=3, content='수정된 리뷰')

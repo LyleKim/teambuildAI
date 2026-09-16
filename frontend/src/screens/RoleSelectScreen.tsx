@@ -1,18 +1,18 @@
-import { useMemo, useState } from 'react'
-import { profileApi } from '@/api'
-import { Page } from '@/components/NavBar'
-import { ChipGroup, InlineError, PrimaryButton } from '@/components/ui'
-import { useMetaOptions } from '@/hooks/useMetaOptions'
-import { useMutation } from '@/hooks/useMutation'
-import { routes, useNavigate } from '@/lib/router'
+import { useMemo, useState } from "react"
+import { profileApi } from "@/api"
+import { Page } from "@/components/NavBar"
+import { ChipGroup, InlineError, PrimaryButton } from "@/components/ui"
+import { useMetaOptions } from "@/hooks/useMetaOptions"
+import { useMutation } from "@/hooks/useMutation"
+import { routes, useNavigate } from "@/lib/router"
 
-type RoleCategory = 'dev' | 'design' | 'planning'
+type RoleCategory = "dev" | "design" | "planning"
 
-const CATEGORY_ORDER: RoleCategory[] = ['dev', 'design', 'planning']
+const CATEGORY_ORDER: RoleCategory[] = ["dev", "design", "planning"]
 const CATEGORY_LABELS: Record<RoleCategory, string> = {
-  dev: '개발',
-  design: '디자인',
-  planning: '기획',
+  dev: "개발",
+  design: "디자인",
+  planning: "기획",
 }
 
 /**
@@ -27,7 +27,10 @@ export function RoleSelectScreen() {
   const [roles, setRoles] = useState<string[]>([])
 
   const rolesInCategory = useMemo(
-    () => options.roles.filter((role) => options.role_categories[role] === category),
+    () =>
+      options.roles.filter(
+        (role) => options.role_categories[role] === category,
+      ),
     [options, category],
   )
 
@@ -42,7 +45,9 @@ export function RoleSelectScreen() {
 
   return (
     <Page>
-      <h1 className="text-[20px] font-bold text-gray-800">어떤 역할로 참여하시나요?</h1>
+      <h1 className="text-[20px] font-bold text-gray-800">
+        어떤 역할로 참여하시나요?
+      </h1>
       <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">
         선택한 역할에 맞춰 다음 프로필 작성 화면의 질문이 달라져요
       </p>
@@ -52,7 +57,8 @@ export function RoleSelectScreen() {
         options={CATEGORY_ORDER.map((c) => CATEGORY_LABELS[c])}
         selected={selectedCategoryLabel}
         onChange={(v) => {
-          const picked = CATEGORY_ORDER.find((c) => CATEGORY_LABELS[c] === v[0]) ?? null
+          const picked =
+            CATEGORY_ORDER.find((c) => CATEGORY_LABELS[c] === v[0]) ?? null
           setCategory(picked)
           setRoles([])
         }}
@@ -60,7 +66,12 @@ export function RoleSelectScreen() {
       />
 
       {category && (
-        <ChipGroup label="세부 역할" options={rolesInCategory} selected={roles} onChange={setRoles} />
+        <ChipGroup
+          label="세부 역할"
+          options={rolesInCategory}
+          selected={roles}
+          onChange={setRoles}
+        />
       )}
 
       <InlineError message={save.error?.message} />

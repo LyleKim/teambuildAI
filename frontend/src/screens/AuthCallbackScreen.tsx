@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { ApiError, authApi, profileApi } from '@/api'
-import { LoadingState } from '@/components/states'
-import { useSession } from '@/context/SessionContext'
-import { routes, useLocation, useNavigate } from '@/lib/router'
+import { useEffect, useRef, useState } from "react"
+import { ApiError, authApi, profileApi } from "@/api"
+import { LoadingState } from "@/components/states"
+import { useSession } from "@/context/SessionContext"
+import { routes, useLocation, useNavigate } from "@/lib/router"
 
 /**
  * 카카오 로그인 콜백 처리 화면.
@@ -25,13 +25,15 @@ export function AuthCallbackScreen() {
     handled.current = true
 
     const run = async () => {
-      const access = query.get('access')
-      const refresh = query.get('refresh')
-      const code = query.get('code')
-      const failure = query.get('error')
+      const access = query.get("access")
+      const refresh = query.get("refresh")
+      const code = query.get("code")
+      const failure = query.get("error")
 
       if (failure) {
-        setError(query.get('error_description') || '카카오 로그인이 취소되었어요.')
+        setError(
+          query.get("error_description") || "카카오 로그인이 취소되었어요.",
+        )
         return
       }
 
@@ -39,10 +41,13 @@ export function AuthCallbackScreen() {
         if (access) {
           await signIn(access, refresh ?? undefined)
         } else if (code) {
-          const tokens = await authApi.exchangeCode(code, query.get('state') ?? undefined)
+          const tokens = await authApi.exchangeCode(
+            code,
+            query.get("state") ?? undefined,
+          )
           await signIn(tokens.access, tokens.refresh)
         } else {
-          setError('로그인 정보가 전달되지 않았어요.')
+          setError("로그인 정보가 전달되지 않았어요.")
           return
         }
 
@@ -50,7 +55,12 @@ export function AuthCallbackScreen() {
         // 온보딩(역할 선택) 화면으로, 이미 골랐으면 바로 홈으로 보낸다.
         try {
           const profile = await profileApi.mine()
-          navigate(profile.roles.length > 0 ? routes.hackathons : routes.onboardingRole, { replace: true })
+          navigate(
+            profile.roles.length > 0
+              ? routes.hackathons
+              : routes.onboardingRole,
+            { replace: true },
+          )
         } catch (profileErr) {
           if (profileErr instanceof ApiError && profileErr.status === 404) {
             navigate(routes.onboardingRole, { replace: true })
@@ -59,7 +69,11 @@ export function AuthCallbackScreen() {
           }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : '로그인 처리 중 문제가 발생했어요.')
+        setError(
+          err instanceof Error
+            ? err.message
+            : "로그인 처리 중 문제가 발생했어요.",
+        )
       }
     }
 
@@ -69,7 +83,9 @@ export function AuthCallbackScreen() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#EEF4FB] flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="text-[17px] font-bold text-[#0F172A]">로그인에 실패했어요</p>
+        <p className="text-[17px] font-bold text-[#0F172A]">
+          로그인에 실패했어요
+        </p>
         <p className="text-[13px] text-[#64748B] max-w-sm">{error}</p>
         <button
           onClick={() => navigate(routes.login, { replace: true })}

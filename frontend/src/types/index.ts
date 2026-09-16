@@ -12,28 +12,23 @@ export interface Paginated<T> {
   results: T[]
 }
 
-export type JoinType = 'individual' | 'team'
-export type CoffeeChatStatus = 'pending' | 'accepted' | 'rejected' | 'in_progress' | 'completed'
-export type NotificationType = 'request' | 'accepted' | 'rejected' | 'recommendation'
+export type JoinType = "individual" | "team"
+export type CoffeeChatStatus = "pending" | "accepted" | "rejected" | "in_progress" | "completed"
+export type NotificationType = "request" | "accepted" | "rejected" | "recommendation"
 
 /** 서버가 내려주는 화면 이동 대상. 프론트 라우팅 경로로 변환해서 쓴다. */
-export type NotificationTarget =
-  | 'coffeechat-inbox'
-  | 'coffeechat-matched'
-  | 'ai-results'
-  | 'messages'
-  | 'member-profile'
+export type NotificationTarget = "coffeechat-inbox" | "coffeechat-matched" | "ai-results" | "messages" | "member-profile"
 
 export const LINK_TYPES = [
-  'GitHub',
-  '블로그',
-  'Instagram',
-  'Notion',
-  'Behance',
-  'LinkedIn',
-  '기타',
+  "GitHub",
+  "블로그",
+  "Instagram",
+  "Notion",
+  "Behance",
+  "LinkedIn",
+  "기타",
 ] as const
-export type LinkType = (typeof LINK_TYPES)[number]
+export type LinkType = typeof LINK_TYPES[number]
 
 export interface PortfolioLink {
   type: LinkType
@@ -89,7 +84,7 @@ export interface Hackathon {
 
 export interface Participation {
   id: number
-  hackathon: Pick<Hackathon, 'id' | 'title'>
+  hackathon: Pick<Hackathon, "id" | "title">
   join_type: JoinType
   /** '모집 중' | '매칭 완료' | '재모집' | '모집 마감' | '비공개' */
   status: string
@@ -172,7 +167,7 @@ export interface TeamInput {
 
 export interface Team extends TeamInput {
   id: number
-  hackathon: Pick<Hackathon, 'id' | 'title'>
+  hackathon: Pick<Hackathon, "id" | "title">
 }
 
 /** 해커톤별 개인 할 일. 팀 공유가 아니라 사용자 1명 기준. */
@@ -203,7 +198,7 @@ export interface ReviewSummary {
 
 export interface Review {
   id: number
-  hackathon: Pick<Hackathon, 'id' | 'title'>
+  hackathon: Pick<Hackathon, "id" | "title">
   reviewer_name: string
   reviewer_initial?: string
   rating: number
@@ -240,7 +235,7 @@ export interface Recommendation {
 /** 추천 생성 작업의 진행 상태 */
 export interface RecommendationJob {
   job_id: string
-  status: 'pending' | 'running' | 'done' | 'failed'
+  status: "pending" | "running" | "done" | "failed"
 }
 
 // ─── 커피챗 ───────────────────────────────────────────────────────────────────
@@ -256,7 +251,7 @@ export interface CoffeeChat {
   id: number
   /** 받은 신청이면 보낸 사람, 보낸 신청이면 받는 사람 */
   counterpart: CoffeeChatPerson
-  hackathon: Pick<Hackathon, 'id' | 'title'>
+  hackathon: Pick<Hackathon, "id" | "title">
   message: string
   /** 신청 시점 발신자의 오픈채팅 링크 스냅샷 */
   sender_contact: string
@@ -289,7 +284,7 @@ export interface ChatThread {
 export interface ChatMessage {
   id: number
   /** 'me' 는 서버가 요청자 기준으로 판단해서 내려준다 */
-  from: 'me' | 'them'
+  from: "me" | "them"
   text: string
   time: string
   date: string

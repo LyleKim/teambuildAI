@@ -76,3 +76,22 @@ class MyProfileRoleTests(APITestCase):
     def test_rejects_missing_roles(self):
         res = self.client.patch('/api/v1/me/profile/role/', {}, format='json')
         self.assertEqual(res.status_code, 400)
+
+
+class MemberProfileVisibilityTests(APITestCase):
+    """비공개(is_private) 프로필은 본인 외엔 존재 자체를 404로 숨긴다."""
+
+    def setUp(self):
+        self.me = User.objects.create_user(email='me@x.com', name='나', password='x')
+        self.stranger = User.objects.create_user(email='stranger@x.com', name='제3자', password='x')
+        Profile.objects.create(user=self.stranger, is_private=True, roles=['디자인'])
+        self.client.force_authenticate(self.me)
+
+    def test_private_profile_hidden_from_others(self):
+        res = self.client.get(f'/api/v1/users/{self.stranger.id}/profile/')
+        self.assertEqual(res.status_code, 404)
+
+    def test_private_profile_visible_to_self(self):
+        self.client.force_authenticate(self.stranger)
+        res = self.client.get(f'/api/v1/users/{self.stranger.id}/profile/')
+        self.assertEqual(res.status_code, 200)

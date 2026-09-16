@@ -1,20 +1,22 @@
-import { participationApi } from '@/api'
-import { Page } from '@/components/NavBar'
-import { EmptyState, ErrorState, LoadingState } from '@/components/states'
-import { InlineError } from '@/components/ui'
-import { useMutation } from '@/hooks/useMutation'
-import { useQuery } from '@/hooks/useQuery'
-import { RECRUIT_STATUS_STYLES } from '@/lib/constants'
-import { routes, useNavigate } from '@/lib/router'
+import { participationApi } from "@/api"
+import { Page } from "@/components/NavBar"
+import { EmptyState, ErrorState, LoadingState } from "@/components/states"
+import { InlineError } from "@/components/ui"
+import { useMutation } from "@/hooks/useMutation"
+import { useQuery } from "@/hooks/useQuery"
+import { RECRUIT_STATUS_STYLES } from "@/lib/constants"
+import { routes, useNavigate } from "@/lib/router"
 
 export function MyStatusScreen() {
   const navigate = useNavigate()
-  const { data, loading, error, refetch, setData } = useQuery('me:participations', () =>
-    participationApi.mine(),
+  const { data, loading, error, refetch, setData } = useQuery(
+    "me:participations",
+    () => participationApi.mine(),
   )
 
   const leave = useMutation((id: number) => participationApi.leave(id), {
-    onSuccess: (_void, id) => setData((prev) => (prev ?? []).filter((p) => p.id !== id)),
+    onSuccess: (_void, id) =>
+      setData((prev) => (prev ?? []).filter((p) => p.id !== id)),
   })
 
   const deleteItem = (id: number, title: string) => {
@@ -27,7 +29,9 @@ export function MyStatusScreen() {
 
   return (
     <Page>
-      <h1 className="text-[22px] font-bold text-[#0F172A] mb-6">내 참가 현황</h1>
+      <h1 className="text-[22px] font-bold text-[#0F172A] mb-6">
+        내 참가 현황
+      </h1>
 
       <InlineError message={leave.error?.message} />
 
@@ -52,7 +56,10 @@ export function MyStatusScreen() {
       {!loading && !error && items.length > 0 && (
         <div className="flex flex-col gap-4">
           {items.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl border border-[#E2EAF4] p-5">
+            <div
+              key={p.id}
+              className="bg-white rounded-2xl border border-[#E2EAF4] p-5"
+            >
               <div className="flex items-center justify-between mb-3 gap-3">
                 <div className="min-w-0">
                   <button
@@ -62,7 +69,9 @@ export function MyStatusScreen() {
                     {p.hackathon.title}
                   </button>
                   <p className="text-[13px] text-[#64748B] mt-0.5">
-                    {p.join_type === 'individual' ? '참가자(개인)' : '팀 모집자'}
+                    {p.join_type === "individual"
+                      ? "참가자(개인)"
+                      : "팀 모집자"}
                   </p>
                 </div>
                 {p.ended_at ? (
@@ -72,7 +81,8 @@ export function MyStatusScreen() {
                 ) : (
                   <span
                     className={`text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
-                      RECRUIT_STATUS_STYLES[p.status] ?? RECRUIT_STATUS_STYLES['모집 마감']
+                      RECRUIT_STATUS_STYLES[p.status] ??
+                      RECRUIT_STATUS_STYLES["모집 마감"]
                     }`}
                   >
                     {p.status}
@@ -82,12 +92,14 @@ export function MyStatusScreen() {
 
               <div className="flex gap-2 flex-wrap">
                 <button
-                  onClick={() => navigate(routes.recommendations(p.hackathon.id))}
+                  onClick={() =>
+                    navigate(routes.recommendations(p.hackathon.id))
+                  }
                   className="border border-[#E2EAF4] rounded-xl px-4 py-2 text-[13px] font-medium text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
                 >
                   AI 추천 보기
                 </button>
-                {p.join_type === 'team' && p.team_id && (
+                {p.join_type === "team" && p.team_id && (
                   <button
                     onClick={() => navigate(routes.teamEdit(p.team_id!))}
                     className="border border-[#E2EAF4] rounded-xl px-4 py-2 text-[13px] font-medium text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"

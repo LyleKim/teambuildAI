@@ -1,21 +1,22 @@
-import { useState } from 'react'
-import { hackathonApi, recommendationApi, teamApi } from '@/api'
-import { Page } from '@/components/NavBar'
-import { ErrorState, LoadingState } from '@/components/states'
-import { EMPTY_TEAM, TeamFormFields } from '@/components/TeamFormFields'
-import { BackButton, InlineError, PrimaryButton } from '@/components/ui'
-import { useMutation } from '@/hooks/useMutation'
-import { useQuery } from '@/hooks/useQuery'
-import { routes, useNavigate } from '@/lib/router'
-import type { TeamInput } from '@/types'
+import { useState } from "react"
+import { hackathonApi, recommendationApi, teamApi } from "@/api"
+import { Page } from "@/components/NavBar"
+import { ErrorState, LoadingState } from "@/components/states"
+import { EMPTY_TEAM, TeamFormFields } from "@/components/TeamFormFields"
+import { BackButton, InlineError, PrimaryButton } from "@/components/ui"
+import { useMutation } from "@/hooks/useMutation"
+import { useQuery } from "@/hooks/useQuery"
+import { routes, useNavigate } from "@/lib/router"
+import type { TeamInput } from "@/types"
 
 /** 팀 모집 조건 신규 작성 → 저장 후 AI 추천 결과로 이동. */
 export function TeamSetupScreen({ hackathonId }: { hackathonId: number }) {
   const navigate = useNavigate()
   const [form, setForm] = useState<TeamInput>(EMPTY_TEAM)
 
-  const { data, loading, error, refetch } = useQuery(`hackathon:${hackathonId}`, () =>
-    hackathonApi.detail(hackathonId),
+  const { data, loading, error, refetch } = useQuery(
+    `hackathon:${hackathonId}`,
+    () => hackathonApi.detail(hackathonId),
   )
 
   const save = useMutation(
@@ -31,7 +32,10 @@ export function TeamSetupScreen({ hackathonId }: { hackathonId: number }) {
     { onSuccess: () => navigate(routes.recommendations(hackathonId)) },
   )
 
-  const neededTotal = Object.values(form.needed_roles).reduce((sum, n) => sum + n, 0)
+  const neededTotal = Object.values(form.needed_roles).reduce(
+    (sum, n) => sum + n,
+    0,
+  )
 
   if (loading) {
     return (
@@ -50,7 +54,10 @@ export function TeamSetupScreen({ hackathonId }: { hackathonId: number }) {
 
   return (
     <Page>
-      <BackButton label="뒤로" onClick={() => navigate(routes.join(hackathonId))} />
+      <BackButton
+        label="뒤로"
+        onClick={() => navigate(routes.join(hackathonId))}
+      />
       <h1 className="text-[20px] font-bold text-gray-800">팀 모집 조건 작성</h1>
       <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">{data?.title}</p>
 
@@ -58,7 +65,9 @@ export function TeamSetupScreen({ hackathonId }: { hackathonId: number }) {
 
       <InlineError message={save.error?.message} />
       {neededTotal === 0 && (
-        <p className="text-[12px] text-[#94A3B8] mb-2">필요한 역할을 최소 1명 이상 지정해주세요.</p>
+        <p className="text-[12px] text-[#94A3B8] mb-2">
+          필요한 역할을 최소 1명 이상 지정해주세요.
+        </p>
       )}
 
       <PrimaryButton

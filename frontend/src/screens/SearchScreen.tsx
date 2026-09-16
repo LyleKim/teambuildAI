@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react'
-import { hackathonApi } from '@/api'
-import { NavBar } from '@/components/NavBar'
-import { EmptyState, ErrorState, HackathonCardSkeleton } from '@/components/states'
-import { useMetaOptions } from '@/hooks/useMetaOptions'
-import { useQuery } from '@/hooks/useQuery'
-import { bannerGradient, periodOf } from '@/lib/format'
-import { rememberHackathon } from '@/lib/prefs'
-import { routes, useLocation, useNavigate } from '@/lib/router'
+import { useEffect, useState } from "react"
+import { hackathonApi } from "@/api"
+import { NavBar } from "@/components/NavBar"
+import {
+  EmptyState,
+  ErrorState,
+  HackathonCardSkeleton,
+} from "@/components/states"
+import { useMetaOptions } from "@/hooks/useMetaOptions"
+import { useQuery } from "@/hooks/useQuery"
+import { bannerGradient, periodOf } from "@/lib/format"
+import { rememberHackathon } from "@/lib/prefs"
+import { routes, useLocation, useNavigate } from "@/lib/router"
 
 /**
  * 해커톤 탐색.
@@ -19,14 +23,14 @@ export function SearchScreen() {
   const { query: urlQuery } = useLocation()
   const { options } = useMetaOptions()
 
-  const [category, setCategory] = useState('전체')
-  const [input, setInput] = useState(urlQuery.get('q') ?? '')
+  const [category, setCategory] = useState("전체")
+  const [input, setInput] = useState(urlQuery.get("q") ?? "")
   // 입력할 때마다 요청하지 않도록 디바운스된 값을 따로 둔다
-  const [search, setSearch] = useState(urlQuery.get('q') ?? '')
+  const [search, setSearch] = useState(urlQuery.get("q") ?? "")
 
   // 상단바 검색으로 들어온 q 파라미터를 반영
   useEffect(() => {
-    const q = urlQuery.get('q') ?? ''
+    const q = urlQuery.get("q") ?? ""
     setInput(q)
     setSearch(q)
   }, [urlQuery])
@@ -53,7 +57,9 @@ export function SearchScreen() {
       <NavBar />
       <main className="max-w-5xl mx-auto px-6 py-10">
         <h1 className="text-2xl font-bold text-gray-800">해커톤 탐색</h1>
-        <p className="text-[14px] text-[#8FA3BF] mt-1">참가하고 싶은 해커톤을 찾아보세요</p>
+        <p className="text-[14px] text-[#8FA3BF] mt-1">
+          참가하고 싶은 해커톤을 찾아보세요
+        </p>
 
         <input
           type="text"
@@ -70,8 +76,8 @@ export function SearchScreen() {
               onClick={() => setCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                 category === cat
-                  ? 'bg-[#4EAAF5] text-white border-[#4EAAF5]'
-                  : 'bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]'
+                  ? "bg-[#4EAAF5] text-white border-[#4EAAF5]"
+                  : "bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]"
               }`}
             >
               {cat}
@@ -89,7 +95,7 @@ export function SearchScreen() {
             description={
               search
                 ? `'${search}' 와 일치하는 해커톤을 찾지 못했어요.`
-                : '아직 등록된 해커톤이 없어요.'
+                : "아직 등록된 해커톤이 없어요."
             }
           />
         )}
@@ -110,7 +116,11 @@ export function SearchScreen() {
                       : { background: bannerGradient(h.color) }
                   }
                 >
-                  {!h.banner_url && <span className="text-[#8FA3BF] text-[13px]">배너 이미지</span>}
+                  {!h.banner_url && (
+                    <span className="text-[#8FA3BF] text-[13px]">
+                      배너 이미지
+                    </span>
+                  )}
                 </div>
                 <div className="p-4">
                   <div className="flex gap-1.5 mb-2">
@@ -124,8 +134,12 @@ export function SearchScreen() {
                   <h3 className="font-bold text-[14px] text-gray-800 group-hover:text-[#4EAAF5] transition-colors">
                     {h.title}
                   </h3>
-                  <p className="text-[12px] text-[#8FA3BF] mt-1">{periodOf(h)}</p>
-                  <p className="text-[12px] text-[#8FA3BF]">참가 인원 {h.participants}명</p>
+                  <p className="text-[12px] text-[#8FA3BF] mt-1">
+                    {periodOf(h)}
+                  </p>
+                  <p className="text-[12px] text-[#8FA3BF]">
+                    참가 인원 {h.participants}명
+                  </p>
                 </div>
               </button>
             ))}

@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
-import { ApiError } from '@/api/client'
+import { useCallback, useRef, useState } from "react"
+import { ApiError } from "@/api/client"
 
 export interface MutationResult<TArgs, TData> {
   mutate: (args: TArgs) => Promise<TData | null>
@@ -16,7 +16,10 @@ export interface MutationResult<TArgs, TData> {
  */
 export function useMutation<TArgs, TData>(
   fn: (args: TArgs) => Promise<TData>,
-  options: { onSuccess?: (data: TData, args: TArgs) => void; onError?: (error: ApiError) => void } = {},
+  options: {
+    onSuccess?: (data: TData, args: TArgs) => void
+    onError?: (error: ApiError) => void
+  } = {},
 ): MutationResult<TArgs, TData> {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
@@ -37,7 +40,8 @@ export function useMutation<TArgs, TData>(
       optionsRef.current.onSuccess?.(data, args)
       return data
     } catch (err) {
-      const apiError = err instanceof ApiError ? err : new ApiError(0, String(err))
+      const apiError =
+        err instanceof ApiError ? err : new ApiError(0, String(err))
       setError(apiError)
       optionsRef.current.onError?.(apiError)
       return null

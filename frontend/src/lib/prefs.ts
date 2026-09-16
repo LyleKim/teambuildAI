@@ -4,7 +4,7 @@
  * 상단바의 '추천' 탭은 해커톤별 추천 결과로 가야 하는데 탭 자체에는 컨텍스트가 없다.
  * 상세/추천 화면을 지날 때 id를 기록해두고 탭에서 재사용한다.
  */
-const LAST_HACKATHON_KEY = 'favicon.last_hackathon_id'
+const LAST_HACKATHON_KEY = "favicon.last_hackathon_id"
 
 export function rememberHackathon(id: number) {
   try {

@@ -1,24 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
-import { chatApi } from '@/api'
-import { NavBar } from '@/components/NavBar'
-import { ErrorState, LoadingState } from '@/components/states'
-import { Avatar, InlineError } from '@/components/ui'
-import { useSession } from '@/context/SessionContext'
-import { useMutation } from '@/hooks/useMutation'
-import { useQuery } from '@/hooks/useQuery'
-import { CHAT_POLL_INTERVAL } from '@/lib/constants'
-import { initialOf } from '@/lib/format'
-import { routes, useNavigate } from '@/lib/router'
-import type { ChatMessage } from '@/types'
+import { useEffect, useRef, useState } from "react"
+import { chatApi } from "@/api"
+import { NavBar } from "@/components/NavBar"
+import { ErrorState, LoadingState } from "@/components/states"
+import { Avatar, InlineError } from "@/components/ui"
+import { useSession } from "@/context/SessionContext"
+import { useMutation } from "@/hooks/useMutation"
+import { useQuery } from "@/hooks/useQuery"
+import { CHAT_POLL_INTERVAL } from "@/lib/constants"
+import { initialOf } from "@/lib/format"
+import { routes, useNavigate } from "@/lib/router"
+import type { ChatMessage } from "@/types"
 
 export function ChatScreen({ threadId }: { threadId: number }) {
   const navigate = useNavigate()
   const { refreshBadges } = useSession()
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const thread = useQuery(`chat:thread:${threadId}`, () => chatApi.thread(threadId))
-  const messages = useQuery(`chat:messages:${threadId}`, () => chatApi.messages(threadId))
+  const thread = useQuery(`chat:thread:${threadId}`, () =>
+    chatApi.thread(threadId),
+  )
+  const messages = useQuery(`chat:messages:${threadId}`, () =>
+    chatApi.messages(threadId),
+  )
 
   // 대화방에 들어오면 읽음 처리하고 상단바 배지를 갱신한다
   useEffect(() => {
@@ -40,13 +44,13 @@ export function ChatScreen({ threadId }: { threadId: number }) {
 
   // 메시지가 늘어나면 항상 맨 아래로
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [list.length])
 
   const send = useMutation((text: string) => chatApi.send(threadId, text), {
     onSuccess: (sent) => {
       messages.setData((prev) => [...(prev ?? []), sent])
-      setInput('')
+      setInput("")
     },
   })
 
@@ -78,7 +82,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
   const avatarInitial = t.initial || initialOf(t.name)
 
   // 날짜가 바뀌는 지점에 구분선을 넣기 위해 직전 메시지의 날짜를 추적한다
-  let lastDate = ''
+  let lastDate = ""
 
   return (
     <div className="min-h-screen bg-[#EEF4FB] flex flex-col">
@@ -93,7 +97,9 @@ export function ChatScreen({ threadId }: { threadId: number }) {
         </button>
         <Avatar initial={avatarInitial} size={36} />
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[14px] text-[#0F172A] leading-tight truncate">{t.name}</p>
+          <p className="font-bold text-[14px] text-[#0F172A] leading-tight truncate">
+            {t.name}
+          </p>
           <p className="text-[11px] text-[#64748B] truncate">
             {t.role} · {t.hackathon}
           </p>
@@ -107,7 +113,9 @@ export function ChatScreen({ threadId }: { threadId: number }) {
       </div>
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-6 flex flex-col gap-1 pb-28">
-        {messages.loading && !messages.data && <LoadingState label="대화를 불러오는 중이에요…" />}
+        {messages.loading && !messages.data && (
+          <LoadingState label="대화를 불러오는 중이에요…" />
+        )}
 
         {messages.error && !messages.data && (
           <ErrorState error={messages.error} onRetry={messages.refetch} />
@@ -122,33 +130,45 @@ export function ChatScreen({ threadId }: { threadId: number }) {
         {list.map((m: ChatMessage) => {
           const showDate = m.date !== lastDate
           lastDate = m.date
-          const mine = m.from === 'me'
+          const mine = m.from === "me"
           return (
             <div key={m.id}>
               {showDate && (
                 <div className="flex items-center gap-3 my-4">
                   <div className="flex-1 h-px bg-[#E2EAF4]" />
-                  <span className="text-[11px] text-[#94A3B8] font-medium px-2">{m.date}</span>
+                  <span className="text-[11px] text-[#94A3B8] font-medium px-2">
+                    {m.date}
+                  </span>
                   <div className="flex-1 h-px bg-[#E2EAF4]" />
                 </div>
               )}
-              <div className={`flex ${mine ? 'justify-end' : 'justify-start'} mb-1`}>
+              <div
+                className={`flex ${
+                  mine ? "justify-end" : "justify-start"
+                } mb-1`}
+              >
                 {!mine && (
                   <div className="mr-2 self-end mb-0.5">
                     <Avatar initial={avatarInitial} size={28} />
                   </div>
                 )}
-                <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} max-w-[70%]`}>
+                <div
+                  className={`flex flex-col ${
+                    mine ? "items-end" : "items-start"
+                  } max-w-[70%]`}
+                >
                   <div
                     className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed whitespace-pre-wrap break-words ${
                       mine
-                        ? 'bg-[#0EA5E9] text-white rounded-br-sm'
-                        : 'bg-[#F0F9FF] text-[#0F172A] border border-[#E0F2FE] rounded-bl-sm'
+                        ? "bg-[#0EA5E9] text-white rounded-br-sm"
+                        : "bg-[#F0F9FF] text-[#0F172A] border border-[#E0F2FE] rounded-bl-sm"
                     }`}
                   >
                     {m.text}
                   </div>
-                  <span className="text-[10px] text-[#94A3B8] mt-0.5 px-1">{m.time}</span>
+                  <span className="text-[10px] text-[#94A3B8] mt-0.5 px-1">
+                    {m.time}
+                  </span>
                 </div>
               </div>
             </div>
@@ -165,7 +185,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
                   submit()
                 }
@@ -182,7 +202,16 @@ export function ChatScreen({ threadId }: { threadId: number }) {
               {send.loading ? (
                 <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
               ) : (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M14 2L2 8l4.5 2L10 6l-2 4.5L14 14 14 2z" />
                 </svg>
               )}

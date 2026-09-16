@@ -4,7 +4,7 @@
  * 화면 컴포넌트는 fetch를 직접 호출하지 않고 항상 이 레이어를 통한다.
  * 엔드포인트 경로를 바꿔야 할 때 수정 지점이 여기 하나로 모인다.
  */
-import { api, toList } from './client'
+import { api, toList } from "./client"
 import type {
   AppNotification,
   Badges,
@@ -28,32 +28,34 @@ import type {
   Teammate,
   TodoItem,
   TokenPair,
-} from '@/types'
+} from "@/types"
 
 // ─── 인증 ─────────────────────────────────────────────────────────────────────
 
 export const authApi = {
   /** 카카오 인가 페이지로 보낼 URL. 전체 페이지 이동이므로 fetch가 아니라 location 변경에 쓴다. */
   kakaoLoginUrl(redirectTo: string) {
-    const base = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
+    const base = import.meta.env.VITE_API_BASE_URL ?? "/api/v1"
     return `${base}/auth/kakao/login/?redirect_uri=${encodeURIComponent(redirectTo)}`
   },
 
   /** 카카오 콜백으로 받은 인가 코드를 토큰으로 교환한다. */
   exchangeCode(code: string, state?: string) {
-    return api.post<TokenPair>('/auth/kakao/callback/', { code, state }, { auth: false })
+    return api.post<TokenPair>("/auth/kakao/callback/", { code, state }, {
+      auth: false,
+    })
   },
 
   me() {
-    return api.get<CurrentUser>('/auth/me/')
+    return api.get<CurrentUser>("/auth/me/")
   },
 
   logout() {
-    return api.post<void>('/auth/logout/')
+    return api.post<void>("/auth/logout/")
   },
 
   badges() {
-    return api.get<Badges>('/auth/me/badges/')
+    return api.get<Badges>("/auth/me/badges/")
   },
 }
 
@@ -61,10 +63,16 @@ export const authApi = {
 
 export const hackathonApi = {
   async list(params: { q?: string; category?: string } = {}) {
-    const data = await api.get<Hackathon[] | { results: Hackathon[] }>('/hackathons/', {
-      // '전체'는 필터가 아니라 "필터 없음"이므로 서버로 보내지 않는다
-      params: { q: params.q, category: params.category === '전체' ? undefined : params.category },
-    })
+    const data = await api.get<Hackathon[] | { results: Hackathon[] }>(
+      "/hackathons/",
+      {
+        // '전체'는 필터가 아니라 "필터 없음"이므로 서버로 보내지 않는다
+        params: {
+          q: params.q,
+          category: params.category === "전체" ? undefined : params.category,
+        },
+      },
+    )
     return toList(data)
   },
 
@@ -73,24 +81,29 @@ export const hackathonApi = {
   },
 
   async categories() {
-    const data = await api.get<string[] | { results: string[] }>('/hackathons/categories/')
+    const data = await api.get<string[] | { results: string[] }>(
+      "/hackathons/categories/",
+    )
     const list = toList(data)
-    return list.includes('전체') ? list : ['전체', ...list]
+    return list.includes("전체") ? list : ["전체", ...list]
   },
 }
 
 // ─── 참가 ─────────────────────────────────────────────────────────────────────
 
 export const participationApi = {
-  join(hackathonId: number, joinType: 'individual' | 'team') {
-    return api.post<Participation>(`/hackathons/${hackathonId}/participations/`, {
-      join_type: joinType,
-    })
+  join(hackathonId: number, joinType: "individual" | "team") {
+    return api.post<Participation>(
+      `/hackathons/${hackathonId}/participations/`,
+      {
+        join_type: joinType,
+      },
+    )
   },
 
   async mine() {
     const data = await api.get<Participation[] | { results: Participation[] }>(
-      '/me/participations/',
+      "/me/participations/",
     )
     return toList(data)
   },
@@ -109,20 +122,22 @@ export const participationApi = {
 
 export const profileApi = {
   mine() {
-    return api.get<MyProfile>('/me/profile/')
+    return api.get<MyProfile>("/me/profile/")
   },
 
   save(input: ProfileInput) {
-    return api.put<MyProfile>('/me/profile/', input)
+    return api.put<MyProfile>("/me/profile/", input)
   },
 
   /** 온보딩(역할 선택) 화면 전용 — 자기소개 등 나머지 필드 없이 roles만 저장한다 */
   setRole(roles: string[]) {
-    return api.patch<{ roles: string[] }>('/me/profile/role/', { roles })
+    return api.patch<{ roles: string[] }>("/me/profile/role/", { roles })
   },
 
   setPrivate(isPrivate: boolean) {
-    return api.patch<{ is_private: boolean }>('/me/profile/privacy/', { is_private: isPrivate })
+    return api.patch<{ is_private: boolean }>("/me/profile/privacy/", {
+      is_private: isPrivate,
+    })
   },
 
   member(userId: number) {
@@ -146,7 +161,9 @@ export const teamApi = {
   },
 
   setStatus(teamId: number, status: string) {
-    return api.patch<Team>(`/teams/${teamId}/status/`, { recruit_status: status })
+    return api.patch<Team>(`/teams/${teamId}/status/`, {
+      recruit_status: status,
+    })
   },
 }
 
@@ -177,15 +194,21 @@ export const todoApi = {
 
 export const manualParticipantApi = {
   async list(hackathonId: number) {
-    const data = await api.get<ManualParticipant[] | { results: ManualParticipant[] }>(
-      `/hackathons/${hackathonId}/participants/manual/`,
-    )
+    const data = await api.get<ManualParticipant[] | {
+      results: ManualParticipant[]
+    }>(`/hackathons/${hackathonId}/participants/manual/`)
     return toList(data)
   },
 
   /** 회원이 아니면 name/email 없이 첫 호출이 실패한다 — ApiError.data.not_member로 판별 */
-  add(hackathonId: number, params: { phone: string; name?: string; email?: string }) {
-    return api.post<ManualParticipant>(`/hackathons/${hackathonId}/participants/manual/`, params)
+  add(
+    hackathonId: number,
+    params: { phone: string; name?: string; email?: string },
+  ) {
+    return api.post<ManualParticipant>(
+      `/hackathons/${hackathonId}/participants/manual/`,
+      params,
+    )
   },
 
   remove(id: number) {
@@ -196,12 +219,19 @@ export const manualParticipantApi = {
 // ─── 리뷰 ─────────────────────────────────────────────────────────────────────
 
 export const reviewApi = {
-  save(params: { hackathon_id: number; reviewee_id: number; rating: number; content: string }) {
-    return api.post<Review>('/reviews/', params)
+  save(params: {
+    hackathon_id: number
+    reviewee_id: number
+    rating: number
+    content: string
+  }) {
+    return api.post<Review>("/reviews/", params)
   },
 
   async received() {
-    const data = await api.get<Review[] | { results: Review[] }>('/reviews/received/')
+    const data = await api.get<Review[] | { results: Review[] }>(
+      "/reviews/received/",
+    )
     return toList(data)
   },
 }
@@ -209,15 +239,22 @@ export const reviewApi = {
 // ─── AI 추천 ──────────────────────────────────────────────────────────────────
 
 export const recommendationApi = {
-  /** 프로필/모집조건 저장 직후 호출해 추천 생성을 트리거한다. */
-  generate(hackathonId: number) {
-    return api.post<RecommendationJob>(`/hackathons/${hackathonId}/recommendations/`)
+  /**
+   * 프로필/모집조건 저장 직후, 또는 "다시 추천받기"에서 호출해 추천 생성을 트리거한다.
+   * category를 지정하면 그 역할군을 대상으로 추천받는다(다르면 랜덤+목표 매칭, 같으면 기존 스코어링).
+   * 생략하면 백엔드가 본인 카테고리로 기본 처리한다(자동생성 지점들은 동작 그대로).
+   */
+  generate(hackathonId: number, category?: string) {
+    return api.post<RecommendationJob>(
+      `/hackathons/${hackathonId}/recommendations/`,
+      category ? { target_category: category } : undefined,
+    )
   },
 
   async list(hackathonId: number) {
-    const data = await api.get<Recommendation[] | { results: Recommendation[] }>(
-      `/hackathons/${hackathonId}/recommendations/`,
-    )
+    const data = await api.get<Recommendation[] | {
+      results: Recommendation[]
+    }>(`/hackathons/${hackathonId}/recommendations/`)
     return toList(data)
   },
 
@@ -231,20 +268,26 @@ export const recommendationApi = {
 export const coffeechatApi = {
   /** 연락처는 서버가 내 프로필의 오픈채팅 링크로 자동 첨부한다. */
   send(params: { to_user_id: number; hackathon_id: number; message: string }) {
-    return api.post<CoffeeChat>('/coffeechats/', params)
+    return api.post<CoffeeChat>("/coffeechats/", params)
   },
 
-  async received(status: CoffeeChatStatus | 'all' = 'all') {
-    const data = await api.get<CoffeeChat[] | { results: CoffeeChat[] }>('/coffeechats/received/', {
-      params: { status: status === 'all' ? undefined : status },
-    })
+  async received(status: CoffeeChatStatus | "all" = "all") {
+    const data = await api.get<CoffeeChat[] | { results: CoffeeChat[] }>(
+      "/coffeechats/received/",
+      {
+        params: { status: status === "all" ? undefined : status },
+      },
+    )
     return toList(data)
   },
 
-  async sent(status: CoffeeChatStatus | 'all' = 'all') {
-    const data = await api.get<CoffeeChat[] | { results: CoffeeChat[] }>('/coffeechats/sent/', {
-      params: { status: status === 'all' ? undefined : status },
-    })
+  async sent(status: CoffeeChatStatus | "all" = "all") {
+    const data = await api.get<CoffeeChat[] | { results: CoffeeChat[] }>(
+      "/coffeechats/sent/",
+      {
+        params: { status: status === "all" ? undefined : status },
+      },
+    )
     return toList(data)
   },
 
@@ -258,12 +301,12 @@ export const coffeechatApi = {
   },
 
   /** accepted -> in_progress -> completed 순서로만 한 단계씩 넘어간다. */
-  setProgress(id: number, status: 'in_progress' | 'completed') {
+  setProgress(id: number, status: "in_progress" | "completed") {
     return api.patch<CoffeeChat>(`/coffeechats/${id}/progress/`, { status })
   },
 
   remove(id: number) {
-    return api.delete<void>(`/coffeechats/${id}/delete/`)
+    return api.delete<void>(`/coffeechats/${id}/`)
   },
 
   detail(id: number) {
@@ -283,7 +326,9 @@ export const coffeechatApi = {
 
 export const chatApi = {
   async threads() {
-    const data = await api.get<ChatThread[] | { results: ChatThread[] }>('/chats/threads/')
+    const data = await api.get<ChatThread[] | { results: ChatThread[] }>(
+      "/chats/threads/",
+    )
     return toList(data)
   },
 
@@ -299,7 +344,9 @@ export const chatApi = {
   },
 
   send(threadId: number, text: string) {
-    return api.post<ChatMessage>(`/chats/threads/${threadId}/messages/`, { text })
+    return api.post<ChatMessage>(`/chats/threads/${threadId}/messages/`, {
+      text,
+    })
   },
 
   markRead(threadId: number) {
@@ -311,14 +358,14 @@ export const chatApi = {
 
 export const notificationApi = {
   async list() {
-    const data = await api.get<AppNotification[] | { results: AppNotification[] }>(
-      '/notifications/',
-    )
+    const data = await api.get<AppNotification[] | {
+      results: AppNotification[]
+    }>("/notifications/")
     return toList(data)
   },
 
   unreadCount() {
-    return api.get<{ count: number }>('/notifications/unread-count/')
+    return api.get<{ count: number }>("/notifications/unread-count/")
   },
 
   markRead(id: number) {
@@ -326,7 +373,7 @@ export const notificationApi = {
   },
 
   markAllRead() {
-    return api.patch<void>('/notifications/read-all/')
+    return api.patch<void>("/notifications/read-all/")
   },
 }
 
@@ -334,7 +381,7 @@ export const notificationApi = {
 
 export const metaApi = {
   options() {
-    return api.get<MetaOptions>('/meta/options/')
+    return api.get<MetaOptions>("/meta/options/")
   },
 }
 
@@ -350,8 +397,8 @@ export interface LandingStats {
 export const statsApi = {
   /** 랜딩 히어로 하단 4개 숫자. 비로그인 상태에서도 접근 가능해야 한다. */
   landing() {
-    return api.get<LandingStats>('/stats/landing/', { auth: false })
+    return api.get<LandingStats>("/stats/landing/", { auth: false })
   },
 }
 
-export { ApiError, tokenStore } from './client'
+export { ApiError, tokenStore } from "./client"

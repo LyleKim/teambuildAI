@@ -52,6 +52,11 @@ def score_pair(requester_profile, candidate_profile) -> ScoredMatch:
     if shared_interests:
         score += min(10, 5 * len(shared_interests))
 
+    # 같은 역할군 추천에서는 스킬이 겹치지 않을수록(보완적일수록) 팀 구성에 유리하다고 보고 가점한다.
+    complementary_skills = set(candidate_profile.skills) - set(requester_profile.skills)
+    if complementary_skills:
+        score += min(10, 2 * len(complementary_skills))
+
     score = max(0, min(100, score))
 
     if candidate_profile.communication:

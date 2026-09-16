@@ -1,5 +1,6 @@
 import datetime
 
+import yaml
 from rest_framework.test import APITestCase
 
 from accounts.models import Profile, User
@@ -109,6 +110,11 @@ class ManualParticipantTests(APITestCase):
         self.assertTrue(res.data['is_member'])
         self.assertEqual(res.data['name'], '회원임')
 
+        # 같은 전화번호로 다시 추가하면 새로 만들지 않고 덮어쓴다 -> 200 (created 아님)
+        res = self.client.post(self._url(), {'phone': '010-1234-5678'})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(ManualParticipant.objects.count(), 1)
+
     def test_unknown_phone_requires_name_and_email(self):
         res = self.client.post(self._url(), {'phone': '010-9999-0000'})
         self.assertEqual(res.status_code, 400)
@@ -161,3 +167,25 @@ class MetaOptionsTests(APITestCase):
         self.assertEqual(
             set(res.data['role_categories'].values()), set(res.data['skills_by_role_category']),
         )
+
+
+class OpenAPISchemaTests(APITestCase):
+    """@extend_schema 애노테이션이 잘못돼 스키마 생성 자체가 깨지는 걸 잡아내는 스모크 테스트.
+    (예: inline_serializer가 이미 인스턴스인데 다시 호출하는 실수 등)"""
+
+    def test_schema_and_docs_render(self):
+        for url in ('/api/schema/', '/api/docs/', '/api/redoc/'):
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, 200, f'{url} -> {res.status_code}')
+
+    def test_schema_covers_every_app_endpoint(self):
+        res = self.client.get('/api/schema/')
+        schema = yaml.safe_load(res.content)
+        paths = schema['paths']
+        for prefix in (
+            '/api/v1/hackathons/', '/api/v1/coffeechats/', '/api/v1/chats/',
+            '/api/v1/notifications/', '/api/v1/reviews/', '/api/v1/auth/', '/api/v1/me/',
+        ):
+            self.assertTrue(
+                any(p.startswith(prefix) for p in paths), f'{prefix} 아래 경로가 스키마에 없음',
+            )

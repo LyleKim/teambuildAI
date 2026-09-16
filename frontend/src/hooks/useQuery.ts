@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { ApiError } from '@/api/client'
+import { useCallback, useEffect, useRef, useState } from "react"
+import { ApiError } from "@/api/client"
 
 export interface QueryResult<T> {
   data: T | null
@@ -53,7 +53,7 @@ export function useQuery<T>(
       })
       .catch((err) => {
         if (cancelled || controller.signal.aborted) return
-        if (err instanceof DOMException && err.name === 'AbortError') return
+        if (err instanceof DOMException && err.name === "AbortError") return
         setError(err instanceof ApiError ? err : new ApiError(0, String(err)))
       })
       .finally(() => {
@@ -70,7 +70,9 @@ export function useQuery<T>(
 
   const setData = useCallback((updater: T | ((prev: T | null) => T | null)) => {
     setDataState((prev) =>
-      typeof updater === 'function' ? (updater as (p: T | null) => T | null)(prev) : updater,
+      typeof updater === "function"
+        ? (updater as (p: T | null) => T | null)(prev)
+        : updater,
     )
   }, [])
 

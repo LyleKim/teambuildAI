@@ -12,13 +12,13 @@ import {
   useMemo,
   useRef,
   useState,
-} from 'react'
-import type { ReactNode } from 'react'
-import { authApi } from '@/api'
-import { setUnauthorizedHandler, tokenStore } from '@/api/client'
-import { BADGE_POLL_INTERVAL } from '@/lib/constants'
-import { navigate, routes } from '@/lib/router'
-import type { Badges, CurrentUser } from '@/types'
+} from "react"
+import type { ReactNode } from "react"
+import { authApi } from "@/api"
+import { setUnauthorizedHandler, tokenStore } from "@/api/client"
+import { BADGE_POLL_INTERVAL } from "@/lib/constants"
+import { navigate, routes } from "@/lib/router"
+import type { Badges, CurrentUser } from "@/types"
 
 interface SessionValue {
   user: CurrentUser | null
@@ -35,7 +35,10 @@ interface SessionValue {
   patchBadges: (patch: Partial<Badges>) => void
 }
 
-const EMPTY_BADGES: Badges = { unread_notification_count: 0, unread_message_count: 0 }
+const EMPTY_BADGES: Badges = {
+  unread_notification_count: 0,
+  unread_message_count: 0,
+}
 
 const SessionContext = createContext<SessionValue | null>(null)
 
@@ -133,14 +136,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       refreshBadges,
       patchBadges,
     }),
-    [user, ready, badges, signIn, signOut, loadUser, refreshBadges, patchBadges],
+    [
+      user,
+      ready,
+      badges,
+      signIn,
+      signOut,
+      loadUser,
+      refreshBadges,
+      patchBadges,
+    ],
   )
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  return (
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  )
 }
 
 export function useSession(): SessionValue {
   const ctx = useContext(SessionContext)
-  if (!ctx) throw new Error('useSession must be used within <SessionProvider>')
+  if (!ctx) throw new Error("useSession must be used within <SessionProvider>")
   return ctx
 }

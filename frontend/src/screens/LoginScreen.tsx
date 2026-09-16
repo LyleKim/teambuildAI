@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
-import { authApi } from '@/api'
-import { LogoIcon } from '@/components/ui'
-import { useSession } from '@/context/SessionContext'
-import { routes, useNavigate } from '@/lib/router'
+import { useEffect } from "react"
+import { authApi } from "@/api"
+import { LogoIcon } from "@/components/ui"
+import { useSession } from "@/context/SessionContext"
+import { routes, useNavigate } from "@/lib/router"
 
 /**
  * 카카오 로그인 진입 화면.
@@ -28,14 +28,23 @@ export function LoginScreen() {
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{ background: 'linear-gradient(160deg, #E8F3FD 0%, #F5F9FF 40%, #EAF0FB 100%)' }}
+      style={{
+        background:
+          "linear-gradient(160deg, #E8F3FD 0%, #F5F9FF 40%, #EAF0FB 100%)",
+      }}
     >
       <div className="flex flex-col items-center gap-4">
         <LogoIcon size={72} />
         <div className="text-center mt-1">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">ㅎㅋㅌ</h1>
-          <p className="text-[12px] text-gray-400 mt-0.5 font-medium tracking-wide">Favorite contact</p>
-          <p className="text-[13px] text-gray-400 mt-1.5">AI로 만나는 우리 팀, 해커톤 팀 빌딩</p>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+            ㅎㅋㅌ
+          </h1>
+          <p className="text-[12px] text-gray-400 mt-0.5 font-medium tracking-wide">
+            Favorite contact
+          </p>
+          <p className="text-[13px] text-gray-400 mt-1.5">
+            AI로 만나는 우리 팀, 해커톤 팀 빌딩
+          </p>
         </div>
 
         <button

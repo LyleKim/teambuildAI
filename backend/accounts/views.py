@@ -1,5 +1,7 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import generics, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -14,10 +16,12 @@ class MyProfileView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=MyProfileSerializer)
     def get(self, request):
         profile = get_object_or_404(Profile, user=request.user)
         return Response(MyProfileSerializer(profile).data)
 
+    @extend_schema(request=MyProfileSerializer, responses=MyProfileSerializer)
     def put(self, request):
         profile, _ = Profile.objects.get_or_create(user=request.user)
         serializer = MyProfileSerializer(profile, data=request.data)
@@ -26,9 +30,13 @@ class MyProfileView(APIView):
         return Response(serializer.data)
 
 
+IsPrivateSerializer = inline_serializer('IsPrivate', {'is_private': serializers.BooleanField()})
+
+
 class MyProfilePrivacyView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=IsPrivateSerializer, responses=IsPrivateSerializer)
     def patch(self, request):
         is_private = request.data.get('is_private')
         if not isinstance(is_private, bool):
@@ -38,6 +46,9 @@ class MyProfilePrivacyView(APIView):
         profile.is_private = is_private
         profile.save(update_fields=['is_private'])
         return Response({'is_private': profile.is_private})
+
+
+RolesSerializer = inline_serializer('Roles', {'roles': serializers.ListField(child=serializers.CharField())})
 
 
 class MyProfileRoleView(APIView):
@@ -50,6 +61,7 @@ class MyProfileRoleView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=RolesSerializer, responses=RolesSerializer)
     def patch(self, request):
         roles = request.data.get('roles')
         if not isinstance(roles, list) or not roles or not all(isinstance(r, str) for r in roles):
@@ -62,8 +74,14 @@ class MyProfileRoleView(APIView):
 
 
 class MemberProfileView(generics.RetrieveAPIView):
+    """다른 사람 프로필 상세. 비공개(is_private) 설정이면 본인 외엔 존재 자체를
+    숨긴다 — 403이 아니라 404로, 비공개인지 아닌지조차 알 수 없게 한다."""
+
     serializer_class = MemberProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return get_object_or_404(Profile, user_id=self.kwargs['user_id'])
+        profile = get_object_or_404(Profile, user_id=self.kwargs['user_id'])
+        if profile.is_private and profile.user_id != self.request.user.id:
+            raise Http404
+        return profile

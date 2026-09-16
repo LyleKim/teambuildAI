@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,6 +21,7 @@ class NotificationListView(ListAPIView):
 class NotificationUnreadCountView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=inline_serializer('UnreadCount', {'count': serializers.IntegerField()}))
     def get(self, request):
         count = Notification.objects.filter(user=request.user, read=False).count()
         return Response({'count': count})
@@ -27,6 +30,7 @@ class NotificationUnreadCountView(APIView):
 class NotificationMarkReadView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses={204: None})
     def patch(self, request, notification_id):
         notification = get_object_or_404(Notification, pk=notification_id, user=request.user)
         notification.read = True
@@ -37,6 +41,7 @@ class NotificationMarkReadView(APIView):
 class NotificationMarkAllReadView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses={204: None})
     def patch(self, request):
         Notification.objects.filter(user=request.user, read=False).update(read=True)
         return Response(status=204)
