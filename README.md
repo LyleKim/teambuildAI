@@ -221,4 +221,4 @@ CloudFront 대신 nginx가 TLS 종료 + 정적 파일 서빙 + 리버스 프록�
   
 ## 개발 과정 및 시행착오
 개발 과정 및 시행착오는 아래의 링크에서 확인해주세요.
-[`infra/terraform/README.md`](./infra/terraform/README.md)
+[`docs/developrecord/`](./docs/developrecord)
