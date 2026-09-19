@@ -9,8 +9,8 @@ export function LoadingState({
 }) {
   return (
     <div className="flex flex-col items-center py-20 gap-5">
-      <div className="w-12 h-12 rounded-full border-4 border-[#E0F2FE] border-t-[#0EA5E9] animate-spin" />
-      <p className="text-[14px] font-medium text-[#64748B]">{label}</p>
+      <div className="w-12 h-12 rounded-full border-4 border-border border-t-brand animate-spin" />
+      <p className="text-[14px] font-medium text-ink-soft">{label}</p>
     </div>
   )
 }
@@ -43,21 +43,21 @@ export function ErrorState({
           <path d="M12 7v6M12 16.5v.5" />
         </svg>
       </div>
-      <p className="text-[16px] font-bold text-[#0F172A]">
+      <p className="text-[16px] font-bold text-ink">
         {isOffline ? "서버에 연결할 수 없어요" : "데이터를 불러오지 못했어요"}
       </p>
-      <p className="text-[13px] text-[#64748B] leading-relaxed max-w-sm">
+      <p className="text-[13px] text-ink-soft leading-relaxed max-w-sm">
         {error.message}
       </p>
       {isOffline && (
-        <p className="text-[12px] text-[#94A3B8] font-mono bg-[#F8FAFC] border border-[#E2EAF4] rounded-lg px-3 py-2">
+        <p className="text-[12px] text-ink-soft font-mono bg-white border border-border rounded-lg px-3 py-2">
           cd backend && uv run python manage.py runserver 8000
         </p>
       )}
       {onRetry && (
         <button
           onClick={onRetry}
-          className="mt-1 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
+          className="mt-1 bg-brand hover:bg-brand-dark text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
         >
           다시 시도
         </button>
@@ -79,14 +79,14 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center py-20 gap-4 text-center">
-      <div className="w-16 h-16 rounded-full bg-[#E0F2FE] flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
         {icon ?? (
           <svg
             width="28"
             height="28"
             viewBox="0 0 28 28"
             fill="none"
-            stroke="#38BDF8"
+            stroke="var(--color-brand)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -95,9 +95,9 @@ export function EmptyState({
           </svg>
         )}
       </div>
-      <p className="text-[16px] font-bold text-[#0F172A]">{title}</p>
+      <p className="text-[16px] font-bold text-ink">{title}</p>
       {description && (
-        <p className="text-[13px] text-[#64748B] leading-relaxed whitespace-pre-line">
+        <p className="text-[13px] text-ink-soft leading-relaxed whitespace-pre-line">
           {description}
         </p>
       )}
@@ -113,19 +113,19 @@ export function RecommendationSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="bg-white rounded-2xl border border-[#E2EAF4] p-5 animate-pulse"
+          className="bg-white rounded-2xl border border-border p-5 animate-pulse"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[#E0F2FE]" />
+            <div className="w-10 h-10 rounded-full bg-brand/10" />
             <div className="flex-1 space-y-2">
-              <div className="h-3.5 bg-[#E0F2FE] rounded-full w-24" />
-              <div className="h-3 bg-[#E0F2FE] rounded-full w-40" />
+              <div className="h-3.5 bg-brand/10 rounded-full w-24" />
+              <div className="h-3 bg-brand/10 rounded-full w-40" />
             </div>
-            <div className="w-14 h-14 rounded-full bg-[#E0F2FE]" />
+            <div className="w-14 h-14 rounded-full bg-brand/10" />
           </div>
           <div className="space-y-2">
-            <div className="h-10 bg-[#F0F9FF] rounded-xl" />
-            <div className="h-10 bg-[#F0F9FF] rounded-xl" />
+            <div className="h-10 bg-brand/5 rounded-xl" />
+            <div className="h-10 bg-brand/5 rounded-xl" />
           </div>
         </div>
       ))}
@@ -140,13 +140,13 @@ export function HackathonCardSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="bg-white rounded-2xl overflow-hidden border border-[#E2EAF4] animate-pulse"
+          className="bg-white rounded-2xl overflow-hidden border border-border animate-pulse"
         >
-          <div className="h-40 bg-[#E0F2FE]" />
+          <div className="h-40 bg-brand/10" />
           <div className="p-4 space-y-2">
-            <div className="h-4 bg-[#E0F2FE] rounded-full w-20" />
-            <div className="h-4 bg-[#E0F2FE] rounded-full w-full" />
-            <div className="h-3 bg-[#F0F9FF] rounded-full w-24" />
+            <div className="h-4 bg-brand/10 rounded-full w-20" />
+            <div className="h-4 bg-brand/10 rounded-full w-full" />
+            <div className="h-3 bg-brand/5 rounded-full w-24" />
           </div>
         </div>
       ))}

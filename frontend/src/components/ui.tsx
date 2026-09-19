@@ -9,7 +9,7 @@ export function LogoIcon({ size = 36 }: { size?: number }) {
   return (
     <img
       src={logo}
-      alt="ㅎㅋㅌ"
+      alt="파비콘"
       width={size}
       height={size}
       className="rounded-[22%] object-cover flex-shrink-0"
@@ -37,7 +37,7 @@ export function Avatar({
       style={{ width: size, height: size }}
     >
       <div
-        className={`w-full h-full rounded-full bg-[#0EA5E9] flex items-center justify-center text-white font-bold ${className}`}
+        className={`w-full h-full rounded-full bg-brand flex items-center justify-center text-white font-bold ${className}`}
         style={{ fontSize: Math.round(size * 0.35) }}
       >
         {initial}
@@ -45,7 +45,7 @@ export function Avatar({
       {verified && (
         <span
           title="받은 리뷰 5개 이상 (인증)"
-          className="absolute bottom-0 right-0 flex items-center justify-center rounded-full bg-[#0EA5E9] border-2 border-white"
+          className="absolute bottom-0 right-0 flex items-center justify-center rounded-full bg-brand border-2 border-white"
           style={{ width: badgeSize, height: badgeSize }}
         >
           <svg
@@ -76,7 +76,7 @@ export function BackButton({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1 text-[#4EAAF5] text-[13px] font-medium hover:underline mb-6"
+      className="flex items-center gap-1 text-brand text-[13px] font-medium hover:underline mb-6"
     >
       ← {label}
     </button>
@@ -109,7 +109,7 @@ export function ChipGroup({
   }
   return (
     <div className="mb-6">
-      <p className="text-[13px] font-semibold text-gray-700 mb-2.5">{label}</p>
+      <p className="text-[13px] font-semibold text-ink mb-2.5">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => (
           <button
@@ -117,8 +117,8 @@ export function ChipGroup({
             onClick={() => toggle(opt)}
             className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
               selected.includes(opt)
-                ? "bg-[#4EAAF5] text-white border-[#4EAAF5]"
-                : "bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]"
+                ? "bg-brand text-white border-brand"
+                : "bg-white text-ink-soft border-border hover:border-brand"
             }`}
           >
             {opt}
@@ -143,7 +143,7 @@ export function Toggle({
       onClick={() => !disabled && onChange(!value)}
       disabled={disabled}
       className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-        value ? "bg-[#4EAAF5]" : "bg-[#D0DCE8]"
+        value ? "bg-brand" : "bg-border"
       } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       <span
@@ -165,21 +165,21 @@ export function CounterRow({
   onChange: (v: number) => void
 }) {
   return (
-    <div className="flex items-center justify-between bg-white rounded-xl border border-[#E2EAF4] px-5 py-3.5">
-      <span className="text-[14px] text-gray-700">{label}</span>
+    <div className="flex items-center justify-between bg-white rounded-xl border border-border px-5 py-3.5">
+      <span className="text-[14px] text-ink">{label}</span>
       <div className="flex items-center gap-4">
         <button
           onClick={() => onChange(Math.max(0, value - 1))}
-          className="w-7 h-7 rounded-full border border-[#4EAAF5] text-[#4EAAF5] flex items-center justify-center text-lg leading-none hover:bg-blue-50 transition-colors"
+          className="w-7 h-7 rounded-full border border-brand text-brand flex items-center justify-center text-lg leading-none hover:bg-brand/10 transition-colors"
         >
           −
         </button>
-        <span className="text-[14px] font-semibold text-gray-800 w-4 text-center">
+        <span className="text-[14px] font-semibold text-ink w-4 text-center">
           {value}
         </span>
         <button
           onClick={() => onChange(value + 1)}
-          className="w-7 h-7 rounded-full border border-[#4EAAF5] text-[#4EAAF5] flex items-center justify-center text-lg leading-none hover:bg-blue-50 transition-colors"
+          className="w-7 h-7 rounded-full border border-brand text-brand flex items-center justify-center text-lg leading-none hover:bg-brand/10 transition-colors"
         >
           +
         </button>
@@ -200,7 +200,7 @@ export function ScoreRing({ score }: { score: number }) {
           cy="28"
           r={r}
           fill="none"
-          stroke="#E2EAF4"
+          stroke="var(--color-border)"
           strokeWidth="4"
         />
         <circle
@@ -208,17 +208,17 @@ export function ScoreRing({ score }: { score: number }) {
           cy="28"
           r={r}
           fill="none"
-          stroke="#4EAAF5"
+          stroke="var(--color-brand)"
           strokeWidth="4"
           strokeDasharray={`${dash} ${circ}`}
           strokeLinecap="round"
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[13px] font-bold text-[#4EAAF5] leading-none">
+        <span className="text-[13px] font-bold text-brand leading-none">
           {score}점
         </span>
-        <span className="text-[9px] text-[#8FA3BF]">매칭</span>
+        <span className="text-[9px] text-ink-soft">매칭</span>
       </div>
     </div>
   )
@@ -254,7 +254,7 @@ export function PrimaryButton({
     <button
       onClick={onClick}
       disabled={inactive}
-      className={`bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold text-[15px] rounded-xl py-3.5 transition-colors shadow-sm disabled:bg-[#BAE6FD] disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
+      className={`bg-brand hover:bg-brand-dark text-white font-semibold text-[15px] rounded-xl py-3.5 transition-colors shadow-sm disabled:bg-brand/40 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
     >
       {loading && (
         <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
@@ -284,7 +284,7 @@ export function useToast() {
   }
 
   const toast = message ? (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-[#0F172A] text-white text-[13px] font-medium px-5 py-3 rounded-full shadow-lg">
+    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-ink text-white text-[13px] font-medium px-5 py-3 rounded-full shadow-lg">
       {message}
     </div>
   ) : null

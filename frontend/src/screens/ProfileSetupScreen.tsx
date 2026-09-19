@@ -151,10 +151,10 @@ export function ProfileSetupScreen({
 
   return (
     <Page>
-      <h1 className="text-[20px] font-bold text-gray-800">
+      <h1 className="text-[22px] text-ink font-[family-name:var(--font-display)]">
         개인 프로필 &amp; 희망 조건
       </h1>
-      <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">
+      <p className="text-[13px] text-ink-soft mt-1 mb-8">
         AI 추천을 위해 정보를 입력해주세요
       </p>
 
@@ -176,16 +176,16 @@ export function ProfileSetupScreen({
 
       {/* 오픈채팅 링크 */}
       <div className="mb-5">
-        <p className="text-[13px] font-semibold text-[#0F172A] mb-1">
+        <p className="text-[13px] font-semibold text-ink mb-1">
           오픈채팅/연락처 링크
         </p>
-        <p className="text-[12px] text-[#64748B] mb-2 flex items-center gap-1">
+        <p className="text-[12px] text-ink-soft mb-2 flex items-center gap-1">
           <svg
             width="12"
             height="12"
             viewBox="0 0 12 12"
             fill="none"
-            stroke="#64748B"
+            stroke="var(--color-ink-soft)"
             strokeWidth="1.4"
             strokeLinecap="round"
           >
@@ -199,16 +199,14 @@ export function ProfileSetupScreen({
           value={form.open_chat}
           onChange={(e) => set("open_chat", e.target.value)}
           placeholder="https://open.kakao.com/o/..."
-          className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#0EA5E9]"
+          className="w-full bg-white border border-border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-brand"
         />
       </div>
 
       {/* 전화번호 — 팀장이 "수동으로 참가자 추가"할 때 회원 조회 키로 쓰인다 */}
       <div className="mb-5">
-        <p className="text-[13px] font-semibold text-[#0F172A] mb-1">
-          전화번호
-        </p>
-        <p className="text-[12px] text-[#64748B] mb-2">
+        <p className="text-[13px] font-semibold text-ink mb-1">전화번호</p>
+        <p className="text-[12px] text-ink-soft mb-2">
           팀장이 참가자를 수동으로 추가할 때 회원 확인용으로 쓰여요. (선택)
         </p>
         <input
@@ -216,16 +214,16 @@ export function ProfileSetupScreen({
           value={form.phone}
           onChange={(e) => set("phone", e.target.value)}
           placeholder="010-1234-5678"
-          className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#0EA5E9]"
+          className="w-full bg-white border border-border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-brand"
         />
       </div>
 
-      <div className="flex items-center justify-between bg-[#F0F5FC] rounded-xl border border-[#E2EAF4] px-4 py-3.5 mb-8">
+      <div className="flex items-center justify-between bg-border/20 rounded-xl border border-border px-4 py-3.5 mb-8">
         <div>
-          <p className="text-[13px] font-semibold text-gray-700">
+          <p className="text-[13px] font-semibold text-ink">
             추천 대상에서 비공개
           </p>
-          <p className="text-[12px] text-[#8FA3BF] mt-0.5">
+          <p className="text-[12px] text-ink-soft mt-0.5">
             켜면 다른 사람의 추천 리스트에 노출되지 않아요
           </p>
         </div>
@@ -237,12 +235,12 @@ export function ProfileSetupScreen({
 
       <InlineError message={save.error?.message} />
       {!canSubmit && form.roles.length === 0 && (
-        <p className="text-[12px] text-[#94A3B8] mb-2">
+        <p className="text-[12px] text-ink-soft mb-2">
           대표 역할을 최소 1개 선택해주세요.
         </p>
       )}
       {!canSubmit && form.roles.length > 0 && !oneLinerComplete && (
-        <p className="text-[12px] text-[#94A3B8] mb-2">
+        <p className="text-[12px] text-ink-soft mb-2">
           한 줄 자기소개를 작성해주세요.
         </p>
       )}
@@ -250,7 +248,7 @@ export function ProfileSetupScreen({
         form.roles.length > 0 &&
         oneLinerComplete &&
         !bioComplete && (
-          <p className="text-[12px] text-[#94A3B8] mb-2">
+          <p className="text-[12px] text-ink-soft mb-2">
             상세 자기소개 5개 항목을 모두 작성해주세요.
           </p>
         )}
@@ -259,7 +257,7 @@ export function ProfileSetupScreen({
         oneLinerComplete &&
         bioComplete &&
         !goalComplete && (
-          <p className="text-[12px] text-[#94A3B8] mb-2">
+          <p className="text-[12px] text-ink-soft mb-2">
             참여 목표를 선택해주세요.
           </p>
         )}

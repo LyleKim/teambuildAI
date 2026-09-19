@@ -41,35 +41,35 @@ export function DetailScreen({ hackathonId }: { hackathonId: number }) {
             }
           >
             {!data.banner_url && (
-              <span className="text-[#8FA3BF] text-[13px]">배너 이미지</span>
+              <span className="text-ink-soft text-[13px]">배너 이미지</span>
             )}
           </div>
 
-          <span className="bg-blue-100 text-[#4EAAF5] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+          <span className="bg-brand/10 text-brand text-[11px] font-semibold px-2 py-0.5 rounded-full">
             {data.category}
           </span>
-          <h1 className="text-[22px] font-bold text-gray-800 mt-3">
+          <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink mt-3">
             {data.title}
           </h1>
-          <p className="text-[13px] text-[#8FA3BF] mt-1">{periodOf(data)}</p>
-          <p className="text-[14px] text-gray-600 mt-4 leading-relaxed whitespace-pre-line">
+          <p className="text-[13px] text-ink-soft mt-1">{periodOf(data)}</p>
+          <p className="text-[14px] text-ink mt-4 leading-relaxed whitespace-pre-line">
             {data.description}
           </p>
 
           <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="bg-white rounded-xl border border-[#E2EAF4] p-4 text-center">
-              <div className="text-[28px] font-bold text-[#4EAAF5]">
+            <div className="bg-white rounded-xl border border-border p-4 text-center">
+              <div className="text-[28px] font-bold text-brand">
                 {data.teams}
               </div>
-              <div className="text-[12px] text-[#8FA3BF] mt-0.5">
+              <div className="text-[12px] text-ink-soft mt-0.5">
                 모집 중인 팀
               </div>
             </div>
-            <div className="bg-white rounded-xl border border-[#E2EAF4] p-4 text-center">
-              <div className="text-[28px] font-bold text-[#4EAAF5]">
+            <div className="bg-white rounded-xl border border-border p-4 text-center">
+              <div className="text-[28px] font-bold text-brand">
                 {data.participants}
               </div>
-              <div className="text-[12px] text-[#8FA3BF] mt-0.5">참가 개인</div>
+              <div className="text-[12px] text-ink-soft mt-0.5">참가 개인</div>
             </div>
           </div>
 

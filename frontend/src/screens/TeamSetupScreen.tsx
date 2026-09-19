@@ -58,14 +58,16 @@ export function TeamSetupScreen({ hackathonId }: { hackathonId: number }) {
         label="뒤로"
         onClick={() => navigate(routes.join(hackathonId))}
       />
-      <h1 className="text-[20px] font-bold text-gray-800">팀 모집 조건 작성</h1>
-      <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">{data?.title}</p>
+      <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink">
+        팀 모집 조건 작성
+      </h1>
+      <p className="text-[13px] text-ink-soft mt-1 mb-8">{data?.title}</p>
 
       <TeamFormFields value={form} onChange={setForm} />
 
       <InlineError message={save.error?.message} />
       {neededTotal === 0 && (
-        <p className="text-[12px] text-[#94A3B8] mb-2">
+        <p className="text-[12px] text-ink-soft mb-2">
           필요한 역할을 최소 1명 이상 지정해주세요.
         </p>
       )}

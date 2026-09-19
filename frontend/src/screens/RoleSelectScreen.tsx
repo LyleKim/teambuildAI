@@ -45,10 +45,10 @@ export function RoleSelectScreen() {
 
   return (
     <Page>
-      <h1 className="text-[20px] font-bold text-gray-800">
+      <h1 className="text-[22px] text-ink font-[family-name:var(--font-display)]">
         어떤 역할로 참여하시나요?
       </h1>
-      <p className="text-[13px] text-[#8FA3BF] mt-1 mb-8">
+      <p className="text-[13px] text-ink-soft mt-1 mb-8">
         선택한 역할에 맞춰 다음 프로필 작성 화면의 질문이 달라져요
       </p>
 

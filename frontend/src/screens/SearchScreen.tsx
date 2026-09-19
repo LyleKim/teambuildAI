@@ -53,11 +53,13 @@ export function SearchScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF4FB]">
+    <div className="min-h-screen bg-surface">
       <NavBar />
       <main className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold text-gray-800">해커톤 탐색</h1>
-        <p className="text-[14px] text-[#8FA3BF] mt-1">
+        <h1 className="text-2xl font-[family-name:var(--font-display)] text-ink">
+          해커톤 탐색
+        </h1>
+        <p className="text-[14px] text-ink-soft mt-1">
           참가하고 싶은 해커톤을 찾아보세요
         </p>
 
@@ -66,7 +68,7 @@ export function SearchScreen() {
           placeholder="해커톤 검색"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full mt-5 bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#4EAAF5] placeholder-[#B8C9D9] shadow-sm"
+          className="w-full mt-5 bg-white border border-border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-brand placeholder-ink-soft shadow-sm"
         />
 
         <div className="flex items-center gap-2 mt-4 flex-wrap">
@@ -76,8 +78,8 @@ export function SearchScreen() {
               onClick={() => setCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                 category === cat
-                  ? "bg-[#4EAAF5] text-white border-[#4EAAF5]"
-                  : "bg-white text-gray-500 border-[#E2EAF4] hover:border-[#4EAAF5]"
+                  ? "bg-brand text-white border-brand"
+                  : "bg-white text-ink-soft border-border hover:border-brand"
               }`}
             >
               {cat}
@@ -106,7 +108,7 @@ export function SearchScreen() {
               <button
                 key={h.id}
                 onClick={() => openDetail(h.id)}
-                className="bg-white rounded-2xl overflow-hidden border border-[#E2EAF4] text-left hover:shadow-md hover:border-[#B8D9F5] transition-all duration-200 group"
+                className="bg-white rounded-2xl overflow-hidden border border-border text-left hover:shadow-md hover:border-brand/40 transition-all duration-200 group"
               >
                 <div
                   className="h-40 flex items-center justify-center bg-cover bg-center"
@@ -117,27 +119,27 @@ export function SearchScreen() {
                   }
                 >
                   {!h.banner_url && (
-                    <span className="text-[#8FA3BF] text-[13px]">
+                    <span className="text-ink-soft text-[13px]">
                       배너 이미지
                     </span>
                   )}
                 </div>
                 <div className="p-4">
                   <div className="flex gap-1.5 mb-2">
-                    <span className="bg-blue-100 text-[#4EAAF5] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                    <span className="bg-brand/10 text-brand text-[11px] font-semibold px-2 py-0.5 rounded-full">
                       {h.category}
                     </span>
-                    <span className="bg-green-50 text-green-600 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                    <span className="bg-border/60 text-ink-soft text-[11px] font-semibold px-2 py-0.5 rounded-full">
                       {h.status}
                     </span>
                   </div>
-                  <h3 className="font-bold text-[14px] text-gray-800 group-hover:text-[#4EAAF5] transition-colors">
+                  <h3 className="font-bold text-[14px] text-ink group-hover:text-brand transition-colors">
                     {h.title}
                   </h3>
-                  <p className="text-[12px] text-[#8FA3BF] mt-1">
+                  <p className="text-[12px] text-ink-soft mt-1">
                     {periodOf(h)}
                   </p>
-                  <p className="text-[12px] text-[#8FA3BF]">
+                  <p className="text-[12px] text-ink-soft">
                     참가 인원 {h.participants}명
                   </p>
                 </div>

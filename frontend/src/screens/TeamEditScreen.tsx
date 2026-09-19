@@ -57,20 +57,18 @@ export function TeamEditScreen({ teamId }: { teamId: number }) {
         label="내 참가 현황으로"
         onClick={() => navigate(routes.myStatus)}
       />
-      <h1 className="text-[20px] font-bold text-[#0F172A]">
+      <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink">
         팀 모집 조건 수정
       </h1>
-      <p className="text-[13px] text-[#64748B] mt-0.5 mb-6">
+      <p className="text-[13px] text-ink-soft mt-0.5 mb-6">
         {data?.hackathon.title}
       </p>
 
       {/* 모집 상태 */}
-      <div className="bg-white rounded-2xl border border-[#E2EAF4] px-5 py-4 mb-8 flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-border px-5 py-4 mb-8 flex items-center justify-between">
         <div>
-          <p className="text-[13px] font-semibold text-[#0F172A] mb-0.5">
-            모집 상태
-          </p>
-          <p className="text-[12px] text-[#64748B]">
+          <p className="text-[13px] font-semibold text-ink mb-0.5">모집 상태</p>
+          <p className="text-[12px] text-ink-soft">
             현재 팀원 모집 진행 상황을 선택해주세요
           </p>
         </div>
@@ -116,14 +114,14 @@ export function TeamEditScreen({ teamId }: { teamId: number }) {
         <button
           onClick={() => navigate(routes.myStatus)}
           disabled={save.loading}
-          className="flex-1 border border-[#E2EAF4] bg-white rounded-xl py-3.5 text-[14px] font-semibold text-[#64748B] hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="flex-1 border border-border bg-white rounded-xl py-3.5 text-[14px] font-semibold text-ink-soft hover:bg-border/40 transition-colors disabled:opacity-50"
         >
           취소
         </button>
         <button
           onClick={() => save.mutate(form)}
           disabled={save.loading}
-          className="flex-1 bg-[#0EA5E9] hover:bg-[#0284C7] text-white rounded-xl py-3.5 text-[14px] font-semibold transition-colors shadow-sm disabled:bg-[#BAE6FD] flex items-center justify-center gap-2"
+          className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl py-3.5 text-[14px] font-semibold transition-colors shadow-sm disabled:bg-brand/40 flex items-center justify-center gap-2"
         >
           {save.loading && (
             <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />

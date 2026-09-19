@@ -82,14 +82,12 @@ export function AuthCallbackScreen() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#EEF4FB] flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="text-[17px] font-bold text-[#0F172A]">
-          로그인에 실패했어요
-        </p>
-        <p className="text-[13px] text-[#64748B] max-w-sm">{error}</p>
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-[17px] font-bold text-ink">로그인에 실패했어요</p>
+        <p className="text-[13px] text-ink-soft max-w-sm">{error}</p>
         <button
           onClick={() => navigate(routes.login, { replace: true })}
-          className="mt-2 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
+          className="mt-2 bg-brand hover:bg-brand-dark text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
         >
           다시 로그인하기
         </button>
@@ -98,7 +96,7 @@ export function AuthCallbackScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF4FB] flex items-center justify-center">
+    <div className="min-h-screen bg-surface flex items-center justify-center">
       <LoadingState label="로그인 중이에요…" />
     </div>
   )

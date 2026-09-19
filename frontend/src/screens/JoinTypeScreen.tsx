@@ -52,10 +52,10 @@ export function JoinTypeScreen({ hackathonId }: { hackathonId: number }) {
       {!loading && !error && data && (
         <>
           <div className="text-center mb-10">
-            <h1 className="text-[26px] font-bold text-gray-800">
+            <h1 className="text-[28px] text-ink font-[family-name:var(--font-display)]">
               어떻게 참가하시겠어요?
             </h1>
-            <p className="text-[14px] text-[#8FA3BF] mt-2">{data.title}</p>
+            <p className="text-[14px] text-ink-soft mt-2">{data.title}</p>
           </div>
 
           <InlineError message={join.error?.message} />
@@ -66,11 +66,11 @@ export function JoinTypeScreen({ hackathonId }: { hackathonId: number }) {
                 key={type}
                 onClick={() => join.mutate(type)}
                 disabled={join.loading}
-                className="bg-white rounded-2xl border-2 border-[#E2EAF4] p-8 text-left hover:border-[#4EAAF5] hover:shadow-md transition-all duration-200 group disabled:opacity-60 disabled:cursor-wait"
+                className="bg-white rounded-2xl border-2 border-border p-8 text-left hover:border-brand hover:shadow-md transition-all duration-200 group disabled:opacity-60 disabled:cursor-wait"
               >
-                <div className="w-12 h-12 rounded-xl mb-5 bg-[#E2EAF4] group-hover:bg-[#4EAAF5] transition-colors" />
-                <h3 className="font-bold text-[16px] text-gray-800">{label}</h3>
-                <p className="text-[13px] text-[#8FA3BF] mt-1">{sub}</p>
+                <div className="w-12 h-12 rounded-xl mb-5 bg-border group-hover:bg-brand transition-colors" />
+                <h3 className="font-bold text-[16px] text-ink">{label}</h3>
+                <p className="text-[13px] text-ink-soft mt-1">{sub}</p>
               </button>
             ))}
           </div>

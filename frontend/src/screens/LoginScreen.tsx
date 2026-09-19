@@ -26,30 +26,21 @@ export function LoginScreen() {
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{
-        background:
-          "linear-gradient(160deg, #E8F3FD 0%, #F5F9FF 40%, #EAF0FB 100%)",
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-surface">
       <div className="flex flex-col items-center gap-4">
         <LogoIcon size={72} />
         <div className="text-center mt-1">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-            ㅎㅋㅌ
+          <h1 className="text-2xl text-ink tracking-tight font-[family-name:var(--font-display)]">
+            파비콘
           </h1>
-          <p className="text-[12px] text-gray-400 mt-0.5 font-medium tracking-wide">
-            Favorite contact
-          </p>
-          <p className="text-[13px] text-gray-400 mt-1.5">
+          <p className="text-[13px] text-ink-soft mt-1.5">
             AI로 만나는 우리 팀, 해커톤 팀 빌딩
           </p>
         </div>
 
         <button
           onClick={loginWithKakao}
-          className="mt-4 flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#F5DB00] text-gray-800 font-semibold text-[14px] rounded-xl px-16 py-3.5 transition-colors shadow-sm"
+          className="mt-4 flex items-center justify-center gap-2.5 bg-kakao hover:brightness-95 text-ink font-semibold text-[14px] rounded-xl px-16 py-3.5 transition-all shadow-sm"
           style={{ minWidth: 200 }}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -64,7 +55,7 @@ export function LoginScreen() {
 
         <button
           onClick={() => navigate(routes.hackathons)}
-          className="text-[13px] text-[#8FA3BF] hover:text-[#4EAAF5] transition-colors mt-1"
+          className="text-[13px] text-ink-soft hover:text-brand transition-colors mt-1"
         >
           로그인 없이 해커톤 둘러보기
         </button>

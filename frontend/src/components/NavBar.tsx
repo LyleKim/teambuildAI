@@ -75,13 +75,13 @@ export function NavBar() {
   }
 
   return (
-    <header className="bg-white border-b border-[#E2EAF4] h-[52px] flex items-center px-6 gap-8 sticky top-0 z-50">
+    <header className="bg-white border-b border-border h-[52px] flex items-center px-6 gap-8 sticky top-0 z-50">
       <button
         onClick={() => navigate(routes.hackathons)}
         className="flex items-center gap-2 flex-shrink-0"
       >
         <LogoIcon size={36} />
-        <span className="font-bold text-[15px] text-gray-800">ㅎㅋㅌ</span>
+        <span className="font-bold text-[15px] text-ink">파비콘</span>
       </button>
 
       <nav className="flex items-center gap-1">
@@ -91,8 +91,8 @@ export function NavBar() {
             onClick={() => handleNav(item)}
             className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
               active === item
-                ? "text-[#0EA5E9] bg-[#F0F9FF]"
-                : "text-[#64748B] hover:text-[#0F172A] hover:bg-gray-50"
+                ? "text-brand bg-brand/10"
+                : "text-ink-soft hover:text-ink hover:bg-border/40"
             }`}
           >
             {item}
@@ -109,7 +109,7 @@ export function NavBar() {
           onKeyDown={(e) => {
             if (e.key === "Enter") submitSearch()
           }}
-          className="bg-[#F0F5FC] border border-[#E2EAF4] rounded-lg px-3 py-1.5 text-[13px] w-52 outline-none focus:border-[#0EA5E9] placeholder-[#8FA3BF]"
+          className="bg-white border border-border rounded-lg px-3 py-1.5 text-[13px] w-52 outline-none focus:border-brand placeholder-ink-soft"
         />
 
         <button
@@ -117,8 +117,8 @@ export function NavBar() {
           aria-label="메시지"
           className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
             active === "메시지"
-              ? "bg-[#F0F9FF] text-[#0EA5E9]"
-              : "text-[#64748B] hover:bg-gray-100"
+              ? "bg-brand/10 text-brand"
+              : "text-ink-soft hover:bg-border/40"
           }`}
         >
           <svg
@@ -141,8 +141,8 @@ export function NavBar() {
           aria-label="알림"
           className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
             active === "알림"
-              ? "bg-[#F0F9FF] text-[#0EA5E9]"
-              : "text-[#64748B] hover:bg-gray-100"
+              ? "bg-brand/10 text-brand"
+              : "text-ink-soft hover:bg-border/40"
           }`}
         >
           <svg
@@ -163,7 +163,7 @@ export function NavBar() {
 
         <button
           onClick={() => navigate(routes.mypage)}
-          className="w-8 h-8 rounded-full bg-[#0EA5E9] flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
+          className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
         >
           {user?.initial || initialOf(user?.name, "나")}
         </button>
@@ -189,7 +189,7 @@ export function Page({
         ? "max-w-none"
         : "max-w-2xl"
   return (
-    <div className="min-h-screen bg-[#EEF4FB]">
+    <div className="min-h-screen bg-surface">
       <NavBar />
       <main className={`${maxWidth} mx-auto px-6 py-8`}>{children}</main>
     </div>

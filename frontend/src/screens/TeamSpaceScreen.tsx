@@ -54,7 +54,7 @@ function ReviewForm({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: "rgba(80,100,130,0.45)" }}
+      style={{ background: "rgba(16,24,40,0.45)" }}
       onClick={onClose}
     >
       <div
@@ -70,16 +70,16 @@ function ReviewForm({
             size={40}
           />
           <div>
-            <p className="font-bold text-[15px] text-gray-800">
+            <p className="font-bold text-[15px] text-ink">
               {teammate.counterpart.name}
             </p>
-            <p className="text-[12px] text-[#8FA3BF]">
+            <p className="text-[12px] text-ink-soft">
               {teammate.counterpart.role}
             </p>
           </div>
         </div>
 
-        <p className="text-[13px] font-semibold text-gray-700 mb-2">평점</p>
+        <p className="text-[13px] font-semibold text-ink mb-2">평점</p>
         <div className="flex gap-1 mb-4">
           {STARS.map((n) => (
             <button
@@ -93,14 +93,14 @@ function ReviewForm({
           ))}
         </div>
 
-        <p className="text-[13px] font-semibold text-gray-700 mb-2">후기</p>
+        <p className="text-[13px] font-semibold text-ink mb-2">후기</p>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
           maxLength={500}
           placeholder="같이 활동하면서 느낀 점을 남겨주세요"
-          className="w-full bg-white border border-[#E2EAF4] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#4EAAF5] resize-none"
+          className="w-full bg-white border border-border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-brand resize-none"
         />
 
         <div className="mt-3">
@@ -111,14 +111,14 @@ function ReviewForm({
           <button
             onClick={onClose}
             disabled={save.loading}
-            className="flex-1 border border-[#E2EAF4] rounded-xl py-2.5 text-[14px] font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="flex-1 border border-border rounded-xl py-2.5 text-[14px] font-medium text-ink-soft hover:bg-border/40 transition-colors disabled:opacity-50"
           >
             취소
           </button>
           <button
             onClick={() => save.mutate(undefined as void)}
             disabled={save.loading}
-            className="flex-1 bg-[#4EAAF5] hover:bg-[#2D8FE0] text-white rounded-xl py-2.5 text-[14px] font-semibold transition-colors disabled:bg-[#BAE6FD] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl py-2.5 text-[14px] font-semibold transition-colors disabled:bg-brand/40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {save.loading && (
               <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
@@ -319,26 +319,26 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
 
       {!hackathon.loading && !hackathon.error && hackathon.data && (
         <>
-          <h1 className="text-[20px] font-bold text-[#0F172A] mb-1">
+          <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink mb-1">
             {hackathon.data.title}
           </h1>
-          <p className="text-[13px] text-[#64748B] mb-6">
+          <p className="text-[13px] text-ink-soft mb-6">
             팀원과 진행 상황을 관리해요
           </p>
 
           <section className="mb-8">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[15px] font-bold text-[#0F172A]">팀원</h2>
+              <h2 className="text-[15px] font-bold text-ink">팀원</h2>
               <button
                 onClick={() => navigate(routes.recommendations(hackathonId))}
-                className="text-[13px] font-semibold text-[#0EA5E9] hover:underline"
+                className="text-[13px] font-semibold text-brand hover:underline"
               >
                 참가자 추천 →
               </button>
             </div>
 
-            <div className="bg-white rounded-2xl border border-[#E2EAF4] p-5 mb-3">
-              <p className="text-[13px] font-semibold text-gray-700 mb-2">
+            <div className="bg-white rounded-2xl border border-border p-5 mb-3">
+              <p className="text-[13px] font-semibold text-ink mb-2">
                 수동으로 참가자 추가
               </p>
 
@@ -350,13 +350,13 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                   onChange={(e) => setManualPhone(e.target.value)}
                   disabled={needsManualDetails}
                   placeholder="전화번호 (010-1234-5678)"
-                  className="flex-1 min-w-0 bg-white border border-[#E2EAF4] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-[#4EAAF5] disabled:bg-[#F8FAFC] disabled:text-[#94A3B8]"
+                  className="flex-1 min-w-0 bg-white border border-border rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-brand disabled:bg-border/30 disabled:text-ink-soft"
                 />
                 {!needsManualDetails && (
                   <button
                     onClick={() => addManual.mutate(undefined as void)}
                     disabled={addManual.loading || !manualPhone.trim()}
-                    className="bg-[#4EAAF5] hover:bg-[#2D8FE0] text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-[#BAE6FD] disabled:cursor-not-allowed flex-shrink-0"
+                    className="bg-brand hover:bg-brand-dark text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-brand/40 disabled:cursor-not-allowed flex-shrink-0"
                   >
                     확인
                   </button>
@@ -370,20 +370,20 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                       value={manualName}
                       onChange={(e) => setManualName(e.target.value)}
                       placeholder="이름"
-                      className="flex-1 min-w-0 bg-white border border-[#E2EAF4] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-[#4EAAF5]"
+                      className="flex-1 min-w-0 bg-white border border-border rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-brand"
                     />
                     <input
                       value={manualEmail}
                       onChange={(e) => setManualEmail(e.target.value)}
                       type="email"
                       placeholder="이메일"
-                      className="flex-1 min-w-0 bg-white border border-[#E2EAF4] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-[#4EAAF5]"
+                      className="flex-1 min-w-0 bg-white border border-border rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-brand"
                     />
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={resetManualForm}
-                      className="border border-[#E2EAF4] rounded-xl px-5 py-2.5 text-[14px] font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+                      className="border border-border rounded-xl px-5 py-2.5 text-[14px] font-medium text-ink-soft hover:bg-border/40 transition-colors"
                     >
                       취소
                     </button>
@@ -394,7 +394,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                         !manualName.trim() ||
                         !manualEmail.trim()
                       }
-                      className="flex-1 bg-[#4EAAF5] hover:bg-[#2D8FE0] text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-[#BAE6FD] disabled:cursor-not-allowed"
+                      className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-brand/40 disabled:cursor-not-allowed"
                     >
                       추가
                     </button>
@@ -433,7 +433,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                   entry.kind === "coffeechat" ? (
                     <div
                       key={entry.key}
-                      className="bg-white rounded-2xl border border-[#E2EAF4] p-5"
+                      className="bg-white rounded-2xl border border-border p-5"
                     >
                       <div className="flex items-start gap-3 mb-3">
                         <button
@@ -451,9 +451,9 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                         </button>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <p className="font-semibold text-[14px] text-[#0F172A] truncate">
+                            <p className="font-semibold text-[14px] text-ink truncate">
                               {entry.data.counterpart.name}{" "}
-                              <span className="text-[#64748B] font-normal">
+                              <span className="text-ink-soft font-normal">
                                 · {entry.data.counterpart.role}
                               </span>
                             </p>
@@ -463,7 +463,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                                 onClick={() => deleteTeamEntry(entry)}
                                 disabled={removeTeammate.loading}
                                 aria-label="삭제"
-                                className="text-[#94A3B8] hover:text-[#F43F5E] transition-colors disabled:opacity-40"
+                                className="text-ink-soft hover:text-[#F43F5E] transition-colors disabled:opacity-40"
                               >
                                 <svg
                                   width="15"
@@ -485,7 +485,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                               href={entry.data.sender_contact}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[12px] font-medium text-[#0EA5E9] hover:underline"
+                              className="text-[12px] font-medium text-brand hover:underline"
                             >
                               💬 오픈채팅 링크
                             </a>
@@ -499,7 +499,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                             onClick={() =>
                               navigate(routes.thread(entry.data.thread_id!))
                             }
-                            className="border border-[#E2EAF4] rounded-xl px-4 py-2 text-[13px] font-semibold text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
+                            className="border border-border rounded-xl px-4 py-2 text-[13px] font-semibold text-brand hover:bg-brand/10 transition-colors"
                           >
                             대화 열기
                           </button>
@@ -513,14 +513,14 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                               })
                             }
                             disabled={progress.loading}
-                            className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white rounded-xl px-4 py-2 text-[13px] font-semibold transition-colors disabled:opacity-60"
+                            className="bg-brand hover:bg-brand-dark text-white rounded-xl px-4 py-2 text-[13px] font-semibold transition-colors disabled:opacity-60"
                           >
                             진행중으로 표시
                           </button>
                         )}
                         <button
                           onClick={() => setReviewTarget(entry.data)}
-                          className="ml-auto border border-[#FDE68A] bg-[#FFFBEB] text-[#B45309] rounded-xl px-4 py-2 text-[13px] font-semibold hover:bg-[#FEF3C7] transition-colors"
+                          className="ml-auto border border-border bg-white text-ink rounded-xl px-4 py-2 text-[13px] font-semibold hover:bg-border/40 transition-colors"
                         >
                           {entry.data.my_review
                             ? "✏️ 리뷰 수정하기"
@@ -531,7 +531,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                   ) : (
                     <div
                       key={entry.key}
-                      className="bg-white rounded-2xl border border-[#E2EAF4] p-5"
+                      className="bg-white rounded-2xl border border-border p-5"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar
@@ -539,15 +539,15 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                           size={40}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-[14px] text-[#0F172A] flex items-center gap-1.5">
+                          <p className="font-semibold text-[14px] text-ink flex items-center gap-1.5">
                             {entry.data.name}
                             {entry.data.is_member && (
-                              <span className="text-[10px] font-semibold text-[#0EA5E9] bg-[#E0F2FE] px-1.5 py-0.5 rounded-full">
+                              <span className="text-[10px] font-semibold text-brand bg-brand/10 px-1.5 py-0.5 rounded-full">
                                 회원
                               </span>
                             )}
                           </p>
-                          <p className="text-[12px] text-[#94A3B8] truncate">
+                          <p className="text-[12px] text-ink-soft truncate">
                             {entry.data.phone}
                             {entry.data.email ? ` · ${entry.data.email}` : ""}
                           </p>
@@ -556,7 +556,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                           onClick={() => deleteTeamEntry(entry)}
                           disabled={removeManual.loading}
                           aria-label="삭제"
-                          className="text-[#94A3B8] hover:text-[#F43F5E] transition-colors flex-shrink-0 disabled:opacity-40"
+                          className="text-ink-soft hover:text-[#F43F5E] transition-colors flex-shrink-0 disabled:opacity-40"
                         >
                           <svg
                             width="15"
@@ -580,9 +580,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
           </section>
 
           <section>
-            <h2 className="text-[15px] font-bold text-[#0F172A] mb-3">
-              내 할 일
-            </h2>
+            <h2 className="text-[15px] font-bold text-ink mb-3">내 할 일</h2>
 
             <InlineError
               message={
@@ -602,12 +600,12 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                 }}
                 placeholder="할 일을 입력하세요"
                 maxLength={200}
-                className="flex-1 min-w-0 bg-white border border-[#E2EAF4] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-[#4EAAF5]"
+                className="flex-1 min-w-0 bg-white border border-border rounded-xl px-4 py-2.5 text-[14px] outline-none focus:border-brand"
               />
               <button
                 onClick={() => addTodo.mutate(undefined as void)}
                 disabled={addTodo.loading || !newTodo.trim()}
-                className="bg-[#4EAAF5] hover:bg-[#2D8FE0] text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-[#BAE6FD] disabled:cursor-not-allowed"
+                className="bg-brand hover:bg-brand-dark text-white rounded-xl px-5 py-2.5 text-[14px] font-semibold transition-colors disabled:bg-brand/40 disabled:cursor-not-allowed"
               >
                 추가
               </button>
@@ -618,7 +616,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
               <ErrorState error={todos.error} onRetry={todos.refetch} />
             )}
             {!todos.loading && !todos.error && todoList.length === 0 && (
-              <p className="text-[13px] text-[#94A3B8] text-center py-8">
+              <p className="text-[13px] text-ink-soft text-center py-8">
                 아직 등록한 할 일이 없어요.
               </p>
             )}
@@ -628,7 +626,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                 {todoList.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-3 bg-white rounded-xl border border-[#E2EAF4] px-4 py-3"
+                    className="flex items-center gap-3 bg-white rounded-xl border border-border px-4 py-3"
                   >
                     <input
                       type="checkbox"
@@ -639,13 +637,11 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                           isDone: e.target.checked,
                         })
                       }
-                      className="w-4 h-4 accent-[#4EAAF5] flex-shrink-0"
+                      className="w-4 h-4 accent-brand flex-shrink-0"
                     />
                     <span
                       className={`flex-1 text-[14px] ${
-                        item.is_done
-                          ? "line-through text-[#94A3B8]"
-                          : "text-gray-700"
+                        item.is_done ? "line-through text-ink-soft" : "text-ink"
                       }`}
                     >
                       {item.text}
@@ -653,7 +649,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                     <button
                       onClick={() => removeTodo.mutate(item.id)}
                       aria-label="삭제"
-                      className="text-[#94A3B8] hover:text-[#F43F5E] transition-colors flex-shrink-0"
+                      className="text-ink-soft hover:text-[#F43F5E] transition-colors flex-shrink-0"
                     >
                       <svg
                         width="15"
@@ -674,14 +670,14 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
             )}
           </section>
 
-          <div className="mt-10 pt-6 border-t border-[#E2EAF4]">
+          <div className="mt-10 pt-6 border-t border-border">
             <InlineError message={endProject.error?.message} />
             {myParticipation?.ended_at ? (
-              <div className="bg-[#F1F5F9] border border-[#E2EAF4] rounded-xl px-5 py-4 text-center">
-                <p className="text-[13px] font-semibold text-[#64748B]">
+              <div className="bg-border/30 border border-border rounded-xl px-5 py-4 text-center">
+                <p className="text-[13px] font-semibold text-ink-soft">
                   ✅ 종료된 프로젝트예요
                 </p>
-                <p className="text-[12px] text-[#94A3B8] mt-1">
+                <p className="text-[12px] text-ink-soft mt-1">
                   팀원과 할 일 목록은 계속 확인할 수 있어요.
                 </p>
               </div>
@@ -697,7 +693,7 @@ export function TeamSpaceScreen({ hackathonId }: { hackathonId: number }) {
                   }
                 }}
                 disabled={!myParticipation || endProject.loading}
-                className="w-full border border-[#E2EAF4] rounded-xl py-3 text-[14px] font-semibold text-[#64748B] hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full border border-border rounded-xl py-3 text-[14px] font-semibold text-ink-soft hover:bg-border/40 transition-colors disabled:opacity-50"
               >
                 프로젝트 종료하기
               </button>
