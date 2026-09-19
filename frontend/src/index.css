@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+/* LandingScreen 전용 — 다른 화면은 계속 Noto Sans KR을 쓴다 */
+@import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@400;500;600;700;800;900&display=swap');
 @import 'tailwindcss';
 
 @theme {

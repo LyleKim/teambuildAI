@@ -1,0 +1,16 @@
+# 이 파일을 terraform.tfvars로 복사해서 실제 값을 채우세요.
+# terraform.tfvars는 .gitignore에 걸려 있어 커밋되지 않습니다.
+#   cp terraform.tfvars.example terraform.tfvars
+
+aws_region   = "ap-northeast-2"
+environment  = "experiment"
+project_name = "teambuildai"
+
+# 미리 aws ec2 create-key-pair로 만들어둔 키 페어 이름
+ssh_key_name = "teambuildai"
+
+# 본인 공인 IP/32. 확인: curl ifconfig.me
+ssh_allowed_cidr = "0.0.0.0/32"
+
+# 전 세계에서 유니크해야 하는 S3 버킷 이름
+s3_bucket_name = "teambuildai-images-change-me"

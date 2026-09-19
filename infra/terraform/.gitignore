@@ -1,0 +1,17 @@
+# Terraform 로컬 작업 캐시/플러그인 - 각자 로컬에서 init하면 다시 받아진다
+.terraform/
+.terraform.lock.hcl.bak
+
+# 상태 파일 - RDS 비밀번호 등 민감정보를 평문으로 담고 있다
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# 실제 값이 들어간 변수 파일 - 예시(.example)만 커밋한다
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+
+# 계획 결과 파일
+*.tfplan
