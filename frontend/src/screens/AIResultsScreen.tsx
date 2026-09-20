@@ -154,14 +154,14 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-[20px] font-bold text-[#0F172A]">
+          <h1 className="text-[20px] font-[family-name:var(--font-display)] text-ink">
             ✨ AI 추천 결과
           </h1>
         </div>
         <button
           onClick={() => regenerate.mutate(targetCategory)}
           disabled={generating}
-          className="text-[13px] font-medium text-[#0EA5E9] hover:underline disabled:text-[#94A3B8] disabled:no-underline flex-shrink-0 mt-1"
+          className="text-[13px] font-medium text-brand hover:underline disabled:text-ink-soft disabled:no-underline flex-shrink-0 mt-1"
         >
           {generating ? "분석 중…" : "다시 추천받기"}
         </button>
@@ -182,8 +182,8 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
 
       {generating && (
         <div className="flex flex-col items-center py-10 gap-5">
-          <div className="w-12 h-12 rounded-full border-4 border-[#E0F2FE] border-t-[#0EA5E9] animate-spin" />
-          <p className="text-[14px] font-medium text-[#64748B]">
+          <div className="w-12 h-12 rounded-full border-4 border-border border-t-brand animate-spin" />
+          <p className="text-[14px] font-medium text-ink-soft">
             AI가 최적의 팀원을 찾고 있어요…
           </p>
           <RecommendationSkeleton />
@@ -202,14 +202,14 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
               height="30"
               viewBox="0 0 36 36"
               fill="none"
-              stroke="#38BDF8"
+              stroke="var(--color-brand)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
               <circle cx="18" cy="14" r="6" />
               <path d="M6 30c0-6.627 5.373-12 12-12s12 5.373 12 12" />
-              <path d="M24 8l2 2 4-4" stroke="#22C55E" strokeWidth="2.5" />
+              <path d="M24 8l2 2 4-4" strokeWidth="2.5" />
             </svg>
           }
           title="아직 조건에 맞는 추천이 없어요"
@@ -219,7 +219,7 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
           action={
             <button
               onClick={() => navigate(routes.profileSetup(hackathonId))}
-              className="mt-2 bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
+              className="mt-2 bg-brand hover:bg-brand-dark text-white font-semibold text-[14px] px-8 py-3 rounded-xl transition-colors"
             >
               프로필 수정하기
             </button>
@@ -254,7 +254,7 @@ export function AIResultsScreen({ hackathonId }: { hackathonId: number }) {
 
           {morePicks.length > 0 && (
             <div className="mt-6">
-              <p className="text-[13px] font-semibold text-[#64748B] mb-3">
+              <p className="text-[13px] font-semibold text-ink-soft mb-3">
                 이 외에도 이런 분들이 있어요
               </p>
               <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory">
@@ -299,7 +299,7 @@ function FullRecommendationCard({
   const p = rec.person
   const avatarInitial = p.initial || initialOf(p.name)
   return (
-    <div className="bg-white rounded-2xl border border-[#E2EAF4] p-5">
+    <div className="bg-white rounded-2xl border border-border p-5">
       <div className="flex items-center gap-3 mb-4">
         <Avatar
           initial={avatarInitial}
@@ -308,9 +308,9 @@ function FullRecommendationCard({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-bold text-[15px] text-[#0F172A]">{p.name}</p>
+            <p className="font-bold text-[15px] text-ink">{p.name}</p>
             {p.review_summary.count > 0 && (
-              <span className="text-[11px] font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-semibold text-ink-soft bg-border/60 px-2 py-0.5 rounded-full">
                 ⭐ {p.review_summary.average} ({p.review_summary.count})
               </span>
             )}
@@ -319,7 +319,7 @@ function FullRecommendationCard({
             {p.roles.map((r) => (
               <span
                 key={r}
-                className="bg-[#E0F2FE] text-[#0EA5E9] text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                className="bg-brand/10 text-brand text-[11px] font-semibold px-2 py-0.5 rounded-full"
               >
                 {r}
               </span>
@@ -327,7 +327,7 @@ function FullRecommendationCard({
             {p.skills.map((s) => (
               <span
                 key={s}
-                className="bg-[#F8FAFC] text-[#64748B] text-[11px] px-2 py-0.5 rounded-full border border-[#E2EAF4]"
+                className="bg-border/30 text-ink-soft text-[11px] px-2 py-0.5 rounded-full border border-border"
               >
                 {s}
               </span>
@@ -338,29 +338,29 @@ function FullRecommendationCard({
       </div>
 
       <div className="flex flex-col gap-2 mb-4">
-        <div className="bg-[#F0FDF4] rounded-xl px-3.5 py-2.5">
-          <p className="text-[11px] font-semibold text-[#22C55E] mb-0.5">
+        <div className="bg-border/30 rounded-xl px-3.5 py-2.5">
+          <p className="text-[11px] font-semibold text-ink mb-0.5">
             ✅ 잘 맞는 점
           </p>
-          <p className="text-[12px] text-[#64748B]">{rec.fit_points}</p>
+          <p className="text-[12px] text-ink-soft">{rec.fit_points}</p>
         </div>
-        <div className="bg-[#F0F9FF] rounded-xl px-3.5 py-2.5">
-          <p className="text-[11px] font-semibold text-[#0EA5E9] mb-0.5">
+        <div className="bg-brand/10 rounded-xl px-3.5 py-2.5">
+          <p className="text-[11px] font-semibold text-brand mb-0.5">
             🔷 상호 보완
           </p>
-          <p className="text-[12px] text-[#64748B]">{rec.complement}</p>
+          <p className="text-[12px] text-ink-soft">{rec.complement}</p>
         </div>
-        <div className="bg-[#FFF7ED] rounded-xl px-3.5 py-2.5">
-          <p className="text-[11px] font-semibold text-[#F59E0B] mb-0.5">
+        <div className="bg-border/30 rounded-xl px-3.5 py-2.5">
+          <p className="text-[11px] font-semibold text-ink mb-0.5">
             ⚠ 체크 포인트
           </p>
-          <p className="text-[12px] text-[#64748B]">{rec.check_point}</p>
+          <p className="text-[12px] text-ink-soft">{rec.check_point}</p>
         </div>
-        <div className="bg-[#F8FAFC] rounded-xl px-3.5 py-2.5 border border-[#E2EAF4]">
-          <p className="text-[11px] font-semibold text-[#64748B] mb-0.5">
+        <div className="bg-border/30 rounded-xl px-3.5 py-2.5 border border-border">
+          <p className="text-[11px] font-semibold text-ink-soft mb-0.5">
             → 추천 이유
           </p>
-          <p className="text-[12px] text-[#64748B]">{rec.reason}</p>
+          <p className="text-[12px] text-ink-soft">{rec.reason}</p>
         </div>
       </div>
 
@@ -411,16 +411,16 @@ function CompactRecommendationCard({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-bold text-[15px] text-[#0F172A] truncate">
+            <p className="font-bold text-[15px] text-ink truncate">
               {p.name}
             </p>
             {p.review_summary.count > 0 && (
-              <span className="text-[11px] font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2 py-0.5 rounded-full flex-shrink-0">
+              <span className="text-[11px] font-semibold text-ink-soft bg-border/60 px-2 py-0.5 rounded-full flex-shrink-0">
                 ⭐ {p.review_summary.average} ({p.review_summary.count})
               </span>
             )}
           </div>
-          <p className="text-[12px] text-[#64748B] mt-0.5 line-clamp-1">
+          <p className="text-[12px] text-ink-soft mt-0.5 line-clamp-1">
             {p.one_liner || "아직 한 줄 소개가 없어요."}
           </p>
         </div>
@@ -431,7 +431,7 @@ function CompactRecommendationCard({
         {specChips.map((chip) => (
           <span
             key={chip}
-            className="bg-[#F8FAFC] text-[#64748B] text-[11px] px-2 py-0.5 rounded-full border border-[#E2EAF4]"
+            className="bg-border/30 text-ink-soft text-[11px] px-2 py-0.5 rounded-full border border-border"
           >
             {chip}
           </span>
@@ -444,7 +444,7 @@ function CompactRecommendationCard({
     return (
       <button
         onClick={onOpenDetail}
-        className="text-left bg-white rounded-2xl border border-[#E2EAF4] p-4 w-[220px] flex-shrink-0 snap-start hover:border-[#0EA5E9] transition-colors"
+        className="text-left bg-white rounded-2xl border border-border p-4 w-[220px] flex-shrink-0 snap-start hover:border-brand transition-colors"
       >
         {content}
       </button>
@@ -452,7 +452,7 @@ function CompactRecommendationCard({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E2EAF4] p-5">
+    <div className="bg-white rounded-2xl border border-border p-5">
       {content}
       <div className="mt-3">
         <CardActions
@@ -482,28 +482,28 @@ function CardActions({
       {onSkip && (
         <button
           onClick={onSkip}
-          className="px-4 border border-[#E2EAF4] rounded-xl py-2.5 text-[13px] font-medium text-[#94A3B8] hover:bg-gray-50 hover:text-[#64748B] transition-colors flex-shrink-0"
+          className="px-4 border border-border rounded-xl py-2.5 text-[13px] font-medium text-ink-soft hover:bg-border/40 hover:text-ink transition-colors flex-shrink-0"
         >
           넘기기
         </button>
       )}
       <button
         onClick={onOpenDetail}
-        className="flex-1 border border-[#E2EAF4] rounded-xl py-2.5 text-[13px] font-medium text-[#64748B] hover:bg-gray-50 transition-colors"
+        className="flex-1 border border-border rounded-xl py-2.5 text-[13px] font-medium text-ink-soft hover:bg-border/40 transition-colors"
       >
         상세 프로필 보기
       </button>
       {rec.coffeechat_sent ? (
         <button
           disabled
-          className="flex-1 bg-[#F1F5F9] border border-[#E2EAF4] text-[#94A3B8] rounded-xl py-2.5 text-[13px] font-semibold cursor-not-allowed"
+          className="flex-1 bg-border/30 border border-border text-ink-soft rounded-xl py-2.5 text-[13px] font-semibold cursor-not-allowed"
         >
           신청함 ✓
         </button>
       ) : (
         <button
           onClick={onRequestCoffeeChat}
-          className="flex-1 bg-[#0EA5E9] hover:bg-[#0284C7] text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors"
+          className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors"
         >
           커피챗 신청하기
         </button>

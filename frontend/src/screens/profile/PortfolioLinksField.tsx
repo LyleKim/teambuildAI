@@ -26,7 +26,7 @@ export function PortfolioLinksField({
                 onChange={(e) =>
                   updateLink(i, { type: e.target.value as LinkType })
                 }
-                className="bg-white border border-[#E2EAF4] rounded-xl px-3 py-2.5 text-[13px] text-[#0F172A] outline-none focus:border-[#0EA5E9] cursor-pointer flex-shrink-0 w-[120px]"
+                className="bg-white border border-border rounded-xl px-3 py-2.5 text-[13px] text-ink outline-none focus:border-brand cursor-pointer flex-shrink-0 w-[120px]"
               >
                 {LINK_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -43,13 +43,13 @@ export function PortfolioLinksField({
                   value={link.url}
                   onChange={(e) => updateLink(i, { url: e.target.value })}
                   placeholder="https://"
-                  className="w-full bg-white border border-[#E2EAF4] rounded-xl pl-9 pr-4 py-2.5 text-[13px] outline-none focus:border-[#0EA5E9] placeholder-[#94A3B8]"
+                  className="w-full bg-white border border-border rounded-xl pl-9 pr-4 py-2.5 text-[13px] outline-none focus:border-brand placeholder-ink-soft"
                 />
               </div>
               <button
                 onClick={() => removeLink(i)}
                 aria-label="링크 삭제"
-                className="w-8 h-8 flex items-center justify-center rounded-full text-[#94A3B8] hover:bg-[#FFF1F2] hover:text-[#F43F5E] transition-colors flex-shrink-0"
+                className="w-8 h-8 flex items-center justify-center rounded-full text-ink-soft hover:bg-[#FFF1F2] hover:text-[#F43F5E] transition-colors flex-shrink-0"
               >
                 <svg
                   width="14"
@@ -70,7 +70,7 @@ export function PortfolioLinksField({
 
       <button
         onClick={addLink}
-        className="mt-2 flex items-center gap-1.5 text-[#0EA5E9] text-[13px] font-medium hover:text-[#0284C7] transition-colors py-1"
+        className="mt-2 flex items-center gap-1.5 text-brand text-[13px] font-medium hover:text-brand-dark transition-colors py-1"
       >
         <svg
           width="14"

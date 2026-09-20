@@ -24,8 +24,10 @@ export function MessagesScreen() {
 
   return (
     <Page>
-      <h1 className="text-[20px] font-bold text-[#0F172A] mb-1">메시지</h1>
-      <p className="text-[13px] text-[#64748B] mb-6">
+      <h1 className="text-[20px] font-[family-name:var(--font-display)] text-ink mb-1">
+        메시지
+      </h1>
+      <p className="text-[13px] text-ink-soft mb-6">
         수락된 커피챗 상대와의 대화
       </p>
 
@@ -45,7 +47,7 @@ export function MessagesScreen() {
             <button
               key={t.id}
               onClick={() => navigate(routes.thread(t.id))}
-              className="bg-white rounded-2xl border border-[#E2EAF4] p-4 flex items-center gap-4 hover:border-[#BAE6FD] hover:bg-[#F0F9FF] transition-colors text-left w-full"
+              className="bg-white rounded-2xl border border-border p-4 flex items-center gap-4 hover:border-brand/40 hover:bg-brand/5 transition-colors text-left w-full"
             >
               <div className="relative flex-shrink-0">
                 <Avatar initial={t.initial || initialOf(t.name)} size={48} />
@@ -57,27 +59,25 @@ export function MessagesScreen() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                  <span className="font-bold text-[14px] text-[#0F172A]">
+                  <span className="font-bold text-[14px] text-ink">
                     {t.name}
                   </span>
-                  <span className="text-[11px] text-[#0EA5E9] bg-[#E0F2FE] px-2 py-0.5 rounded-full font-medium">
+                  <span className="text-[11px] text-ink-soft bg-border/60 px-2 py-0.5 rounded-full font-medium">
                     {t.role}
                   </span>
-                  <span className="text-[11px] text-[#64748B] bg-[#F1F5F9] px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] text-ink-soft bg-border/30 px-2 py-0.5 rounded-full">
                     {t.hackathon}
                   </span>
                 </div>
                 <p
                   className={`text-[13px] truncate ${
-                    t.unread > 0
-                      ? "font-semibold text-[#0F172A]"
-                      : "text-[#64748B]"
+                    t.unread > 0 ? "font-semibold text-ink" : "text-ink-soft"
                   }`}
                 >
                   {t.last_message}
                 </p>
               </div>
-              <span className="text-[11px] text-[#94A3B8] flex-shrink-0">
+              <span className="text-[11px] text-ink-soft flex-shrink-0">
                 {t.last_time}
               </span>
             </button>

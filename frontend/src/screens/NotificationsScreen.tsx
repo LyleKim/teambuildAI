@@ -69,11 +69,13 @@ export function NotificationsScreen() {
   return (
     <Page>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[22px] font-bold text-[#0F172A]">알림</h1>
+        <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink">
+          알림
+        </h1>
         {items.some((n) => !n.read) && (
           <button
             onClick={() => void markAll()}
-            className="text-[13px] text-[#0EA5E9] font-medium hover:underline"
+            className="text-[13px] text-brand font-medium hover:underline"
           >
             모두 읽음 처리
           </button>
@@ -91,7 +93,7 @@ export function NotificationsScreen() {
               height="28"
               viewBox="0 0 18 18"
               fill="none"
-              stroke="#38BDF8"
+              stroke="var(--color-brand)"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -109,8 +111,8 @@ export function NotificationsScreen() {
         <div className="flex flex-col gap-2">
           {items.map((n) => {
             const style = NOTIF_ICON_STYLE[n.type] ?? {
-              bg: "#F0F5FC",
-              color: "#64748B",
+              bg: "var(--color-border)",
+              color: "var(--color-ink-soft)",
             }
             return (
               <button
@@ -118,8 +120,8 @@ export function NotificationsScreen() {
                 onClick={() => open(n)}
                 className={`rounded-2xl border px-5 py-4 flex items-center gap-4 hover:shadow-sm transition-all text-left w-full ${
                   n.read
-                    ? "bg-white border-[#E2EAF4] hover:border-[#BAE6FD]"
-                    : "bg-[#F0F9FF] border-[#BAE6FD] hover:border-[#38BDF8]"
+                    ? "bg-white border-border hover:border-brand/40"
+                    : "bg-brand/5 border-brand/30 hover:border-brand"
                 }`}
               >
                 <div
@@ -130,16 +132,16 @@ export function NotificationsScreen() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-[14px] text-[#0F172A] ${
+                    className={`text-[14px] text-ink ${
                       n.read ? "font-medium" : "font-semibold"
                     }`}
                   >
                     {n.text}
                   </p>
-                  <p className="text-[12px] text-[#64748B] mt-0.5">{n.time}</p>
+                  <p className="text-[12px] text-ink-soft mt-0.5">{n.time}</p>
                 </div>
                 {!n.read && (
-                  <span className="w-2 h-2 rounded-full bg-[#0EA5E9] flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0" />
                 )}
               </button>
             )

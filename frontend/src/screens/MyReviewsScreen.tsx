@@ -23,8 +23,10 @@ export function MyReviewsScreen() {
         label="마이페이지로"
         onClick={() => navigate(routes.mypage)}
       />
-      <h1 className="text-[22px] font-bold text-[#0F172A] mb-1">받은 리뷰</h1>
-      <p className="text-[13px] text-[#64748B] mb-6">
+      <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink mb-1">
+        받은 리뷰
+      </h1>
+      <p className="text-[13px] text-ink-soft mb-6">
         {average
           ? `⭐ 평균 ${average}점 · ${items.length}개`
           : "팀원들이 남긴 리뷰가 여기 모여요"}
@@ -45,21 +47,21 @@ export function MyReviewsScreen() {
           {items.map((r) => (
             <div
               key={r.id}
-              className="bg-white rounded-2xl border border-[#E2EAF4] p-5"
+              className="bg-white rounded-2xl border border-border p-5"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="font-semibold text-[14px] text-[#0F172A]">
+                <p className="font-semibold text-[14px] text-ink">
                   {r.reviewer_name}
-                  <span className="text-[#94A3B8] font-normal ml-2">
+                  <span className="text-ink-soft font-normal ml-2">
                     · {r.hackathon.title}
                   </span>
                 </p>
-                <span className="text-[13px] font-bold text-[#F59E0B] flex-shrink-0">
+                <span className="text-[13px] font-bold text-ink flex-shrink-0">
                   {"⭐".repeat(r.rating)}
                 </span>
               </div>
               {r.content && (
-                <p className="text-[13px] text-[#64748B] leading-relaxed">
+                <p className="text-[13px] text-ink-soft leading-relaxed">
                   {r.content}
                 </p>
               )}

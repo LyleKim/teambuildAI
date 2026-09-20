@@ -15,27 +15,27 @@ export function BioItemsView({
 
   return (
     <div className="mb-6">
-      <p className="text-[13px] font-semibold text-[#0F172A] mb-3">자기소개</p>
-      <div className="bg-white rounded-2xl border border-[#E2EAF4] overflow-hidden">
+      <p className="text-[13px] font-semibold text-ink mb-3">자기소개</p>
+      <div className="bg-white rounded-2xl border border-border overflow-hidden">
         {bioItems.length > 0 ? (
           bioItems.map((q, idx) => (
             <div
               key={q.label}
               className={`px-5 py-4 ${
-                idx < bioItems.length - 1 ? "border-b border-[#F8FAFC]" : ""
+                idx < bioItems.length - 1 ? "border-b border-border" : ""
               }`}
             >
-              <p className="text-[11px] font-semibold text-[#0EA5E9] mb-1 uppercase tracking-wide">
+              <p className="text-[11px] font-semibold text-ink-soft mb-1">
                 {q.label}
               </p>
-              <p className="text-[14px] text-[#0F172A] leading-relaxed">
+              <p className="text-[14px] text-ink leading-relaxed">
                 {q.value}
               </p>
             </div>
           ))
         ) : (
           <div className="px-5 py-4">
-            <p className="text-[14px] text-[#94A3B8] leading-relaxed">
+            <p className="text-[14px] text-ink-soft leading-relaxed">
               아직 작성된 자기소개가 없어요.
             </p>
           </div>

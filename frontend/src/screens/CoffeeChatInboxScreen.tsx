@@ -99,7 +99,7 @@ export function CoffeeChatInboxScreen() {
 
   return (
     <Page>
-      <h1 className="text-[22px] font-bold text-[#0F172A] mb-5">
+      <h1 className="text-[22px] font-[family-name:var(--font-display)] text-ink mb-5">
         커피챗 관리함
       </h1>
 
@@ -110,8 +110,8 @@ export function CoffeeChatInboxScreen() {
             onClick={() => switchTab(t)}
             className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-colors ${
               tab === t
-                ? "bg-[#0EA5E9] text-white"
-                : "bg-white text-[#64748B] border border-[#E2EAF4] hover:border-[#38BDF8]"
+                ? "bg-brand text-white"
+                : "bg-white text-ink-soft border border-border hover:border-brand"
             }`}
           >
             {t === "received" ? "받은 신청" : "보낸 신청"}
@@ -120,9 +120,9 @@ export function CoffeeChatInboxScreen() {
       </div>
 
       {tab === "received" && (
-        <p className="text-[12px] text-[#94A3B8] mb-3">
+        <p className="text-[12px] text-ink-soft mb-3">
           수락한 커피챗은{" "}
-          <span className="font-medium text-[#0EA5E9]">내 현황</span>에서
+          <span className="font-medium text-brand">내 현황</span>에서
           팀원으로 확인할 수 있어요.
         </p>
       )}
@@ -134,8 +134,8 @@ export function CoffeeChatInboxScreen() {
             onClick={() => setFilter(f.value)}
             className={`px-3 py-1 rounded-full text-[12px] font-medium border transition-colors ${
               filter === f.value
-                ? "bg-[#0F172A] text-white border-[#0F172A]"
-                : "bg-white text-[#64748B] border-[#E2EAF4] hover:border-[#0EA5E9] hover:text-[#0EA5E9]"
+                ? "bg-brand text-white border-brand"
+                : "bg-white text-ink-soft border-border hover:border-brand hover:text-brand"
             }`}
           >
             {f.label}
@@ -177,7 +177,7 @@ export function CoffeeChatInboxScreen() {
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-[#E2EAF4] p-5"
+                className="bg-white rounded-2xl border border-border p-5"
               >
                 <div className="flex items-start gap-3 mb-3">
                   <button onClick={() => navigate(routes.member(person.id))}>
@@ -188,9 +188,9 @@ export function CoffeeChatInboxScreen() {
                   </button>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="font-semibold text-[14px] text-[#0F172A] truncate">
+                      <p className="font-semibold text-[14px] text-ink truncate">
                         {person.name}{" "}
-                        <span className="text-[#64748B] font-normal">
+                        <span className="text-ink-soft font-normal">
                           · {person.role}
                         </span>
                       </p>
@@ -200,7 +200,7 @@ export function CoffeeChatInboxScreen() {
                           onClick={() => deleteItem(item.id)}
                           disabled={busy}
                           aria-label="삭제"
-                          className="text-[#94A3B8] hover:text-[#F43F5E] transition-colors disabled:opacity-40"
+                          className="text-ink-soft hover:text-[#F43F5E] transition-colors disabled:opacity-40"
                         >
                           <svg
                             width="15"
@@ -217,10 +217,10 @@ export function CoffeeChatInboxScreen() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-[11px] text-[#94A3B8] mb-1">
+                    <p className="text-[11px] text-ink-soft mb-1">
                       {item.hackathon.title}
                     </p>
-                    <p className="text-[13px] text-[#64748B] leading-relaxed">
+                    <p className="text-[13px] text-ink-soft leading-relaxed">
                       {item.message}
                     </p>
                     {item.sender_contact && (
@@ -228,7 +228,7 @@ export function CoffeeChatInboxScreen() {
                         href={item.sender_contact}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-block mt-1.5 text-[12px] font-medium text-[#0EA5E9] hover:underline"
+                        className="inline-block mt-1.5 text-[12px] font-medium text-brand hover:underline"
                       >
                         💬 오픈채팅 링크 열기
                       </a>
@@ -242,7 +242,7 @@ export function CoffeeChatInboxScreen() {
                     <button
                       onClick={() => accept.mutate(item.id)}
                       disabled={busy}
-                      className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
+                      className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
                     >
                       수락
                     </button>
@@ -263,7 +263,7 @@ export function CoffeeChatInboxScreen() {
                     {item.thread_id && (
                       <button
                         onClick={() => navigate(routes.thread(item.thread_id!))}
-                        className="flex-1 border border-[#E2EAF4] rounded-xl py-2.5 text-[13px] font-semibold text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
+                        className="flex-1 border border-border rounded-xl py-2.5 text-[13px] font-semibold text-brand hover:bg-brand/10 transition-colors"
                       >
                         대화 열기
                       </button>
@@ -277,7 +277,7 @@ export function CoffeeChatInboxScreen() {
                           })
                         }
                         disabled={busy}
-                        className="flex-1 bg-[#0EA5E9] hover:bg-[#0284C7] text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
+                        className="flex-1 bg-brand hover:bg-brand-dark text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
                       >
                         진행중으로 표시
                       </button>
@@ -288,7 +288,7 @@ export function CoffeeChatInboxScreen() {
                           progress.mutate({ id: item.id, status: "completed" })
                         }
                         disabled={busy}
-                        className="flex-1 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
+                        className="flex-1 bg-ink hover:bg-ink/90 text-white rounded-xl py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60"
                       >
                         완료로 표시
                       </button>

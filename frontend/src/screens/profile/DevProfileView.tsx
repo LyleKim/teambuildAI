@@ -7,7 +7,7 @@ export function DevProfileView({ data, bioQuestions }: ProfileViewProps) {
   return (
     <>
       {data.one_liner && (
-        <p className="text-[14px] text-[#64748B] mb-5 leading-relaxed">
+        <p className="text-[14px] text-ink-soft mb-5 leading-relaxed">
           {data.one_liner}
         </p>
       )}
@@ -17,7 +17,7 @@ export function DevProfileView({ data, bioQuestions }: ProfileViewProps) {
           {data.skills.map((s) => (
             <span
               key={s}
-              className="bg-white border border-[#E2EAF4] text-gray-600 text-[13px] px-3 py-1 rounded-lg"
+              className="bg-white border border-border text-ink-soft text-[13px] px-3 py-1 rounded-lg"
             >
               {s}
             </span>
@@ -27,7 +27,7 @@ export function DevProfileView({ data, bioQuestions }: ProfileViewProps) {
 
       {data.links.length > 0 && (
         <div className="mb-5">
-          <p className="text-[13px] font-semibold text-[#0F172A] mb-2.5">
+          <p className="text-[13px] font-semibold text-ink mb-2.5">
             포트폴리오
           </p>
           <LinksView links={data.links} />
@@ -43,10 +43,10 @@ export function DevProfileView({ data, bioQuestions }: ProfileViewProps) {
         ] as [string, string][]).map(([label, value]) => (
           <div
             key={label}
-            className="bg-white rounded-xl border border-[#E2EAF4] p-4"
+            className="bg-white rounded-xl border border-border p-4"
           >
-            <p className="text-[11px] text-[#8FA3BF] mb-1">{label}</p>
-            <p className="text-[14px] font-semibold text-gray-800">
+            <p className="text-[11px] text-ink-soft mb-1">{label}</p>
+            <p className="text-[14px] font-semibold text-ink">
               {value || "—"}
             </p>
           </div>
@@ -55,14 +55,14 @@ export function DevProfileView({ data, bioQuestions }: ProfileViewProps) {
 
       {data.interests.length > 0 && (
         <div className="mb-5">
-          <p className="text-[13px] font-semibold text-gray-700 mb-2">
+          <p className="text-[13px] font-semibold text-ink mb-2">
             관심 분야
           </p>
           <div className="flex gap-2 flex-wrap">
             {data.interests.map((i) => (
               <span
                 key={i}
-                className="bg-blue-100 text-[#4EAAF5] text-[12px] font-semibold px-3 py-1 rounded-full"
+                className="bg-border/60 text-ink-soft text-[12px] font-semibold px-3 py-1 rounded-full"
               >
                 {i}
               </span>

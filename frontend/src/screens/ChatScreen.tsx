@@ -62,7 +62,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
 
   if (thread.loading) {
     return (
-      <div className="min-h-screen bg-[#EEF4FB]">
+      <div className="min-h-screen bg-surface">
         <NavBar />
         <LoadingState />
       </div>
@@ -71,7 +71,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
 
   if (thread.error || !thread.data) {
     return (
-      <div className="min-h-screen bg-[#EEF4FB]">
+      <div className="min-h-screen bg-surface">
         <NavBar />
         <ErrorState error={thread.error} onRetry={thread.refetch} />
       </div>
@@ -85,28 +85,28 @@ export function ChatScreen({ threadId }: { threadId: number }) {
   let lastDate = ""
 
   return (
-    <div className="min-h-screen bg-[#EEF4FB] flex flex-col">
+    <div className="min-h-screen bg-surface flex flex-col">
       <NavBar />
 
-      <div className="bg-white border-b border-[#E2EAF4] px-6 py-3 flex items-center gap-3 sticky top-[52px] z-40">
+      <div className="bg-white border-b border-border px-6 py-3 flex items-center gap-3 sticky top-[52px] z-40">
         <button
           onClick={() => navigate(routes.messages)}
-          className="text-[#4EAAF5] text-[13px] font-medium hover:underline mr-1"
+          className="text-brand text-[13px] font-medium hover:underline mr-1"
         >
           ←
         </button>
         <Avatar initial={avatarInitial} size={36} />
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[14px] text-[#0F172A] leading-tight truncate">
+          <p className="font-bold text-[14px] text-ink leading-tight truncate">
             {t.name}
           </p>
-          <p className="text-[11px] text-[#64748B] truncate">
+          <p className="text-[11px] text-ink-soft truncate">
             {t.role} · {t.hackathon}
           </p>
         </div>
         <button
           onClick={() => navigate(routes.member(t.person_id))}
-          className="text-[12px] text-[#0EA5E9] font-medium hover:underline flex-shrink-0"
+          className="text-[12px] text-brand font-medium hover:underline flex-shrink-0"
         >
           프로필 보기
         </button>
@@ -122,7 +122,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
         )}
 
         {list.length === 0 && !messages.loading && !messages.error && (
-          <p className="text-center text-[13px] text-[#94A3B8] py-16">
+          <p className="text-center text-[13px] text-ink-soft py-16">
             첫 메시지를 보내 대화를 시작해보세요.
           </p>
         )}
@@ -135,11 +135,11 @@ export function ChatScreen({ threadId }: { threadId: number }) {
             <div key={m.id}>
               {showDate && (
                 <div className="flex items-center gap-3 my-4">
-                  <div className="flex-1 h-px bg-[#E2EAF4]" />
-                  <span className="text-[11px] text-[#94A3B8] font-medium px-2">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="text-[11px] text-ink-soft font-medium px-2">
                     {m.date}
                   </span>
-                  <div className="flex-1 h-px bg-[#E2EAF4]" />
+                  <div className="flex-1 h-px bg-border" />
                 </div>
               )}
               <div
@@ -160,13 +160,13 @@ export function ChatScreen({ threadId }: { threadId: number }) {
                   <div
                     className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed whitespace-pre-wrap break-words ${
                       mine
-                        ? "bg-[#0EA5E9] text-white rounded-br-sm"
-                        : "bg-[#F0F9FF] text-[#0F172A] border border-[#E0F2FE] rounded-bl-sm"
+                        ? "bg-brand text-white rounded-br-sm"
+                        : "bg-border/30 text-ink border border-border rounded-bl-sm"
                     }`}
                   >
                     {m.text}
                   </div>
-                  <span className="text-[10px] text-[#94A3B8] mt-0.5 px-1">
+                  <span className="text-[10px] text-ink-soft mt-0.5 px-1">
                     {m.time}
                   </span>
                 </div>
@@ -177,7 +177,7 @@ export function ChatScreen({ threadId }: { threadId: number }) {
         <div ref={bottomRef} />
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2EAF4] px-4 py-3 z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 z-40">
         <div className="max-w-2xl mx-auto">
           <InlineError message={send.error?.message} />
           <div className="flex items-center gap-2">
@@ -191,13 +191,13 @@ export function ChatScreen({ threadId }: { threadId: number }) {
                 }
               }}
               placeholder="메시지를 입력하세요…"
-              className="flex-1 bg-[#F0F5FC] border border-[#E2EAF4] rounded-full px-5 py-2.5 text-[14px] outline-none focus:border-[#0EA5E9] placeholder-[#8FA3BF]"
+              className="flex-1 bg-white border border-border rounded-full px-5 py-2.5 text-[14px] outline-none focus:border-brand placeholder-ink-soft"
             />
             <button
               onClick={submit}
               disabled={send.loading || !input.trim()}
               aria-label="보내기"
-              className="w-10 h-10 bg-[#0EA5E9] hover:bg-[#0284C7] rounded-full flex items-center justify-center flex-shrink-0 transition-colors shadow-sm disabled:bg-[#BAE6FD] disabled:cursor-not-allowed"
+              className="w-10 h-10 bg-brand hover:bg-brand-dark rounded-full flex items-center justify-center flex-shrink-0 transition-colors shadow-sm disabled:bg-brand/40 disabled:cursor-not-allowed"
             >
               {send.loading ? (
                 <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
