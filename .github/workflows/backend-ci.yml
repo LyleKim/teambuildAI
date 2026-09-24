@@ -11,11 +11,11 @@ name: Backend CI
 # .github/workflows/backend-ci.yml 파일이 실행되도록 설정
 # workflow_dispatch는 Github UI에서 수동으로 워크플로우를 실행할 수 있도록 설정
 on:
-  push:
-    branches: [main]
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend-ci.yml"
+  push: #push 발생했고
+    branches: [main] # main 브랜치에 대한 변경이고
+    paths: 
+      - "backend/**" # backend 디렉토리 내부의 모든 파일이 변경되었을 때
+      - ".github/workflows/backend-ci.yml" # 워크플로우 파일이 변경되었을 때
   pull_request:
     branches: [main]
     paths:
@@ -37,6 +37,7 @@ concurrency:
   cancel-in-progress: true
 
 #job에 대한 정의.
+# job은 그 자체로 그냥 VM이 뜨고 사라지는 단위라고 보면 된다.
 # 이름은 test이고, github에서 제공하는 ubuntu-latest 환경에서 실행되도록 설정
 # service는 외부 서비스에 대한 정의를 한다.
 # DB에 대한 메타데이터를 정의하고, 
@@ -50,11 +51,12 @@ concurrency:
 # 분리 기준은 "실행 시간이 충분히 길거나, 실패 원인을 분리해서 보고 싶거나, 환경이 다를 때"
 jobs:
   test:
+    # 이 테스트 자체가 ubuntu 환경에서만 동작하도록 작성되어 있다.(docker가 이미 설치되어 있음)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
-
+    # 이 섹션은 job 시작 전에 실행되는 서비스 컨테이너를 정의하여 준비하도록 한다.
     services:
       db:
         image: mysql:8.4
@@ -86,6 +88,7 @@ jobs:
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
       CORS_ALLOWED_ORIGINS: http://localhost:8443
 
+    # 이제 준비된 VM 위에서 스텝을 순차적으로 실행한다.
     # uv.lock은 설치된 패키지들의 정확한 버과전이 기록된 파일이다. 
     # pyproject.toml에도 버전 정보는 있지만 느슨하게 적혀있다.
     # 이런걸 참조하면 나는 되고 남은 안되는 상황이 발생할 수 있다.
