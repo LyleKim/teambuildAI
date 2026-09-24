@@ -9,7 +9,7 @@ name: Backend CI
 # push와 pull_request 이벤트에 대해 
 # main 브랜치와 backend 디렉토리 또는 워크플로우 파일이 변경될 때
 # .github/workflows/backend-ci.yml 파일이 실행되도록 설정
-# workflow_dispatch는 Github UI에서 수동으로 워크플로우를 실행할 수 있도록 설정
+# workflow_dispatch는 Github UI에서 수동으로 워크플로우를 실행할 수 있도록 설정
 on:
   push:
     branches: [main]
