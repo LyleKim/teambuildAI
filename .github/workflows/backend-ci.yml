@@ -73,7 +73,10 @@ jobs:
     # Django 테스트를 위한 환경변수 설정
     env:
       DB_NAME: teambuild
-      DB_USER: teambuild
+      # teambuild 계정은 teambuild DB에만 권한이 있어서, Django가 테스트용으로
+      # 새로 만드는 test_teambuild DB엔 CREATE 권한이 없다 (Access denied 원인).
+      # CI는 일회용 컨테이너라 권한 분리할 이유가 없으므로 root로 접속한다.
+      DB_USER: root
       DB_PASSWORD: teambuild
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
