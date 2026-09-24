@@ -1,0 +1,120 @@
+# githubaction은
+# 워크 플로우는 job의 실행으로 동작하고, job은 여러 스탭으로 구성된다. 
+#그리고 각각의 job은 독립된 격리 환경인 러너에서 동작한다.
+
+# 저장소의 ACtions 탭에서 워크플로우를 식별하기 위한 이름
+name: Backend CI
+
+# on은 트리거를 정의하는 섹션이다.
+# push와 pull_request 이벤트에 대해 
+# main 브랜치와 backend 디렉토리 또는 워크플로우 파일이 변경될 때
+# .github/workflows/backend-ci.yml 파일이 실행되도록 설정
+# workflow_dispatch는 Github UI에서 수동으로 워크플로우를 실행할 수 있도록 설정
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  workflow_dispatch:
+
+# concurrency, 즉 동시성 제어에 대한 섹션이다.
+# cancel-in-progress: true는 동일 브랜치에 새 커밋이 올라오면
+# 이전에 진행 중이던 워크플로우(CI 작업)를 취소하고 새 워크플로우를 실행하도록 설정
+# github.ref는 현재 작동 중인 Git 브랜치 이름이다.
+# main 브랜치면 refs/heads/main이 된다.
+# 5번 PR이면 refs/pull/5/merge가 된다.
+# 같은 브랜치에서 여러 워크플로우가 동시에 실행되는 것을 방지하고,
+# 이전 워크플로우를 취소하고 새 워크플로우를 실행하도록 설정하는 것이다.
+#  표현식은 실행 전에 치환된다. 걱정 ㄴㄴ
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+#job에 대한 정의.
+# 이름은 test이고, github에서 제공하는 ubuntu-latest 환경에서 실행되도록 설정
+# service는 외부 서비스에 대한 정의를 한다.
+# DB에 대한 메타데이터를 정의하고, 
+# DB가 쿼리를 받을 수 있는 상태인지를 점검한다.
+# run: working-directory: backend는 
+# 모든 run 스텝에서 backend 디렉토리에서 실행되도록 설정한다. (cd /backend)
+# job의 기본 동작은 병렬 실행이다.
+# 기본 job은 병렬로 실행되지만, needs를 사용하면 순차적으로 실행되도록 설정할 수 있다.
+# 물론 이 프로젝트는 단일 job이므로 순차 실행은 필요 없다.
+# job 사이는 독립작이기 때문에 너무 job을 벌리는 것은 좋은 방법이 아님.
+# 분리 기준은 "실행 시간이 충분히 길거나, 실패 원인을 분리해서 보고 싶거나, 환경이 다를 때"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      db:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: teambuild
+          MYSQL_USER: teambuild
+          MYSQL_PASSWORD: teambuild
+          MYSQL_ROOT_PASSWORD: teambuild
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    # Django 테스트를 위한 환경변수 설정
+    env:
+      DB_NAME: teambuild
+      DB_USER: teambuild
+      DB_PASSWORD: teambuild
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      # CI 테스트 전용 더미 값. 실제 배포 시크릿과 무관하므로 repo secret으로 뺄 필요 없음.
+      DJANGO_SECRET_KEY: ci-test-secret-key-not-for-production
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      CORS_ALLOWED_ORIGINS: http://localhost:8443
+
+    # uv.lock은 설치된 패키지들의 정확한 버과전이 기록된 파일이다. 
+    # pyproject.toml에도 버전 정보는 있지만 느슨하게 적혀있다.
+    # 이런걸 참조하면 나는 되고 남은 안되는 상황이 발생할 수 있다.
+    # uv.lock은 uv가 모든 라이브러리와 그 라이브러리가 의존하는 하위가패키지들의 정확한 버전/해시값을 기록해둔 파일이다.
+    # 정확히 명시하고 있기 때문에 uv.lock을 참조해서 설치하면, 모든 개발 환경에서 동일한 버전의 패키지가 설치된다.
+    # 스탭 내부에는 실행 순서가 있다. 스텝은 순차적으로 top-down으로 실행된다.
+    # usues 액션 : 남이 만들어 둔 재사용 가능한 액션(부품) 모듈을 불러와 실행
+    # run 액션 : 직접 명령어를 셸에서 실행
+    # 스탭을 나누는 기준은 아래와 같다.
+    # 실행 시간이 눈에 띄거나 실패 가능성이 있는 작업은 별도 스텝으로, 
+    # 준비 작업 같은 잔손질은 묶어서.
+    # 아래 같은 경우 패키지 준비 같은 작업은 굳이 분리하지 않았고
+    # 메인 작업인 run을 보면 이 스탭은 패키지 설치 + manage.py 기반 테스트를 수행하는 것을 볼 수 있다.
+    # 참고로 steps 내부 액션 각각에 name:을 널어주면 실패 시 어디에서 실패했는지 알 수 있다.
+    steps:
+      - name: 소스코드 체크아웃
+        uses: actions/checkout@v4 # 저장소의 코드를 러너로 가져오는 스텝
+
+      - name: uv 툴체인 및 캐시 설정
+        uses: astral-sh/setup-uv@v5 # 파이썬 패키지 매니저 uv를 설치하는 스텝
+        with: # 캐시를 활성화하고, uv.lock 파일이 변경되지 않았다면 캐시를 재사용하도록 설시
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      # uv.lock에 명시된 버전 고정값 그대로 의존성 패키지를 설치
+      - name: 의존성 설치
+        run: uv sync --locked
+      # manage.py는 Django가 자동으로 만들어주는 진입점(CLI) 스크립트이다.
+      # manage.py test 명령어를 실행하면, Django가 테스트를 수행한다.
+      # 내가 적성한 코드가 없어도 manage.py test 명령어를 실행하면 
+      # settings.py 확인, DB 연결 확인, 테스트용 DB 생성, 테스트용 DB 마이그레이션 수행, 테스트 코드 실행, 테스트용 DB 삭제까지 자동으로 수행한다
+      # 이번 프로젝트에서는 단위 테스트 코드가 없으나, 
+      # Django는 앱 디렉터리 내부에서 파일명이 test*.py인 파일을 자동으로 찾아서 테스트를 수행한다.
+      # tests/ 디렉토리 내부에 test*.py 파일을 만들어서 테스트 코드를 작성하면 된다.
+      - name: Django 테스트 실행
+        run: uv run python manage.py test

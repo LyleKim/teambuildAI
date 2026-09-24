@@ -205,6 +205,5 @@ Task 7이 발견한 Django 6.x/MySQL 8.4 요구사항 vs RDS 8.0 설계 충돌�
 
 ## 8. 남은 일
 
-- **Phase C (미실행, 사용자 승인 대기):** `floci_override.tf`를 비활성화하고 실제 AWS에 apply → floci가 검증 못 했던 유일한 지점인 보안그룹/private 서브넷의 실제 네트워크 격리를 확인 → 확인 후 `terraform destroy`로 정리.
 - Task 7이 남긴 참고사항: gunicorn의 자동 재시작(systemd/supervisor)은 이번 범위 밖으로 남겨둠 — 실제 AWS 배포 시 별도 처리 필요.
-- floci 위의 리소스는 아직 정리하지 않은 상태(nginx/WAS/RDS 컨테이너, VPC 전부 살아있음) — 다음 세션에서 이어서 검증하거나 실험할 수 있게 일부러 유지.
+- **2026-09-22 정리 완료**: 사용자 요청으로 floci 위에 떠 있던 AWS 에뮬레이션 리소스를 `terraform destroy -auto-approve`(`infra/terraform/`, `floci_override.tf` 활성 상태라 localhost:4566에만 적용됨)로 전량 정리. `terraform state list` 0건, `docker ps`에서 `floci-ec2-*`(nginx/WAS 2대) · `floci-rds-*` 컨테이너 소멸 확인 — VPC/서브넷/NAT Gateway/보안그룹 3개/RDS/S3 버킷 등 29개 리소스 전부 제거됨. floci/floci-ui 에뮬레이터 엔진 자체(도구, AWS 리소스 아님)는 남겨둠. 첫 시도는 Claude Code 자동 모드가 `-auto-approve` 무인 실행을 "blind apply"로 차단해 사용자가 직접 터미널에서 실행함.

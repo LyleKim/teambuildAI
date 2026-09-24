@@ -1,0 +1,49 @@
+name: Frontend CI
+
+# backend-ci.yml과 동일한 구조로 작성되어 있다.
+# main 브랜치에 push 또는 pull_request 이벤트가 발생했을 때,
+# frontend 디렉토리 또는 워크플로우 파일이 변경되면 실행되도록 설정되어 있다
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  workflow_dispatch:
+
+# 동기화 구성도 마찬가지로 되어 있고.
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# job 구성도 동일하다. 여기도 단일 job 구성
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    # 여기도 단일 step 구성이다.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      # build 스크립트 안에 tsc --noEmit(typecheck)가 이미 포함돼 있음
+      - run: pnpm build
