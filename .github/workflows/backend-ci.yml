@@ -1,4 +1,4 @@
-# githubaction은
+# github action은
 # 워크 플로우는 job의 실행으로 동작하고, job은 여러 스탭으로 구성된다. 
 #그리고 각각의 job은 독립된 격리 환경인 러너에서 동작한다.
 
