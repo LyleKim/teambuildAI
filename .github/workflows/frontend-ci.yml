@@ -87,5 +87,4 @@ jobs:
           git add k8s/frontend.yaml
           git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}" || echo "No changes to commit"
           
-          git pull origin main --rebase
           git push origin main
