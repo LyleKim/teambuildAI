@@ -78,19 +78,20 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
         run: |
+          run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # 1. k8s/frontend.yaml 파일 수정
           sed -i 's|lylekim/my-frontend:.*|lylekim/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
 
-          # 2. 변경된 매니페스트만 커밋
+          # 2. 매니페스트 파일만 스테이징 후 커밋
           git add k8s/frontend.yaml
           git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}"
 
-          # 3. 빌드 중 생겼을 수 있는 잔여 파일 정리 후 최신 커밋 리베이스
-          git checkout -- .   # 커밋되지 않은 나머지 임시 변경사항 제거
-          git pull origin main --rebase
+          # 3. LFS 이미지 파일 등 커밋되지 않은 나머지 변경사항 싹 강제 제거
+          git reset --hard HEAD
 
-          # 4. 푸시
+          # 4. 리베이스 및 푸시
+          git pull origin main --rebase
           git push origin main
