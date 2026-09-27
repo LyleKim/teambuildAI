@@ -3,7 +3,7 @@
 #그리고 각각의 job은 독립된 격리 환경인 러너에서 동작한다.
 
 # 저장소의 ACtions 탭에서 워크플로우를 식별하기 위한 이름
-name: Backend CI
+name: Backend CI/CD
 
 # on은 트리거를 정의하는 섹션이다.
 # push와 pull_request 이벤트에 대해 
@@ -41,6 +41,9 @@ concurrency:
   group: backend-ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 #job에 대한 정의.
 # job은 그 자체로 그냥 VM이 뜨고 사라지는 단위라고 보면 된다.
 # 이름은 test이고, github에서 제공하는 ubuntu-latest 환경에서 실행되도록 설정
@@ -55,7 +58,7 @@ concurrency:
 # job 사이는 독립작이기 때문에 너무 job을 벌리는 것은 좋은 방법이 아님.
 # 분리 기준은 "실행 시간이 충분히 길거나, 실패 원인을 분리해서 보고 싶거나, 환경이 다를 때"
 jobs:
-  test:
+  test-and-deploy:
     # 이 테스트 자체가 ubuntu 환경에서만 동작하도록 작성되어 있다.(docker가 이미 설치되어 있음)
     runs-on: ubuntu-latest
     defaults:
@@ -129,3 +132,39 @@ jobs:
       # tests/ 디렉토리 내부에 test*.py 파일을 만들어서 테스트 코드를 작성하면 된다.
       - name: Django 테스트 실행
         run: uv run python manage.py test
+
+
+      - name: Docker Hub 로그인
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker Buildx 설정
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker 이미지 빌드 및 도커 허브 푸시
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:latest
+
+      - name: K8s 매니페스트 이미지 태그 업데이트 및 Git Commit/Push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
+        run: |
+          # 1. k8s/backend.yaml 내 이미지 태그를 새로 빌드된 커밋 SHA로 교체
+          sed -i 's|image: .*my-backend:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:${{ github.sha }}|g' k8s/backend.yaml
+          
+          # 2. 변경된 매니페스트를 main 브랜치에 커밋 및 푸시 (ArgoCD가 이를 감지함)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s/backend.yaml
+          git commit -m "chore(cd): update backend image tag to ${{ github.sha }}" || echo "No changes to commit"
+          git push

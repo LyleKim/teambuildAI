@@ -47,3 +47,39 @@ jobs:
 
       # build 스크립트 안에 tsc --noEmit(typecheck)가 이미 포함돼 있음
       - run: pnpm build
+      
+      # argoCD 기반 CD 파이프라인 시작
+      - name: Docker Hub 로그인
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker Buildx 설정
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker 이미지 빌드 및 도커 허브 푸시
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:latest
+
+      - name: K8s 매니페스트 이미지 태그 업데이트 및 Git Commit/Push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
+        run: |
+          # 1. k8s/frontend.yaml 내 이미지 태그를 새로 빌드된 커밋 SHA로 교체
+          sed -i 's|image: .*my-frontend:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
+          
+          # 2. 변경된 매니페스트를 main 브랜치에 커밋 및 푸시 (ArgoCD가 이를 감지함)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s/frontend.yaml
+          git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}" || echo "No changes to commit"
+          git push
