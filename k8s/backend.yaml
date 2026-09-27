@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: lylekim/my-backend:latest
+          image: lylekim/my-backend:a2144f510bf3c38af9d15e7f9d2a0035c407ee41
           ports:
             - containerPort: 8000
           env:
