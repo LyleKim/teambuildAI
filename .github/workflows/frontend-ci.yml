@@ -78,13 +78,19 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
         run: |
-          # 1. k8s/frontend.yaml 내 이미지 태그를 새로 빌드된 커밋 SHA로 교체
-          sed -i 's|image: .*my-frontend:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
-          
-          # 2. 변경된 매니페스트를 main 브랜치에 커밋 및 푸시 (ArgoCD가 이를 감지함)
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 1. k8s/frontend.yaml 파일 수정
+          sed -i 's|lylekim/my-frontend:.*|lylekim/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
+
+          # 2. 변경된 매니페스트만 커밋
           git add k8s/frontend.yaml
-          git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}" || echo "No changes to commit"
-          
+          git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}"
+
+          # 3. 빌드 중 생겼을 수 있는 잔여 파일 정리 후 최신 커밋 리베이스
+          git checkout -- .   # 커밋되지 않은 나머지 임시 변경사항 제거
+          git pull origin main --rebase
+
+          # 4. 푸시
           git push origin main
