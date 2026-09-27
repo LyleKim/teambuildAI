@@ -133,7 +133,7 @@ jobs:
       - name: Django 테스트 실행
         run: uv run python manage.py test
 
-
+      # argoCD 기반 CD 파이프라인 시작
       - name: Docker Hub 로그인
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
