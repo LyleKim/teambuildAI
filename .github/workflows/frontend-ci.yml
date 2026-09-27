@@ -81,8 +81,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # 1. k8s/frontend.yaml 파일 수정
           sed -i 's|lylekim/my-frontend:.*|lylekim/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
 
+          # 2. 매니페스트 파일만 스테이징 후 커밋
           git add k8s/frontend.yaml
           git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}"
+
+          # 3. LFS 이미지 파일 등 남아있는 워킹 디렉토리 잔여물 정리
+          git reset --hard HEAD
+
+          # 4. 원격 저장소의 최신 커밋을 받아서 내 커밋 뒤로 이어붙임
+          git pull origin main --rebase
+
+          # 5. 푸시
           git push origin main
