@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: lylekim/my-backend:latest
+          image: lylekim/my-backend:d3bcb85e312d6ec145e1ae849d18f72e1fa55e66
           env:
             # 1. 일반 설정은 value로 직접 작성
             - name: DJANGO_SETTINGS_MODULE
