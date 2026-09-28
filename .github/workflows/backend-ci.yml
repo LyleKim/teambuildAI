@@ -158,7 +158,7 @@ jobs:
 
       - name: K8s 매니페스트 이미지 태그 업데이트 및 Git Commit/Push
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
+        working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
