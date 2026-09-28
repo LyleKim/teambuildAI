@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "teambuild"
+            - name: MYSQL_USER
+              value: "teambuild"
+            # etcd에 저장된 Secret 참조
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: django-backend-secret
+                  key: DB_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: django-backend-secret
+                  key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db 
+spec:
+  type: ClusterIP
+  selector:
+    app: db
+  ports:
+    - port: 3306
+      targetPort: 3306
