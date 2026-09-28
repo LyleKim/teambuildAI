@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: lylekim/my-frontend:293b685e43c907cab333e5b60bcc1c2956aaa1ee
+          image: lylekim/my-frontend:0c6263445178cff6fdf99e2633f0a960045728f2
           ports:
             - containerPort: 80
 ---
