@@ -2,14 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
+  labels:
+    app: backend
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend          # 필수: 파드를 찾기 위한 셀렉터
   template:
+    metadata:
+      labels:
+        app: backend        # 필수: 생성될 파드의 라벨 (selector와 일치해야 함)
     spec:
       containers:
         - name: backend
-          image: lylekim/my-backend:d3bcb85e312d6ec145e1ae849d18f72e1fa55e66
+          image: lylekim/my-backend:latest
+          ports:
+            - containerPort: 8000
           env:
-            # 1. 일반 설정은 value로 직접 작성
             - name: DJANGO_SETTINGS_MODULE
               value: "config.settings"
             - name: DJANGO_DEBUG
@@ -18,19 +28,31 @@ spec:
               value: "*"
             - name: DB_HOST
               value: "db"
+            - name: DB_PORT
+              value: "3306"
             - name: DB_NAME
               value: "teambuild"
             - name: DB_USER
               value: "teambuild"
-
-            # 2. 민감 정보는 K8s Secret에서 안전하게 불러옴 
             - name: DJANGO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: django-backend-secret    # 1단계에서 만든 K8s Secret 이름
-                  key: DJANGO_SECRET_KEY         # Secret 내부 키 이름
+                  name: django-backend-secret
+                  key: DJANGO_SECRET_KEY
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: django-backend-secret
                   key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
