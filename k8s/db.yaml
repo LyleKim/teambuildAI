@@ -24,7 +24,7 @@ spec:
               value: "teambuild"
             - name: MYSQL_USER
               value: "teambuild"
-            # etcd에 저장된 Secret 참조
+            # etcd에 저장된 Secret 참조 
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:

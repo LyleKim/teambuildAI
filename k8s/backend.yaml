@@ -23,7 +23,7 @@ spec:
             - name: DB_USER
               value: "teambuild"
 
-            # 2. 민감 정보는 K8s Secret에서 안전하게 불러옴
+            # 2. 민감 정보는 K8s Secret에서 안전하게 불러옴 
             - name: DJANGO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
