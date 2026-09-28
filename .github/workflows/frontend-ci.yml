@@ -1,22 +1,20 @@
 name: Frontend CI
 
-# backend-ci.yml과 동일한 구조로 작성되어 있다.
-# main 브랜치에 push 또는 pull_request 이벤트가 발생했을 때,
-# frontend 디렉토리 또는 워크플로우 파일이 변경되면 실행되도록 설정되어 있다
 on:
   push:
     branches: [main]
     paths:
       - "frontend/**"
       - ".github/workflows/frontend-ci.yml"
+
   pull_request:
     branches: [main]
     paths:
       - "frontend/**"
       - ".github/workflows/frontend-ci.yml"
+
   workflow_dispatch:
 
-# 동기화 구성도 마찬가지로 되어 있고.
 concurrency:
   group: frontend-ci-${{ github.ref }}
   cancel-in-progress: true
@@ -24,17 +22,18 @@ concurrency:
 permissions:
   contents: write
 
-# job 구성도 동일하다. 여기도 단일 job 구성
 jobs:
   build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: frontend
 
-    # 여기도 단일 step 구성이다.
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - uses: pnpm/action-setup@v4
         with:
@@ -48,10 +47,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # build 스크립트 안에 tsc --noEmit(typecheck)가 이미 포함돼 있음
       - run: pnpm build
-      
-      # argoCD 기반 CD 파이프라인 시작
+
       - name: Docker Hub 로그인
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
@@ -76,23 +73,16 @@ jobs:
 
       - name: K8s 매니페스트 이미지 태그 업데이트 및 Git Commit/Push
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: . # k8s 디렉터리 접근을 위해 저장소 루트로 작업 경로 변경
+        working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 1. k8s/frontend.yaml 파일 수정
           sed -i 's|lylekim/my-frontend:.*|lylekim/my-frontend:${{ github.sha }}|g' k8s/frontend.yaml
 
-          # 2. 매니페스트 파일만 스테이징 후 커밋
           git add k8s/frontend.yaml
-          git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}"
 
-          # 3. LFS 이미지 파일 등 남아있는 워킹 디렉토리 잔여물 정리
-          git reset --hard HEAD
+          git diff --cached --quiet || \
+            git commit -m "chore(cd): update frontend image tag to ${{ github.sha }}"
 
-          # 4. 원격 저장소의 최신 커밋을 받아서 내 커밋 뒤로 이어붙임
-          git pull origin main --rebase
-
-          # 5. 푸시
-          git push origin main
+          git push origin HEAD:main
